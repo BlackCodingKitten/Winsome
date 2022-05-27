@@ -19,22 +19,22 @@ public class Wallet {
         try {
             URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=4&col=1&format=plain&rnd=new");
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-            if (connection.getResponseCode() <= 299) {
+            if (connection.getResponseCode() < 300) {
                 InputStream inputStream = connection.getInputStream();
-                StringBuffer stringBuffer = new StringBuffer();
                 BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStream));
                 String line = bReader.readLine();
                 exchangeRate = Double.parseDouble(line);
+            } else {
+                System.out.print(" Service temporarily unavailable. :-( \nPlease try again later \n");
             }
         } catch (IOException e) {
             e.printStackTrace();
-
         }
-
+        return this.walletAmount * exchangeRate;
     }
 
     public double amountUpdate() {
-
+        return this.walletAmount;
     }
 
 }
