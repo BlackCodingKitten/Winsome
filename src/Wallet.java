@@ -1,8 +1,7 @@
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -16,27 +15,21 @@ public class Wallet {
     }
 
     public double getWalletbitcoin() {
-
-        String valueConverter = null;
-        URL rdoUrl = new URL(
-                "https://www.random.org/integers/?num=1&min=1&max=100&col=1&base=10&format=html&rnd=new");
-        HttpsURLConnection httpsUrlConnection = (HttpsURLConnection) rdoUrl.openConnection();
-        InputStream stream = rdoUrl.openStream();
-        int status = httpsUrlConnection.getResponseCode();
-        if (status < 300) {
-            stream = new BufferedInputStream(stream);
-            Reader reader = new InputStreamReader(stream);
-            int c;
-
-            while ((c = reader.read()) != -1) {
-                System.out.print((char) c);
+        double exchangeRate = 0.0000;
+        try {
+            URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=4&col=1&format=plain&rnd=new");
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            if (connection.getResponseCode() <= 299) {
+                InputStream inputStream = connection.getInputStream();
+                StringBuffer stringBuffer = new StringBuffer();
+                BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStream));
+                String line = bReader.readLine();
+                exchangeRate = Double.parseDouble(line);
             }
-        } else {
-            Reader streamReader = null;
-            streamReader = new InputStreamReader(httpsUrlConnection.getErrorStream());
-        }
+        } catch (IOException e) {
+            e.printStackTrace();
 
-    }
+        }
 
     }
 
