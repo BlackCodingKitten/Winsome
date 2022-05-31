@@ -15,6 +15,7 @@ public class WinsomeServerMain implements RMIWinsomeServerInterface {
 
     }
 
+
     public String register(String username, String password, String[] tags) throws RemoteException {
         if (username.isEmpty() || password.isEmpty()) {
             return "Registrazione invalida - utente non registrato";
