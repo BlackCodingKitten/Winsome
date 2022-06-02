@@ -3,14 +3,11 @@ import java.sql.Timestamp;
 import io.vavr.collection.List;
 
 public class Post {
-    private Timestamp postTimestamp;
-    private int postId;
-    private User owner;
-    private List<String> upVote;
-    private List<String> downVote;
-
-    boolean String addUpVote(String nick){
-        
-    }
+    private final int postId;
+    private final String owner;
+    private final String title;
+    private final String text;
+    private final Timestamp date;
+    
 
 }

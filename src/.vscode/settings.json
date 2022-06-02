@@ -1,11 +1,15 @@
 {
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\vavr-1.0.0-alpha-4.jar",
-        "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\junit-platform-console-standalone-1.8.2.jar",
-        "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\java-jwt-3.18.2.jar",
-        "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\jackson-databind-2.13.0.jar",
-        "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\jackson-core-2.13.0.jar",
-        "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\jackson-annotations-2.13.0.jar"
-    ]
+    "java.project.referencedLibraries": {
+        "include": [
+            "lib/**/*.jar",
+            "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\vavr-1.0.0-alpha-4.jar",
+            "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\gson-2.8.2.jar",
+            "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\spring-security-crypto-5.4.7.jar"
+        ],
+        "exclude": [
+            "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\jackson-databind-2.13.0.jar",
+            "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\java-jwt-3.18.2.jar",
+            "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\junit-platform-console-standalone-1.8.2.jar"
+        ]
+    }
 }
