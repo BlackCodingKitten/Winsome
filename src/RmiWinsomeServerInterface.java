@@ -1,5 +1,5 @@
 import java.rmi.*;
 
-public interface RMIWinsomeServerInterface extends Remote {
+public interface RmiWinsomeServerInterface extends Remote {
     public String register(String nickname, String password, String[] tags) throws RemoteException;
 }

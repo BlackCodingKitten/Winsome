@@ -4,7 +4,9 @@
             "lib/**/*.jar",
             "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\vavr-1.0.0-alpha-4.jar",
             "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\gson-2.8.2.jar",
-            "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\spring-security-crypto-5.4.7.jar"
+            "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\spring-security-crypto-5.4.7.jar",
+            "c:\\Users\\USER\\Desktop\\Winsome\\libraries\\spring-security-crypto-5.4.7.jar",
+            "c:\\Users\\USER\\Desktop\\Winsome\\libraries\\gson-2.8.2.jar"
         ],
         "exclude": [
             "c:\\Users\\USER\\Desktop\\Winsome\\.vscode\\jackson-databind-2.13.0.jar",

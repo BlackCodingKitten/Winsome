@@ -2,10 +2,9 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 //NioMultiplexingServer
-public class WinsomeServerMain implements RMIWinsomeServerInterface {
+public class WinsomeServerMain implements RmiWinsomeServerInterface {
 
     private List<User> Users;
     private final ObjectMapper mapper;
