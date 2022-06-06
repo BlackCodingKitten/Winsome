@@ -16,7 +16,7 @@ public class User {
     public User(String nickname, String plaintext, List<String> tags) {
         this.nickname = nickname.toLowerCase();
         for (String t : tags) {
-            t=t.toUpperCase();// voglio che i tag siano scritti in maiuscolo
+            t = t.toUpperCase();// voglio che i tag siano scritti in maiuscolo
             this.tags.add(t);
         }
         this.password = encryptedPassword(plaintext);
@@ -47,6 +47,15 @@ public class User {
         encrypted = BCrypt.hashpw(plaintext, salt);
         // System.out.println("MESSAGGIO DI DEBUG: "+ plaintext + "-->"+ encrypted);
         return encrypted;
+    }
+
+    // metodo che controlla che la password inserita sia corretta
+    public boolean isPasswordCorrect(String plaintext, String hashed) {
+        if (hashed.equals(encryptedPassword(plaintext))) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }
