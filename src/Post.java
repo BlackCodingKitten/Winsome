@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
+
 /*classe Post del social winsome  */
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Post {
     private final String postId; // -> id univoco del post
@@ -15,7 +16,7 @@ public class Post {
 
     private int nIterazioni; // -> variabile per il calcolo delle ricompense, viene incrementata ogni volta
                              // che il gestore premi controlla il post
-    private final ConcurrentLinkedDeque<User> postRewinUser; // -> utenti che hanno fatto il "rewin"(retweet) del post
+    private final ConcurrentLinkedQueue<User> postRewinUser; // -> utenti che hanno fatto il "rewin"(retweet) del post
     // rewin e nIterazioni non sono inerenti alla classe post, ma per comodità sono
     // stati inseriti
     // come attributi, questi fanno si che sebbene la classe post in se sia
@@ -29,7 +30,7 @@ public class Post {
         this.title = title;
         this.text = text;
         this.postComment = new ArrayList<>();
-        this.postRewinUser = new ConcurrentLinkedDeque<>();
+        this.postRewinUser = new ConcurrentLinkedQueue<>();
         this.allPostVotes = new ConcurrentHashMap<>();
         this.nIterazioni = 0;// inizializzo a zero il numero di iterazioni
     }
@@ -69,6 +70,37 @@ public class Post {
         return this.postComment;
     }
 
+    // metodo per aggiungere commenti alla lista commenti
+    public void addNewComment(User user, String text) {
+        this.postComment.add(new Comment(user, text));
+    }
+
+    // metodo per trovare tutti i commenti fatti da uno specifico utente
+    public ArrayList<Comment> getCommentByUser(String username) {
+        ArrayList<Comment> byUser = new ArrayList<>();
+        for (Comment c : this.postComment) {
+            if (c.getOwner().getNickname().equals(username)) {
+                byUser.add(c);
+            }
+
+        }
+        return byUser;
+    }
+
+    // metodo che ritorna la lista di tutti gli utenti che hanno commentato il post
+    // dopo una certa data
+    public ArrayList<User> getListUserCommentingAfterDate(Date afterDate) {
+        ArrayList<User> userCommentingList = new ArrayList<>();
+        for (Comment c : this.postComment) {
+            // se l'user non è già stato messo in lista e il commento è stato pubblicato
+            // dopo una certa data
+            if (!userCommentingList.contains(c.getOwner()) && c.getDate().after(afterDate)) {
+                userCommentingList.add(c.getOwner());
+            }
+        }
+        return userCommentingList;
+    }
+
     // metodo per aggiungere un voto alla lista
     public void addNewVote(User user, int v) {
         allPostVotes.putIfAbsent(user, new Vote(user, v));
@@ -104,4 +136,37 @@ public class Post {
         }
     }
 
+    // metodo getter della lista degli utenti che hanno fatto il rewin del post
+    public ConcurrentLinkedQueue<User> getRewinUsers() {
+        return this.postRewinUser;
+    }
+
+    // metodo per controllare se un utente ha già fatto il rewin
+    public boolean isUserRewinedPost(User user) {
+        if (this.postRewinUser.contains(user)) {
+            return false;// -> ritorna false se l'utente è già in lista
+        }
+        return true;// -> l'utente non ha mai fatto il rewind del post
+    }
+
+    // metodo che aggiunge un utente alla lista rewind è boolean perchè serve a
+    // sollevare un'eccezione in caso l'utente
+    // sia già presente
+    public boolean addRewineUser(User user) {
+        if (isUserRewinedPost(user)) {
+            this.postRewinUser.add(user);
+            return true; // utente inserito correttemente in lista
+        }
+        return false;// utente già inserito impossibile inserirlo nuovamente
+    }
+
+    // metodo getter del numero di iterazioni
+    public int getIteration() {
+        return this.nIterazioni;
+    }
+
+    // metodo di incremento del numero di iterazioni
+    public void addIteration() {
+        this.nIterazioni++;
+    }
 }
