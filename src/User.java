@@ -14,8 +14,9 @@ public class User {
 
     // costruttore della classe user
     public User(String nickname, String plaintext, List<String> tags) {
-        this.nickname = nickname;
+        this.nickname = nickname.toLowerCase();
         for (String t : tags) {
+            t=t.toUpperCase();// voglio che i tag siano scritti in maiuscolo
             this.tags.add(t);
         }
         this.password = encryptedPassword(plaintext);
