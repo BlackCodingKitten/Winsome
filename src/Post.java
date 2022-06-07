@@ -7,23 +7,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Post {
     private final int postId; // -> id univoco del post
-    private final User owner; // -> autore del post
+    private final String owner; // -> autore del post
     private final String title; // -> titolo del post
     private final String text; // ->contenuto testuale del post
     private final Date date; // -> data in cui è stato scritto il post
-    private final ConcurrentHashMap<User, Vote> allPostVotes;// -> tutti i voti dati ad un post
+    private final ConcurrentHashMap<String, Vote> allPostVotes;// -> tutti i voti dati ad un post
     private final ArrayList<Comment> postComment; // -> ArrayList dei commenti degli utenti al post
 
     private int nIterazioni; // -> variabile per il calcolo delle ricompense, viene incrementata ogni volta
                              // che il gestore premi controlla il post
-    private final ConcurrentLinkedQueue<User> postRewinUser; // -> utenti che hanno fatto il "rewin"(retweet) del post
+    private final ConcurrentLinkedQueue<String> postRewinUser; // -> utenti che hanno fatto il "rewin"(retweet) del post
     // rewin e nIterazioni non sono inerenti alla classe post, ma per comodità sono
     // stati inseriti
     // come attributi, questi fanno si che sebbene la classe post in se sia
     // immutabile nIterazioni è modificabile (non ha la keyword final)
 
     // costruttore della classe post
-    public Post(User owner, String title, String text, int id) {
+    public Post(String owner, String title, String text, int id) {
         this.owner = owner;
         this.date = new Date();
         this.postId = id;
@@ -56,12 +56,12 @@ public class Post {
     }
 
     // metodo getter dell'utente
-    public User getOwner() {
+    public String getOwner() {
         return this.owner;
     }
 
     // metodo getter della lista dei voti
-    public ConcurrentHashMap<User, Vote> getVotes() {
+    public ConcurrentHashMap<String, Vote> getVotes() {
         return allPostVotes;
     }
 
@@ -71,7 +71,7 @@ public class Post {
     }
 
     // metodo per aggiungere commenti alla lista commenti
-    public void addNewComment(User user, String text) {
+    public void addNewComment(String user, String text) {
         this.postComment.add(new Comment(user, text));
     }
 
@@ -79,7 +79,7 @@ public class Post {
     public ArrayList<Comment> getCommentByUser(String username) {
         ArrayList<Comment> byUser = new ArrayList<>();
         for (Comment c : this.postComment) {
-            if (c.getOwner().getNickname().equals(username)) {
+            if (c.getOwner().equals(username)) {
                 byUser.add(c);
             }
 
@@ -89,8 +89,8 @@ public class Post {
 
     // metodo che ritorna la lista di tutti gli utenti che hanno commentato il post
     // dopo una certa data
-    public ArrayList<User> getListUserCommentingAfterDate(Date afterDate) {
-        ArrayList<User> userCommentingList = new ArrayList<>();
+    public ArrayList<String> getListUserCommentingAfterDate(Date afterDate) {
+        ArrayList<String> userCommentingList = new ArrayList<>();
         for (Comment c : this.postComment) {
             // se l'user non è già stato messo in lista e il commento è stato pubblicato
             // dopo una certa data
@@ -102,7 +102,7 @@ public class Post {
     }
 
     // metodo per aggiungere un voto alla lista
-    public void addNewVote(User user, int v) {
+    public void addNewVote(String user, int v) {
         allPostVotes.putIfAbsent(user, new Vote(user, v));
     }
 
@@ -128,7 +128,7 @@ public class Post {
     }
 
     // metodo per trovare un voto nella lista dei voti al post per nome utente
-    public Integer getVoteByUser(User user) {
+    public Integer getVoteByUser(String user) {
         if (this.allPostVotes.get(user) != null) {
             return this.allPostVotes.get(user).getVote();
         } else {
@@ -137,12 +137,12 @@ public class Post {
     }
 
     // metodo getter della lista degli utenti che hanno fatto il rewin del post
-    public ConcurrentLinkedQueue<User> getRewinUsers() {
+    public ConcurrentLinkedQueue<String> getRewinUsers() {
         return this.postRewinUser;
     }
 
     // metodo per controllare se un utente ha già fatto il rewin
-    public boolean isUserRewinedPost(User user) {
+    public boolean isUserRewinedPost(String user) {
         if (this.postRewinUser.contains(user)) {
             return false;// -> ritorna false se l'utente è già in lista
         }
@@ -152,7 +152,7 @@ public class Post {
     // metodo che aggiunge un utente alla lista rewind è boolean perchè serve a
     // sollevare un'eccezione in caso l'utente
     // sia già presente
-    public boolean addRewineUser(User user) {
+    public boolean addRewineUser(String user) {
         if (isUserRewinedPost(user)) {
             this.postRewinUser.add(user);
             return true; // utente inserito correttemente in lista

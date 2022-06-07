@@ -3,16 +3,16 @@ ogni voto ha un autore e un valore che deve essere +1 nel caso di valutazione
 e -1 nel caso di valutazione negativa*/
 
 public class Vote {
-    private final User user;// ->autore della votazione
+    private final String user;// ->autore della votazione
     private final int vote;// -> valore del voto
 
-    public Vote(User user, int vote) {
+    public Vote(String user, int vote) {
         this.user = user;
         this.vote = vote;
     }
 
     // metodo getter del nome del votante
-    public User getUser() {
+    public String getUser() {
         return this.user;
     }
 

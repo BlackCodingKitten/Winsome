@@ -9,12 +9,13 @@ import javax.net.ssl.HttpsURLConnection;
 
 /*rappresenta il wallet di un utente, il valore corrente viene calcolato dalla lista di transazioni che l'untente ha fatto */
 public class Wallet {
-    private final User owner; //-> proprietario del portafoglio
+    private static final DEBUG debug = new DEBUG();
+    private final String owner; //-> proprietario del portafoglio
     private final ConcurrentLinkedQueue<WalletMovement> transaction; //-> lista delle transazioni del portafoglio
     private double walletAmount;//-> valore corrente del portafoglio riaggiornato ad ogni chiamata
 
     // costruttore della classe wallet
-    public Wallet(User owner) {
+    public Wallet(String owner) {
         this.owner = owner;
         this.transaction = new ConcurrentLinkedQueue<>();
         this.walletAmount = 0;
@@ -22,7 +23,7 @@ public class Wallet {
     }
 
     // metodo getter del proprietario del portafoglio
-    public User getOwner() {
+    public String getOwner() {
         return this.owner;
     }
 
@@ -44,13 +45,14 @@ public class Wallet {
         for (WalletMovement m : transaction) {
             amount = amount + m.getAmount();
         }
+        //debug.messaggioDiDebug("totale wincoins: "+String.valueOf(amount));
         return amount;
     }
 
     // metodo che permette di convertire la moneta winsome in bitcoin con un tasso
     // di cambio di cambio preso via url da Random.org
     public double getWalletbitcoin() {
-        double exchangeRate = 0.0000;
+        double exchangeRate = 0.000;
         try {
             URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=4&col=1&format=plain&rnd=new");
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection(); //httpsURLConnection estende httpURLConnection con funzionalità specifiche per https
@@ -60,11 +62,12 @@ public class Wallet {
                 String line = bReader.readLine();
                 exchangeRate = Double.parseDouble(line);
             } else {
-                System.out.print(" Service temporarily unavailable. :-( \nPlease try again later \n");
+                System.out.print(" Servizio temporaneamente non disponibile. :-( \nRiprovare più tardi \n");
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //debug.messaggioDiDebug("valore convertito da wincoins in bitcoins"+String.valueOf(getWallet() * exchangeRate));
         return getWallet() * exchangeRate;
     }
 

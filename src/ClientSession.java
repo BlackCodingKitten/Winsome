@@ -4,11 +4,11 @@ import java.net.Socket;
  */
 
 public class ClientSession {
-    private final User user;// -> user relativo alla socket
+    private final String user;// -> user relativo alla socket
     private final Socket sessionSocket;// -> socket della sessione corrente
 
     // costruttore della classe ClientSession
-    public ClientSession(User user, Socket sessionSocket) {
+    public ClientSession(String user, Socket sessionSocket) {
         this.user = user;
         this.sessionSocket = sessionSocket;
     }
@@ -19,7 +19,7 @@ public class ClientSession {
     }
 
     // getter dell'user relativo a questa sessione
-    public User getUser() {
+    public String getUser() {
         return this.user;
     }
 

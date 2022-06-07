@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 public class User {
     private static final String salt = "0x0x0EsameLaboratorioReti28Giugno2022SocialWinsome0x0x0";
 
+    // private static final DEBUG debug = new DEBUG();
+
     private final String nickname;// ->nickname con cui si salva l'utenet
     private final Set<String> tags = new LinkedHashSet<>();// -> lista dei tag che inserisce l'utente
     private final String password;// ->password dell'utente salvata
@@ -17,6 +19,7 @@ public class User {
         this.nickname = nickname.toLowerCase();
         for (String t : tags) {
             t = t.toUpperCase();// voglio che i tag siano scritti in maiuscolo
+            // debug.messaggioDiDebug(t);
             this.tags.add(t);
         }
         this.password = encryptedPassword(plaintext);
@@ -44,18 +47,10 @@ public class User {
      */
     public static String encryptedPassword(String plaintext) {
         String encrypted = null;
+        // debug.messaggioDiDebug("questo è il salt: " + salt);
         encrypted = BCrypt.hashpw(plaintext, salt);
-        // System.out.println("MESSAGGIO DI DEBUG: "+ plaintext + "-->"+ encrypted);
+        // debug.messaggioDiDebug( plaintext + "-->"+ encrypted);
         return encrypted;
-    }
-
-    // metodo che controlla che la password inserita sia corretta
-    public boolean isPasswordCorrect(String plaintext, String hashed) {
-        if (hashed.equals(encryptedPassword(plaintext))) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
 }

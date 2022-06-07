@@ -4,13 +4,13 @@ import java.util.Date;
 contine autore del commemto, la data in cui è stato inviato e il testo del commento*/
 
 public class Comment {
-    private final User owner;// ->autore del commento
+    private final String  owner;// ->autore del commento
     private final String text;// ->testo del commento
     private final Date date;// -> data di pubblicazione del commento
 
     // costruttore della classe Comment, il metodo Date() usa data e ora correnti
     // per inizializzare un oggetto
-    public Comment(User owner, String text) {
+    public Comment(String owner, String text) {
         this.text = text;
         this.owner = owner;
         this.date = new Date();
@@ -22,7 +22,7 @@ public class Comment {
     }
 
     // metodo getter per vedere l'autore del post
-    public User getOwner() {
+    public String getOwner() {
         return this.owner;
     }
 
