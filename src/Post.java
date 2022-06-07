@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Post {
-    private final String postId; // -> id univoco del post
+    private final int postId; // -> id univoco del post
     private final User owner; // -> autore del post
     private final String title; // -> titolo del post
     private final String text; // ->contenuto testuale del post
@@ -26,7 +26,7 @@ public class Post {
     public Post(User owner, String title, String text, int id) {
         this.owner = owner;
         this.date = new Date();
-        this.postId = owner.getNickname().toUpperCase() + String.valueOf(id);
+        this.postId = id;
         this.title = title;
         this.text = text;
         this.postComment = new ArrayList<>();
@@ -36,7 +36,7 @@ public class Post {
     }
 
     // metodo getter dell'id del post
-    public String getpostId() {
+    public int getpostId() {
         return this.postId;
     }
 
