@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +12,6 @@ import java.util.Properties;
 public class ConfigReader {
     // private static final DEBUG debug = new DEBUG();
     private static final String CONFIG_FOLDER = "config";// -> cartella dove vengono salvati i file di config
-    private static final String DEFAULT_PREFERENCE = null; // -> valore di default del metodo get preference
     private static final String SERVER_PATH = "ServerFile.proprieties"; // -> file config per il server
     private static final String CLIENT_PATH = "ClientFile.proprieties"; // -> file config per il client
     private final String filePath;
@@ -32,7 +32,7 @@ public class ConfigReader {
 
         }
 
-        File configFile = new File(System.getProperty("user.dir"), CONFIG_FOLDER + "/" + filePath);
+        File configFile = new File(System.getProperty("user.dir"), CONFIG_FOLDER + "/" + this.filePath);
         // user.dir è directory corrente che è specificata dall'applicazione che lancia
         // l'applicazione
         if (!configFile.exists()) {
@@ -45,8 +45,8 @@ public class ConfigReader {
              * //debug.messaggioDiDebug("cartella non creata");
              * }
              */
-            OutputStream out = new FileOutputStream(CONFIG_FOLDER + "/" + filePath);
-            prop = new Properties();
+            OutputStream out = new FileOutputStream(CONFIG_FOLDER + "/" + this.filePath);
+            this.prop = new Properties();
             if (flag == true) {
                 // creazione del file di config del server i parametri sono:
                 /*
@@ -75,28 +75,28 @@ public class ConfigReader {
                  * data UNIX dell'ultimo controllo del RewardsManager
                  * contatore dell'ultimo post di WinSome
                  */
-                prop.setProperty("ServerPort", "1511");
-                prop.setProperty("RmiServerPort", "1115");
-                prop.setProperty("ServerRmiRegistryName", "WinsomeServer");
-                prop.setProperty("RmiCallbackClientPort", "1151");
-                prop.setProperty("RmiCallbackClientRegistryName", "WinsomeCallbackServer");
-                prop.setProperty("PostTitleMaxLenght", "50");
-                prop.setProperty("PostTextMaxLenght", "500");
-                prop.setProperty("CurrencyNameS", "Wincoin");
-                prop.setProperty("CurrencyNameP", "Wincoins");
-                prop.setProperty("DecimalPlace", "3");
-                prop.setProperty("MulticastAddress", "239.255.32.32");
-                prop.setProperty("MulticastPort", "4444");
-                prop.setProperty("BackupInterval", "10000");
-                prop.setProperty("DefaultReason", "NULL");
-                prop.setProperty("AuthorReason", "Autore ricompensato per il post #{post}");
-                prop.setProperty("CuratorReason", "Curatore ricompensato per il post #{post}");
-                prop.setProperty("PercentageAuthor", "70");
-                prop.setProperty("PercentageCurator", "30");
-                prop.setProperty("RewardChecktimeout", "15000");
-                prop.setProperty("TimeoutBeforeShutdown", "40000");
-                prop.setProperty("LastRewardUnixCheck", "0");
-                prop.setProperty("LastPostId", "0");
+                this.prop.setProperty("ServerPort", "1511");
+                this.prop.setProperty("RmiServerPort", "1115");
+                this.prop.setProperty("ServerRmiRegistryName", "WinsomeServer");
+                this.prop.setProperty("RmiCallbackClientPort", "1151");
+                this.prop.setProperty("RmiCallbackClientRegistryName", "WinsomeCallbackServer");
+                this.prop.setProperty("PostTitleMaxLenght", "50");
+                this.prop.setProperty("PostTextMaxLenght", "500");
+                this.prop.setProperty("CurrencyNameS", "Wincoin");
+                this.prop.setProperty("CurrencyNameP", "Wincoins");
+                this.prop.setProperty("DecimalPlace", "3");
+                this.prop.setProperty("MulticastAddress", "239.255.32.32");
+                this.prop.setProperty("MulticastPort", "4444");
+                this.prop.setProperty("BackupInterval", "10000");
+                this.prop.setProperty("DefaultReason", "NULL");
+                this.prop.setProperty("AuthorReason", "Autore ricompensato per il post #{post}");
+                this.prop.setProperty("CuratorReason", "Curatore ricompensato per il post #{post}");
+                this.prop.setProperty("PercentageAuthor", "70");
+                this.prop.setProperty("PercentageCurator", "30");
+                this.prop.setProperty("RewardChecktimeout", "15000");
+                this.prop.setProperty("TimeoutBeforeShutdown", "40000");
+                this.prop.setProperty("LastRewardUnixCheck", "0");
+                this.prop.setProperty("LastPostId", "0");
                 // debug.messaggioDiDebug("file config serever creato correttamnte");
             } else {
                 // creazione del file di config per il client
@@ -111,28 +111,53 @@ public class ConfigReader {
                  * indirizzo multicast per ricevere le notifiche
                  * porta multicast per le notifiche
                  */
-                prop.setProperty("ServerAddress", "localhost");
-                prop.setProperty("ServerPort", "1511");
-                prop.setProperty("RmiServerPort", "1115");
-                prop.setProperty("RmiClientCallbackPort", "1151");
-                prop.setProperty("ServerRmiRegistryName", "WinsomeServer");
-                prop.setProperty("RmiCallbackClientRegistryName", "WinsomeCallbackServer");
-                prop.setProperty("MulticastAddress", "239.255.32.32");
-                prop.setProperty("MulticastPort", "4444");
+                this.prop.setProperty("ServerAddress", "localhost");
+                this.prop.setProperty("ServerPort", "1511");
+                this.prop.setProperty("RmiServerPort", "1115");
+                this.prop.setProperty("RmiClientCallbackPort", "1151");
+                this.prop.setProperty("ServerRmiRegistryName", "WinsomeServer");
+                this.prop.setProperty("RmiCallbackClientRegistryName", "WinsomeCallbackServer");
+                this.prop.setProperty("MulticastAddress", "239.255.32.32");
+                this.prop.setProperty("MulticastPort", "4444");
                 // debug.messaggioDiDebug("file config client creato correttamnte");
             }
-            prop.store(out, "Winsome Configuration File");
+            this.prop.store(out, "Winsome Configuration File");
             out.close();
             // debug.messaggioDiDebug("file storato correttamnte");
 
         } else {
-            InputStream inStream = new FileInputStream(CONFIG_FOLDER + "/" + filePath);
-            prop = new Properties();
-            prop.load(inStream);
+            InputStream inStream = new FileInputStream(CONFIG_FOLDER + "/" + this.filePath);
+            this.prop = new Properties();
+            this.prop.load(inStream);
             // debug.messaggioDiDebug("file config caricato correttamnte");
             inStream.close();
         }
 
+    }
+
+    // recupera informazioni dal file di config se non esiste nulla ritorna NULL
+    public String getConfigValue(String key) {
+        if (this.prop != null) {
+            return this.prop.getProperty(key, null);
+        }
+        return null;
+    }
+
+    // Salva un'aggiunta o una modifica al file di configurazione
+    public void changeSaveConfig(String key, String value) {
+        OutputStream out;
+        try {
+            out = new FileOutputStream(CONFIG_FOLDER + "/" + filePath);
+            prop.setProperty(key, value);
+            try {
+                prop.store(out, "Winsome Configuration File");
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 }
