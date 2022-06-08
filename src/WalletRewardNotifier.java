@@ -11,8 +11,8 @@ public class WalletRewardNotifier implements Runnable {
     private boolean listen = true;
 
     private MulticastSocket multicastSocket;
-    private final int port;
-    private final InetAddress address;
+    private /*final */ int port;
+    private /*final */ InetAddress address;
 
     // costruttore della classe
     public WalletRewardNotifier(String address, int port) throws ConfigurationException {

@@ -7,7 +7,7 @@ import java.util.Scanner;
 //Classe miscellanea di metodi per il server e il client
 
 public class SharedMethods {
-    private final static DEBUG debug = new DEBUG();
+    //private final static DEBUG debug = new DEBUG();
 
     // writeOnStream() metodo che permette di inviare una stringa su uno stream
     public static void writeOnStream(PrintWriter out, String toSend) {
