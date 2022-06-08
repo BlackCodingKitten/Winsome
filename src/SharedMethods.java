@@ -72,4 +72,10 @@ public class SharedMethods {
         }
     }
 
+    //approximateDouble() approssima un numero a "precision" cifre dopo la virgola
+
+    public static double approximateDouble(double num, int precision){
+        return Math.round(num*(Math.pow(10, precision))) / Math.pow(10, precision);
+    }
+
 }
