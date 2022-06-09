@@ -3,11 +3,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 //Classe miscellanea di metodi per il server e il client
 
 public class SharedMethods {
-    //private final static DEBUG debug = new DEBUG();
+    // private final static DEBUG debug = new DEBUG();
 
     // writeOnStream() metodo che permette di inviare una stringa su uno stream
     public static void writeOnStream(PrintWriter out, String toSend) {
@@ -72,10 +73,10 @@ public class SharedMethods {
         }
     }
 
-    //approximateDouble() approssima un numero a "precision" cifre dopo la virgola
+    // approximateDouble() approssima un numero a "precision" cifre dopo la virgola
 
-    public static double approximateDouble(double num, int precision){
-        return Math.round(num*(Math.pow(10, precision))) / Math.pow(10, precision);
+    public static double approximateDouble(double num, int precision) {
+        return Math.round(num * (Math.pow(10, precision))) / Math.pow(10, precision);
     }
 
 }

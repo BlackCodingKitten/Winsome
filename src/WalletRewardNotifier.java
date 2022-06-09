@@ -1,9 +1,6 @@
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
-
-import javax.naming.ConfigurationException;
-
 /*è la clsse che gestisce le notifiche di aggiornamnento dei wallet degli utenti, la notifica è uguale per tutti */
 
 public class WalletRewardNotifier implements Runnable {
@@ -11,29 +8,22 @@ public class WalletRewardNotifier implements Runnable {
     private boolean listen = true;
 
     private MulticastSocket multicastSocket;
-    private /*final */ int port;
-    private /*final */ InetAddress address;
+    private /* final */ int port;
+    private /* final */ InetAddress address;
 
     // costruttore della classe
-    public WalletRewardNotifier(String address, int port) throws ConfigurationException {
-        // controllo sul valore della porta altrimenti lancia Configuration exception
-        if (port < 0) {
-            throw new ConfigurationException("Valore della porta: " + port + " non valido!!");
-        } else {
-            this.port = port;
-            // debug.messaggioDiDebug("Valore della porta multicast "+ this.port);
-        }
+    public WalletRewardNotifier(String address, int port) {
+        this.port = port;
+        // debug.messaggioDiDebug("Valore della porta multicast "+ this.port);
         try {
             this.address = InetAddress.getByName(address);
             // debug.messaggioDiDebug("indirizzo multicast "+ address);
             // controllo che l'indirizzo multicast passato sia correttoa ltrimenti lancia
             // una Configuaration exceptions
-            if (this.address.isMulticastAddress()) {
-            } else {
-                throw new ConfigurationException("L''indirizzo fornito: " + address + " non è valido!!");
-            }
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
+
             // debug.messaggioDiDebug("indirizzo multicast non valido");
         }
     }
