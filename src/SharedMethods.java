@@ -3,7 +3,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+
 
 //Classe miscellanea di metodi per il server e il client
 
@@ -65,8 +65,8 @@ public class SharedMethods {
     }
 
     // metodo che controlla che la password inserita sia corretta
-    public boolean isPasswordCorrect(String plaintext, String hashed) {
-        if (hashed.equals(User.encryptedPassword(plaintext))) {
+    public boolean isPasswordCorrect(String passwordInput, String passwordStored) {
+        if (passwordInput.equalsIgnoreCase(passwordStored)) {
             return true;
         } else {
             return false;

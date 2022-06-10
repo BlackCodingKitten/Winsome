@@ -2,16 +2,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
+
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.rmi.NoSuchObjectException;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import javax.naming.ConfigurationException;
+
 import java.io.BufferedReader;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -63,7 +62,7 @@ public class WinsomeClientMain {
             return;// termina se non legge/crea il file di config
         }
 
-        Socket socket;
+        Socket socket = null;
         Scanner inputReader = new Scanner(System.in);
         boolean connectionState = true; // true se la connessione è on, false se la connessione è off
         RmiCallbackInterface server = null;
@@ -104,7 +103,7 @@ public class WinsomeClientMain {
             String op = "";
             NotifyEventInterface callback = null;
             String fromServer;
-            boolean successRequest = true;//true se la request è eseguita correttamente false se la request fallisce
+            boolean successRequest = true;// true se la request è eseguita correttamente false se la request fallisce
 
             try {
                 /*
@@ -122,22 +121,21 @@ public class WinsomeClientMain {
                 while (true) {
                     // Ricevo il comando dall'utente se è vuoto lo ignoro
                     System.out.println("WinsomeServer è in attesa di istruzioni...");
-                    if(successRequest == false){
-                        //leggo l'input utente e lo ignoro
-                        SharedMethods.readFromConsole( inputReader);
-                        if(callback!=null){
-                            //se non ci fosse questo controllo il client terminerebbe 
+                    if (successRequest == false) {
+                        // leggo l'input utente e lo ignoro
+                        SharedMethods.readFromConsole(inputReader);
+                        if (callback != null) {
+                            // se non ci fosse questo controllo il client terminerebbe
                             UnicastRemoteObject.unexportObject(callback, false);
                         }
                         successRequest = true;
-                    }else{
+                    } else {
                         completeRequest = SharedMethods.readFromConsole(inputReader);
                         debug.messaggioDiDebug("Richiesta fatta al server: " + completeRequest);
                         if (completeRequest.equals("")) {
                             continue;
                         }
                     }
-                    
 
                     String[] splitCommandLine = completeRequest.split(" ");
                     op = splitCommandLine[0]; // il primo elemnto dell'array splitCommandLine è l'operazione da eseguire
@@ -266,12 +264,18 @@ public class WinsomeClientMain {
                 } // end while richieste utente
             } catch (IOException e) {
                 // persa la connessione col server
-                System.out.println("Oh no l'orco cattivo è tornato e si è preso il nostro server.\nVuoi affrontarlo di nuovo? [S/N]")
-                if(SharedMethods.readFromConsole(inputReader).equalsIgnoreCase("S")){
-                    if(op.equalsIgnoreCase("login") ||op.equalsIgnoreCase("listfollowers")|| op.equalsIgnoreCase("register") || op.equalsIgnoreCase("logout")||op.equalsIgnoreCase("forcedexit"));
+                System.out.println(
+                        "Oh no l'orco cattivo è tornato e si è preso il nostro server.\nVuoi affrontarlo di nuovo? [S/N]");
+                if (SharedMethods.readFromConsole(inputReader).equalsIgnoreCase("S")) {
+                    if (op.equalsIgnoreCase("login") || op.equalsIgnoreCase("listfollowers")
+                            || op.equalsIgnoreCase("register") || op.equalsIgnoreCase("logout")
+                            || op.equalsIgnoreCase("forcedexit"))
+                        ;
                     successRequest = false;
-                    //in questo modo se l'ultima richiesta è login o register o logout o listfollowers o un'uscita forzata viene ricopiata direttamente senza che l'utente debba riscrivere il comando
-                }else{
+                    // in questo modo se l'ultima richiesta è login o register o logout o
+                    // listfollowers o un'uscita forzata viene ricopiata direttamente senza che
+                    // l'utente debba riscrivere il comando
+                } else {
                     connectionState = false;
                     System.out.println("Le nostre armate sono dalla tua parte.");
                     break;

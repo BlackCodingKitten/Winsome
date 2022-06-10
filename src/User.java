@@ -1,7 +1,7 @@
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+
 
 /*Classe utente, per ogni utente conosciamo, nickname, password e lista dei tag */
 
@@ -22,7 +22,7 @@ public class User {
             // debug.messaggioDiDebug(t);
             this.tags.add(t);
         }
-        this.password = encryptedPassword(plaintext);
+        this.password = plaintext;
 
     }
 
@@ -41,16 +41,5 @@ public class User {
         return this.password;
     }
 
-    /*
-     * Il metodo encryptedPassword effettua l'hashing di una stringa
-     * usata anche per verificare che la password inserita sia corretta
-     */
-    public static String encryptedPassword(String plaintext) {
-        String encrypted = null;
-        // debug.messaggioDiDebug("questo è il salt: " + salt);
-        encrypted = BCrypt.hashpw(plaintext, salt);
-        // debug.messaggioDiDebug( plaintext + "-->"+ encrypted);
-        return encrypted;
-    }
 
 }
