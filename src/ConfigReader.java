@@ -55,24 +55,14 @@ public class ConfigReader {
                  * nome registro RMI del server
                  * porta callback RMI del client
                  * nome registro callback RMI del client
-                 * lunghezza massima del titolo del post
-                 * lunghezza massima del corpo del post
-                 * nome della valuta Winsome singolare
-                 * nome della valuta Winsome plurale
-                 * cifre decimali
                  * indirizzo multicast
                  * porta multicast
                  * intervallo di backup dei dati
-                 * default causale di una trasazione
-                 * Per l'Autore di un post->causale di una transazione relativa ad un premio
-                 * Per in Curatore di un post->causale di una transazione relativa ad un premio
-                 * percentuale del premio di un post dell'autore
-                 * percentuale del premio di un post del curatore
                  * tempo che il RewardsManager dovrà attendere ogni volta che fa un controllo
                  * prima di farne un altro
                  * tempo (in millisecondi)prima di chiudere forzatamente la pool di thread
                  * ConnectionHandler
-                 * datae ora dell'ultimo controllo del RewardsManager
+                 * data e ora dell'ultimo controllo del RewardsManager
                  * contatore dell'ultimo post di WinSome
                  */
                 this.prop.setProperty("ServerPort", "1511");
@@ -83,11 +73,6 @@ public class ConfigReader {
                 this.prop.setProperty("MulticastAddress", "239.255.32.32");
                 this.prop.setProperty("MulticastPort", "4444");
                 this.prop.setProperty("BackupInterval", "10000");
-                this.prop.setProperty("DefaultReason", "NULL");
-                this.prop.setProperty("AuthorReason", "Autore ricompensato per il post #{post}");
-                this.prop.setProperty("CuratorReason", "Curatore ricompensato per il post #{post}");
-                this.prop.setProperty("PercentageAuthor", "70");
-                this.prop.setProperty("PercentageCurator", "30");
                 this.prop.setProperty("RewardChecktimeout", "15000");
                 this.prop.setProperty("TimeoutBeforeShutdown", "40000");
                 this.prop.setProperty("LastRewardCheck", "0");

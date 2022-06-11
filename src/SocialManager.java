@@ -1,7 +1,6 @@
 import java.util.Set;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import Color.ColoredText;
@@ -12,7 +11,7 @@ import Color.ColoredText;
 import CustomizedException.*;
 
 public class SocialManager {
-    private static final DEBUG d = new DEBUG();
+    // private static final DEBUG d = new DEBUG();
     /*
      * Necessita di leggere le informazioni sullo stato del social comequelle
      * relative all'id corrente del post
@@ -167,7 +166,7 @@ public class SocialManager {
                 allPostByUser.add(post);
             }
         }
-        d.messaggioDiDebug("Tutti i post di un utente");
+        // d.messaggioDiDebug("Tutti i post di un utente");
         return allPostByUser;
     }
 

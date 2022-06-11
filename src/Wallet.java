@@ -10,7 +10,7 @@ import Color.ColoredText;
 
 /*rappresenta il wallet di un utente, il valore corrente viene calcolato dalla lista di transazioni che l'untente ha fatto */
 public class Wallet {
-    private static final DEBUG debug = new DEBUG();
+    //private static final DEBUG debug = new DEBUG();
     private final String owner; //-> proprietario del portafoglio
     private final ConcurrentLinkedQueue<WalletMovement> transaction; //-> lista delle transazioni del portafoglio
     private double walletAmount;//-> valore corrente del portafoglio riaggiornato ad ogni chiamata

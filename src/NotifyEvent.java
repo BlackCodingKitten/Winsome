@@ -7,7 +7,7 @@ public class NotifyEvent extends RemoteObject implements NotifyEventInterface {
     private static final String FOLLOW = "+";
     private static final String UNFOLLOW = "-";
 
-    private static final DEBUG debug = new DEBUG();
+    //private static final DEBUG debug = new DEBUG();
 
     @Override
     public void notifyEvent(String s) throws RemoteException {

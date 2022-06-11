@@ -18,15 +18,16 @@ public class RmiCallback implements RmiCallbackInterface {
             System.out.println("***** (^o^) *****\nIscrizione al servizio di notifica avvenuta con succcesso.");
         }
     }
-    //permette di rimuoversi dalla lista di utenti che ricevono notifiche
+
+    // permette di rimuoversi dalla lista di utenti che ricevono notifiche
     @Override
     public void callbackUnregister(String nickname) throws RemoteException {
         userClients.remove(nickname);
         System.out.println("***** (^///^) *****\nUtente rimosso dal servizio di notifica con successo.");
     }
 
-    public static void followeUpdate(String username, String notif)throws RemoteException{
-        if(userClients.containsKey(username)){
+    public static void followeUpdate(String username, String notif) throws RemoteException {
+        if (userClients.containsKey(username)) {
             userClients.get(username).notifyEvent(notif);
         }
     }
