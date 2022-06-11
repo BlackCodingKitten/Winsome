@@ -72,19 +72,14 @@ public class ConfigReader {
                  * prima di farne un altro
                  * tempo (in millisecondi)prima di chiudere forzatamente la pool di thread
                  * ConnectionHandler
-                 * data UNIX dell'ultimo controllo del RewardsManager
+                 * datae ora dell'ultimo controllo del RewardsManager
                  * contatore dell'ultimo post di WinSome
                  */
                 this.prop.setProperty("ServerPort", "1511");
                 this.prop.setProperty("RmiServerPort", "1115");
                 this.prop.setProperty("ServerRmiRegistryName", "WinsomeServer");
-                this.prop.setProperty("RmiCallbackClientPort", "1151");
+                this.prop.setProperty("RmiClientCallbackPort", "1151");
                 this.prop.setProperty("RmiCallbackClientRegistryName", "WinsomeCallbackServer");
-                this.prop.setProperty("PostTitleMaxLenght", "50");
-                this.prop.setProperty("PostTextMaxLenght", "500");
-                this.prop.setProperty("CurrencyNameS", "Wincoin");
-                this.prop.setProperty("CurrencyNameP", "Wincoins");
-                this.prop.setProperty("DecimalPlace", "3");
                 this.prop.setProperty("MulticastAddress", "239.255.32.32");
                 this.prop.setProperty("MulticastPort", "4444");
                 this.prop.setProperty("BackupInterval", "10000");
@@ -95,8 +90,8 @@ public class ConfigReader {
                 this.prop.setProperty("PercentageCurator", "30");
                 this.prop.setProperty("RewardChecktimeout", "15000");
                 this.prop.setProperty("TimeoutBeforeShutdown", "40000");
-                this.prop.setProperty("LastRewardUnixCheck", "0");
-                this.prop.setProperty("LastPostId", "0");
+                this.prop.setProperty("LastRewardCheck", "0");
+                this.prop.setProperty("CurrentPostId", "0");
                 // debug.messaggioDiDebug("file config serever creato correttamnte");
             } else {
                 // creazione del file di config per il client

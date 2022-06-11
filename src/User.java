@@ -2,12 +2,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-
 /*Classe utente, per ogni utente conosciamo, nickname, password e lista dei tag */
 
 public class User {
-    private static final String salt = "0x0x0EsameLaboratorioReti28Giugno2022SocialWinsome0x0x0";
-
     // private static final DEBUG debug = new DEBUG();
 
     private final String nickname;// ->nickname con cui si salva l'utenet
@@ -41,5 +38,14 @@ public class User {
         return this.password;
     }
 
+    @Override
+    public int hashCode() {
+        return this.nickname.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object u) {
+        return this.nickname.equalsIgnoreCase(((User) u).getNickname());
+    }
 
 }

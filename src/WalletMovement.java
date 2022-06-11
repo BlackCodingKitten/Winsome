@@ -26,4 +26,11 @@ public class WalletMovement {
         return this.date;
     }
 
+
+    @Override
+    public int hashCode(){
+        String movement  = this.date.toString()+String.valueOf(movementAmount)+movementReason;
+        return movement.hashCode();
+    }
+
 }

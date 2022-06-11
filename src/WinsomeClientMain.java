@@ -1,5 +1,5 @@
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Set;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
@@ -13,7 +13,10 @@ import java.rmi.server.UnicastRemoteObject;
 
 import java.io.BufferedReader;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Scanner;
+
+import Color.ColoredText;
 
 /*classe client che contine il metodo main, 
 gestisce tutte le operazioni che è in grado di svolgere il client, 
@@ -23,7 +26,7 @@ che essenzialmente sono inviare richieste e attendere risposte dal server,
 
 public class WinsomeClientMain {
     public static final boolean CLIENT = false;
-    private static final DEBUG debug = new DEBUG();
+    // private static final DEBUG debug = new DEBUG();
 
     public static String serverAddress;
     public static int serverPort;
@@ -35,12 +38,16 @@ public class WinsomeClientMain {
     public static String multicastAddress;
     public static ConfigReader configReader;
 
-    public static ArrayList<String> followerList = new ArrayList<>();
+    public static HashSet<String> followerList = new HashSet<>();
 
     public static void main(String[] args) throws NotBoundException {
         // lettura del file config
         System.out.println(
-                "\n**************** Benvenuto in WINSOME ****************\n\nAttendi stiamo recuperando i tuoi dati...");
+                "\n" + ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE + "**************** "
+                        + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE + ColoredText.ANSI_WHITE_BACKGROUND
+                        + "Benvenuto in WINSOME" + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE_BACKGROUND
+                        + ColoredText.ANSI_WHITE + " ****************" + ColoredText.ANSI_RESET
+                        + "\n\n\nAttendi stiamo recuperando il file di configurazione...\n\n\n");
         try {
             configReader = new ConfigReader(CLIENT);
             setServerAddress();
@@ -131,7 +138,7 @@ public class WinsomeClientMain {
                         successRequest = true;
                     } else {
                         completeRequest = SharedMethods.readFromConsole(inputReader);
-                        debug.messaggioDiDebug("Richiesta fatta al server: " + completeRequest);
+                        // debug.messaggioDiDebug("Richiesta fatta al server: " + completeRequest);
                         if (completeRequest.equals("")) {
                             continue;
                         }
@@ -142,7 +149,7 @@ public class WinsomeClientMain {
                     // copio il resto degli argomenti in un'altro array
                     String[] otherArgumentsInCommandLine = new String[splitCommandLine.length - 1];
                     System.arraycopy(splitCommandLine, 1, otherArgumentsInCommandLine, 0,
-                            (splitCommandLine.length - 1));
+                            (splitCommandLine.length));
                     // effettuo la switch su op per vedere qual'è l'operazione richiesta dall'utente
                     switch (op) {
                         case "help":
@@ -202,7 +209,7 @@ public class WinsomeClientMain {
                                 break;
                             } else {
                                 // copio la lista dei tag dall'array otherArgumentInCommandLine
-                                ArrayList<String> tags = new ArrayList<>(Arrays.asList(otherArgumentsInCommandLine)
+                                HashSet<String> tags = new HashSet<>(Arrays.asList(otherArgumentsInCommandLine)
                                         .subList(2, (otherArgumentsInCommandLine.length - 1)));
                                 boolean flag = stub.registerNewUser(otherArgumentsInCommandLine[0],
                                         otherArgumentsInCommandLine[1], tags);
@@ -287,53 +294,54 @@ public class WinsomeClientMain {
     // recupera l'indirizzo dal file di config
     public static void setServerAddress() {
         serverAddress = configReader.getConfigValue("ServerAddress");
-        debug.messaggioDiDebug("serverAddress " + serverAddress);
+        // debug.messaggioDiDebug("serverAddress " + serverAddress);
     }
 
     // recupera la porta del server dal file di config
     public static void setServerPort() {
         serverPort = Integer.parseInt(configReader.getConfigValue("ServerPort"));
-        debug.messaggioDiDebug("serverPort: " + serverPort);
+        // debug.messaggioDiDebug("serverPort: " + serverPort);
     }
 
     // recupero la porta dell'interfaccia rmi che permette al client di registrarsi
     // dal file di config
     public static void setServerRmiPort() {
         serverRmiPort = Integer.parseInt(configReader.getConfigValue("RmiServerPort"));
-        debug.messaggioDiDebug("serverRmiPort:" + serverRmiPort);
+        // debug.messaggioDiDebug("serverRmiPort:" + serverRmiPort);
     }
 
     // recupero il nome del registry dell'interfaccia Rmi presente nel configFile
     public static void setServerRmiRegistryName() {
         serverRmiRegistryName = configReader.getConfigValue("ServerRmiRegistryName");
-        debug.messaggioDiDebug("serverRmiREgistryName: " + serverRmiRegistryName);
+        // debug.messaggioDiDebug("serverRmiREgistryName: " + serverRmiRegistryName);
     }
 
     // recupero dal file di config la porta dell'interfaccia che permette al server
     // diconoscere i cambiamenti nella lista follower
     public static void setClientRmiPort() {
         clientRmiPort = Integer.parseInt(configReader.getConfigValue("RmiClientCallbackPort"));
-        debug.messaggioDiDebug("clientRmiPort: " + clientRmiPort);
+        // debug.messaggioDiDebug("clientRmiPort: " + clientRmiPort);
     }
 
     // recupero del nome del registry dell'interfaccia RmiCallback sia presente nel
     // file di config
     public static void setServerRmiCallbackRegistryName() {
         serverRmiCallbackRegistryName = configReader.getConfigValue("RmiCallbackClientRegistryName");
-        debug.messaggioDiDebug("serverRmiCallbackRegistryName:" + serverRmiCallbackRegistryName);
+        // debug.messaggioDiDebug("serverRmiCallbackRegistryName:" +
+        // serverRmiCallbackRegistryName);
     }
 
     // recupero l'indirizzo multicast per le notifiche di aggiornamento del wallet
     public static void setMulticastPort() {
         multicastPort = Integer.parseInt(configReader.getConfigValue("MulticastPort"));
-        debug.messaggioDiDebug("multicastPort: " + multicastPort);
+        // debug.messaggioDiDebug("multicastPort: " + multicastPort);
     }
 
     // recupero dal file di config l'indirizzo multicast a cui il server invia le
     // notifiche di aggiornamento wallet
     public static void setMulticastAddress() {
         multicastAddress = configReader.getConfigValue("MulticastAddress");
-        debug.messaggioDiDebug("multicastAddress: " + multicastAddress);
+        // debug.messaggioDiDebug("multicastAddress: " + multicastAddress);
     }
 
     // metetodo che stampa il comando help
@@ -341,7 +349,7 @@ public class WinsomeClientMain {
         System.out.println("Hai bidogno di aiuto?\nEccoti una clista dei comadi pronta per te:");
         System.out.println("help    Serve a mostrare questa lista, ma questo lo sai. :-)");
         System.out
-                .println("register <username> <password> <elnenca max 5 tag>       Serve per registrare nuovi utenti");
+                .println("register <username> <password> <elnenca max 5 tag>  Serve per registrare nuovi utenti");
         System.out
                 .println("login <username> <password>   Serve per effettuare il login nel magico mondo di Winsome.");
         System.out.println("logout   Serve per sloggare dal magico mondo di Winsome. :-(");
@@ -367,20 +375,19 @@ public class WinsomeClientMain {
 
     // metodo per la stampa della barra di caricamento
     public static void loadingBar() throws InterruptedException {
-        String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
-        String ANSI_RESET = "\u001B[0m";
-        System.out.printf("Caricameneto: \t");
+
+        System.out.printf("Caricamento: \t");
 
         System.out.printf("\r");
         System.out.printf("\t\t");
-        for (int k = 0; k < 55; k++) {
-            System.out.print(ANSI_YELLOW_BACKGROUND + " ");
+        for (int k = 0; k < 35; k++) {
+            System.out.print(ColoredText.ANSI_PURPLE_BACKGROUND + " ");
             WinsomeClientMain m = new WinsomeClientMain();
             synchronized (m) {
                 m.wait(79);
             }
         }
-        System.out.println(ANSI_RESET + "\n\t\tCaricamento completato \\_(^w^)_/");
+        System.out.println(ColoredText.ANSI_RESET + "\n\t\tCaricamento completato \\_(^w^)_/");
         return;
     }
 

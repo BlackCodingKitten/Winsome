@@ -66,17 +66,17 @@ public class SharedMethods {
 
     // metodo che controlla che la password inserita sia corretta
     public boolean isPasswordCorrect(String passwordInput, String passwordStored) {
-        if (passwordInput.equalsIgnoreCase(passwordStored)) {
+        if (passwordInput.equals(passwordStored)) {
             return true;
         } else {
             return false;
         }
     }
 
-    // approximateDouble() approssima un numero a "precision" cifre dopo la virgola
+    // approximateDouble() approssima un numero a 4 cifre dopo la virgola
 
-    public static double approximateDouble(double num, int precision) {
-        return Math.round(num * (Math.pow(10, precision))) / Math.pow(10, precision);
+    public static double approximateDouble(double num) {
+        return Math.round(num * (Math.pow(10, 4))) / Math.pow(10, 4);
     }
 
 }

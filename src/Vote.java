@@ -22,7 +22,7 @@ public class Vote {
     }
 
     // metodo che controlla se il valore del voto è corretto
-    public boolean validVode(int vote) {
+    public static boolean validVode(int vote) {
         if (vote == 1 || vote == -1) {
             return true;
         } else {

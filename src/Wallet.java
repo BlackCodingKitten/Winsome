@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.net.ssl.HttpsURLConnection;
+import Color.ColoredText;
 
 /*rappresenta il wallet di un utente, il valore corrente viene calcolato dalla lista di transazioni che l'untente ha fatto */
 public class Wallet {
@@ -67,6 +68,7 @@ public class Wallet {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println("Il tasso di conversione"+ColoredText.ANSI_PURPLE+" Wincoin"+ColoredText.ANSI_RESET+"->"+ColoredText.ANSI_BLUE+" Bitcoin"+ColoredText.ANSI_RESET+" e': "+exchangeRate+", mi dispiace neanche oggi diventerai ricco.");
         //debug.messaggioDiDebug("valore convertito da wincoins in bitcoins"+String.valueOf(getWallet() * exchangeRate));
         return getWallet() * exchangeRate;
     }
@@ -80,4 +82,9 @@ public class Wallet {
 
     }
 
+
+    @Override
+    public int hashCode(){
+        return this.owner.hashCode();
+    }
 }

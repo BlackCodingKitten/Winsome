@@ -1,5 +1,7 @@
-import java.util.ArrayList;
+
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /*classe Post del social winsome  */
@@ -12,7 +14,7 @@ public class Post {
     private final String text; // ->contenuto testuale del post
     private final Date date; // -> data in cui è stato scritto il post
     private final ConcurrentHashMap<String, Vote> allPostVotes;// -> tutti i voti dati ad un post
-    private final ArrayList<Comment> postComment; // -> ArrayList dei commenti degli utenti al post
+    private final HashSet<Comment> postComment; // ->HashSet dei commenti degli utenti al post
 
     private int nIterazioni; // -> variabile per il calcolo delle ricompense, viene incrementata ogni volta
                              // che il gestore premi controlla il post
@@ -29,7 +31,7 @@ public class Post {
         this.postId = id;
         this.title = title;
         this.text = text;
-        this.postComment = new ArrayList<>();
+        this.postComment = new HashSet<>();
         this.postRewinUser = new ConcurrentLinkedQueue<>();
         this.allPostVotes = new ConcurrentHashMap<>();
         this.nIterazioni = 0;// inizializzo a zero il numero di iterazioni
@@ -41,8 +43,8 @@ public class Post {
     }
 
     // metodo getter della data di pubblicazione
-    public Date getDate() {
-        return this.date;
+    public String getDate() {
+        return this.date.toString();
     }
 
     // metodo getter del titolo del post
@@ -66,7 +68,7 @@ public class Post {
     }
 
     // metodo getter della lista dei commenti
-    public ArrayList<Comment> getComments() {
+    public HashSet<Comment> getComments() {
         return this.postComment;
     }
 
@@ -76,8 +78,8 @@ public class Post {
     }
 
     // metodo per trovare tutti i commenti fatti da uno specifico utente
-    public ArrayList<Comment> getCommentByUser(String username) {
-        ArrayList<Comment> byUser = new ArrayList<>();
+    public Set<Comment> getCommentByUser(String username) {
+        HashSet<Comment> byUser = new HashSet<>();
         for (Comment c : this.postComment) {
             if (c.getOwner().equals(username)) {
                 byUser.add(c);
@@ -89,8 +91,8 @@ public class Post {
 
     // metodo che ritorna la lista di tutti gli utenti che hanno commentato il post
     // dopo una certa data
-    public ArrayList<String> getListUserCommentingAfterDate(Date afterDate) {
-        ArrayList<String> userCommentingList = new ArrayList<>();
+    public Set<String> getListUserCommentingAfterDate(Date afterDate) {
+        HashSet<String> userCommentingList = new HashSet<>();
         for (Comment c : this.postComment) {
             // se l'user non è già stato messo in lista e il commento è stato pubblicato
             // dopo una certa data
@@ -168,5 +170,14 @@ public class Post {
     // metodo di incremento del numero di iterazioni
     public void addIteration() {
         this.nIterazioni++;
+    }
+
+    @Override
+    public int hashCode(){
+        return String.valueOf(this.postId).hashCode();
+    }
+    @Override
+    public boolean equals(Object p){
+        return this.postId == ((Post)p).getpostId();
     }
 }

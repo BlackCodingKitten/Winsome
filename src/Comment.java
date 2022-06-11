@@ -31,4 +31,10 @@ public class Comment {
         return this.date;
     }
 
+
+    @Override
+    public int hashCode(){
+        return this.text.hashCode();
+    }
+
 }
