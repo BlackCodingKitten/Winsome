@@ -434,6 +434,11 @@ public class SocialManager {
     public void addNewUser(User u) {
         userList.putIfAbsent(u.getNickname(), u);
     }
+    
+    //metdo per vedere se esiste un utenet
+    public boolean existUser(String u){
+        return userList.contains(u);
+    }
 
     /********************
      * I prossimi metodi sono usati per prendere le info dai file json
