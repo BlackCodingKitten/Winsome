@@ -67,6 +67,17 @@ public class Post {
         return allPostVotes;
     }
 
+    //ritorna un aloista di voti dopo unacera data
+    public ConcurrentHashMap<String, Vote> newPeopleLike(Date d){
+        ConcurrentHashMap<String, Vote> voteList = new ConcurrentHashMap<>();
+        for(Vote v : allPostVotes.values()){
+            if (v.getDate().after(d)){
+                voteList.put(v.getUser(), v);
+            }
+        }
+        return voteList;
+    } 
+
     // metodo getter della lista dei commenti
     public HashSet<Comment> getComments() {
         return this.postComment;

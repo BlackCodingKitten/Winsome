@@ -62,7 +62,7 @@ public class ConfigReader {
                  * prima di farne un altro
                  * tempo (in millisecondi)prima di chiudere forzatamente la pool di thread
                  * ConnectionHandler
-                 * data e ora dell'ultimo controllo del RewardsManager
+                 * data e dell'ultimo controllo del RewardsManager
                  * contatore dell'ultimo post di WinSome
                  */
                 this.prop.setProperty("ServerPort", "1511");
@@ -73,7 +73,7 @@ public class ConfigReader {
                 this.prop.setProperty("MulticastAddress", "239.255.32.32");
                 this.prop.setProperty("MulticastPort", "4444");
                 this.prop.setProperty("BackupInterval", "10000");
-                this.prop.setProperty("RewardChecktimeout", "15000");
+                this.prop.setProperty("RewardCheckSleep", "15000");
                 this.prop.setProperty("TimeoutBeforeShutdown", "40000");
                 this.prop.setProperty("LastRewardCheck", "0");
                 this.prop.setProperty("CurrentPostId", "0");
