@@ -65,7 +65,7 @@ public class SharedMethods {
     }
 
     // metodo che controlla che la password inserita sia corretta
-    public boolean isPasswordCorrect(String passwordInput, String passwordStored) {
+    public static boolean isPasswordCorrect(String passwordInput, String passwordStored) {
         if (passwordInput.equals(passwordStored)) {
             return true;
         } else {

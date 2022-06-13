@@ -417,7 +417,7 @@ public class SocialManager {
         if (u == null) {
             throw new UserNotFoundException();
         } else {
-            if (p.equals(u.getEncryptedPassword())) {
+            if (p.equals(u.getPassword())) {
                 return true;
             } else {
                 return false;

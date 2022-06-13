@@ -12,7 +12,7 @@ public class User {
     private final String password;// ->password dell'utente salvata
 
     // costruttore della classe user
-    public User(String nickname, String plaintext, List<String> tags) {
+    public User(String nickname, String plaintext, Set<String> tags) {
         this.nickname = nickname.toLowerCase();
         for (String t : tags) {
             t = t.toUpperCase();// voglio che i tag siano scritti in maiuscolo
@@ -34,7 +34,7 @@ public class User {
     }
 
     // ritorna la password dell'utente
-    public String getEncryptedPassword() {
+    public String getPassword() {
         return this.password;
     }
 
