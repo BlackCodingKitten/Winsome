@@ -1,6 +1,5 @@
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.HashSet;
 import java.util.Set;
 
 public interface RmiServiceInterface extends Remote {

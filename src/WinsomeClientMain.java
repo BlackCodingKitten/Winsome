@@ -156,7 +156,7 @@ public class WinsomeClientMain {
                             break;
                         case "logout":
                             // operazione di logout
-                            SharedMethods.sendToServer(out, completeRequest);
+                            SharedMethods.sendToStream(out, completeRequest);
                             fromServer = SharedMethods.readFromServer(in);
                             // se il logout ha avuto successo lato sever
                             if (fromServer.equalsIgnoreCase("OK")) {
@@ -172,7 +172,7 @@ public class WinsomeClientMain {
                             break;
                         case "login":
                             // operazione di login
-                            SharedMethods.sendToServer(out, completeRequest);
+                            SharedMethods.sendToStream(out, completeRequest);
                             fromServer = SharedMethods.readFromServer(in);
                             if (fromServer.equalsIgnoreCase("OK")) {
                                 nickname = otherArgumentsInCommandLine[0];
@@ -257,7 +257,7 @@ public class WinsomeClientMain {
                         case "post":
                             // tutte queste altre operazioni vengono gestite direttamente dal server senza
                             // bisogno di ulteriori controlli
-                            SharedMethods.sendToServer(out, completeRequest);
+                            SharedMethods.sendToStream(out, completeRequest);
                             System.out.println("WinsomeServer: " + SharedMethods.readFromServer(in));
                             break;
                         default:

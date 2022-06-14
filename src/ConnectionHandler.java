@@ -9,6 +9,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.w3c.dom.Text;
+
 import java.util.Objects;
 
 import Color.ColoredText;
@@ -453,8 +458,8 @@ public class ConnectionHandler implements Runnable {
         }
     }
 
-
-    //e ultimo, ma non meno importante, il metodo run della classe ConnectionHandler
+    // e ultimo, ma non meno importante, il metodo run della classe
+    // ConnectionHandler
     public void run(){
         try {
             output=new PrintWriter(clientSocket.getOutputStream(), true);//autoflush true
@@ -533,7 +538,22 @@ public class ConnectionHandler implements Runnable {
                             break;
                         case "post":
                             //controllo la sintass del comando 
-                            int count = request.codePoints().filter(ch -> ch == '"').count();
+                            if(!Pattern.matches("^post\\s+\".+\"\\s+\".+\"\\s*$", request)){
+                                //in questo modo controllo anche che ci sia necesariamente almeno un carattere per il titolo 
+                                //e uno per il contenuto
+                                SharedMethods.sendToStream(output, "Comando errato, consulata la lisat comandi.");
+                            }else{
+                                Matcher m = Pattern.compile("\"([^\"]*)\"").matcher(request);
+                                ArrayList<String> post = new ArrayList<>();
+                                while(m.find()){
+                                    //ottengo i valori di post
+                                    post.add(m.group(1));
+                                }
+                                post(post);
+                                break;
+
+
+                            }
 
                             
                         

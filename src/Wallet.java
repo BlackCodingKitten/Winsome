@@ -68,7 +68,7 @@ public class Wallet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Il tasso di conversione"+ColoredText.ANSI_PURPLE+" Wincoin"+ColoredText.ANSI_RESET+"->"+ColoredText.ANSI_BLUE+" Bitcoin"+ColoredText.ANSI_RESET+" e': "+exchangeRate+", mi dispiace neanche oggi diventerai ricco.");
+        
         //debug.messaggioDiDebug("valore convertito da wincoins in bitcoins"+String.valueOf(getWallet() * exchangeRate));
         return getWallet() * exchangeRate;
     }

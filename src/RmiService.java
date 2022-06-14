@@ -22,6 +22,9 @@ public class RmiService implements RmiServiceInterface {
         if (tags.size() > 5) {
             System.err.println("Troppi tag inseriti.");
             return false;
+        } else if (tags.size() == 0) {
+            System.err.println("Necessario inserire almeno un tag.");
+            return false;
         } else {
             if (!usernameNeverUsed(nickname)) {
                 System.err.println("Username già registrato.");

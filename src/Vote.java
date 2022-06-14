@@ -1,5 +1,4 @@
 import java.util.Date;
-import java.util.concurrent.ConcurrentHashMap;
 
 /* questa classe rappresenta gli upvote e i downvote che vengono dati ad un post
 ogni voto ha un autore e un valore che deve essere +1 nel caso di valutazione 
@@ -16,8 +15,8 @@ public class Vote {
         this.voteDate = new Date();
     }
 
-    //metodo getter della data di votazione
-    public Date getDate(){
+    // metodo getter della data di votazione
+    public Date getDate() {
         return this.voteDate;
     }
 
@@ -30,8 +29,6 @@ public class Vote {
     public int getVote() {
         return this.vote;
     }
-
-
 
     // metodo che controlla se il valore del voto è corretto
     public static boolean validVode(int vote) {

@@ -11,7 +11,7 @@ public class SharedMethods {
     // private final static DEBUG debug = new DEBUG();
 
     // writeOnStream() metodo che permette di inviare una stringa su uno stream
-    public static void sendToServer(PrintWriter out, String toSend) {
+    public static void sendToStream(PrintWriter out, String toSend) {
         int bytes = toSend.getBytes().length;
         out.println(bytes);// invio la lunghezza della stringa
         out.print(toSend); // invio la stringa
@@ -20,7 +20,7 @@ public class SharedMethods {
     }
 
     // readFromStream() metodo che permette di leggere una stringa da uno stream
-    public static String readFromServer(BufferedReader in) throws IOException {
+    public static String readFromStream(BufferedReader in) throws IOException {
         int size = 0;
         StringBuilder sBuilder = new StringBuilder();
         // leggo la lunghezza della stringa
