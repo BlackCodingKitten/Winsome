@@ -157,7 +157,7 @@ public class WinsomeClientMain {
                         case "logout":
                             // operazione di logout
                             SharedMethods.sendToStream(out, completeRequest);
-                            fromServer = SharedMethods.readFromServer(in);
+                            fromServer = SharedMethods.readFromStream(in);
                             // se il logout ha avuto successo lato sever
                             if (fromServer.equalsIgnoreCase("OK")) {
                                 System.out.println("Logout avvenuto con successo.\nArrivederci!");
@@ -173,7 +173,7 @@ public class WinsomeClientMain {
                         case "login":
                             // operazione di login
                             SharedMethods.sendToStream(out, completeRequest);
-                            fromServer = SharedMethods.readFromServer(in);
+                            fromServer = SharedMethods.readFromStream(in);
                             if (fromServer.equalsIgnoreCase("OK")) {
                                 nickname = otherArgumentsInCommandLine[0];
                                 // registrazione al servizio notifiche per la lista follower
@@ -258,7 +258,7 @@ public class WinsomeClientMain {
                             // tutte queste altre operazioni vengono gestite direttamente dal server senza
                             // bisogno di ulteriori controlli
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromServer(in));
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
                             break;
                         default:
                             // nessun comando riconosciuto

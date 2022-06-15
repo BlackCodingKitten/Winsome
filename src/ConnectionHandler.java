@@ -460,28 +460,28 @@ public class ConnectionHandler implements Runnable {
 
     // e ultimo, ma non meno importante, il metodo run della classe
     // ConnectionHandler
-    public void run(){
+    public void run() {
         try {
-            output=new PrintWriter(clientSocket.getOutputStream(), true);//autoflush true
+            output = new PrintWriter(clientSocket.getOutputStream(), true);// autoflush true
             input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        } catch (IOException e) { 
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        //controllo che input e output siano validi altrimenti chiudo la connessione
-        if(output != null && input != null){
+        // controllo che input e output siano validi altrimenti chiudo la connessione
+        if (output != null && input != null) {
             String request;
-            while(!false){
-                try{
-                    //leggo la richiesta del client
-                    request= SharedMethods.readFromStream(input);
-                    //splitto comando e argomenti
+            while (true) {
+                try {
+                    // leggo la richiesta del client
+                    request = SharedMethods.readFromStream(input);
+                    // splitto comando e argomenti
                     String[] splitted = request.split(" ");
                     String op = splitted[0];
-                    String[] args = new String[splitted.length -1 ];
-                    System.arraycopy(splitted, 1, args, 0, splitted.length -1 );
-                    //gestisco la richiesta
-                    switch(op){
+                    String[] args = new String[splitted.length - 1];
+                    System.arraycopy(splitted, 1, args, 0, splitted.length - 1);
+                    // gestisco la richiesta
+                    switch (op) {
                         case "listusers":
                             listUserCommonTags();
                             break;
@@ -498,72 +498,115 @@ public class ConnectionHandler implements Runnable {
                             getWallet();
                             break;
                         case "walletbitcoin":
-                            //DEBUG.messaggioDiDebug("wallet bitcoin");
+                            // DEBUG.messaggioDiDebug("wallet bitcoin");
                             getBitcoin();
                             break;
                         case "login":
-                            //controllo che il comando di login sia corretto
-                            if(args.length != 2){
-                                //non sono stati mandati utente e password
-                                SharedMethods.sendToStream(output, "Comando di login incorretto, digita \"help\" per un aiuto.");
+                            // controllo che il comando di login sia corretto
+                            if (args.length != 2) {
+                                // non sono stati mandati utente e password
+                                SharedMethods.sendToStream(output,
+                                        "Comando di login incorretto, digita \"help\" per un aiuto.");
                                 break;
-                            }else{
+                            } else {
                                 login(args[0], args[1]);
                                 break;
                             }
                         case "logout":
-                            if(clientSession != null){
-                                //l'utente non ha loggato
+                            if (clientSession != null) {
+                                // l'utente non ha loggato
                                 logout(clientSession.getUser());
-                            }else{
+                            } else {
                                 SharedMethods.sendToStream(output, "Effettua prima il login.");
                             }
                         case "follow":
-                            //controllo che il comando sia corretto
-                            if(args.length != 1){
-                                SharedMethods.sendToStream(output, "Comando incorretto, consulata lista dei comandi per un aiuto.");
+                            // controllo che il comando sia corretto
+                            if (args.length != 1) {
+                                SharedMethods.sendToStream(output,
+                                        "Comando incorretto, consulata lista dei comandi per un aiuto.");
                                 break;
-                            }else{
+                            } else {
                                 followUser(args[0]);
                                 break;
                             }
                         case "unfollow":
-                            //controllo la sintessi del comando
-                            if(args.length != 1){
-                                SharedMethods.sendToStream(output, "Comando errato, consulata lista dei comandi per saperne di piu'.");
-                            }else{
+                            // controllo la sintessi del comando
+                            if (args.length != 1) {
+                                SharedMethods.sendToStream(output,
+                                        "Comando errato, consulata lista dei comandi per saperne di piu'.");
+                            } else {
                                 unfollowUser(args[1]);
-                                //DEBUG.messaggioDiDebug("unfollow");
+                                // DEBUG.messaggioDiDebug("unfollow");
                             }
                             break;
                         case "post":
-                            //controllo la sintass del comando 
-                            if(!Pattern.matches("^post\\s+\".+\"\\s+\".+\"\\s*$", request)){
-                                //in questo modo controllo anche che ci sia necesariamente almeno un carattere per il titolo 
-                                //e uno per il contenuto
+                            // controllo la sintass del comando
+                            if (!Pattern.matches("^post\\s+\".+\"\\s+\".+\"\\s*$", request)) {
+                                // in questo modo controllo anche che ci sia necesariamente almeno un carattere
+                                // per il titolo
+                                // e uno per il contenuto
                                 SharedMethods.sendToStream(output, "Comando errato, consulata la lisat comandi.");
-                            }else{
+                            } else {
                                 Matcher m = Pattern.compile("\"([^\"]*)\"").matcher(request);
                                 ArrayList<String> post = new ArrayList<>();
-                                while(m.find()){
-                                    //ottengo i valori di post
+                                while (m.find()) {
+                                    // ottengo i valori di post
                                     post.add(m.group(1));
                                 }
                                 post(post);
                                 break;
-
-
                             }
-
-                            
-                        
+                        case "rewin":
+                            if (args.length != 1) {
+                                SharedMethods.sendToStream(output,
+                                        "Comado errato, impossibile fare la rewin del post.");
+                            } else {
+                                rewinPost(Integer.parseInt(args[1]));
+                            }
+                            break;
+                        case "rate":
+                            if (args.length != 2) {
+                                SharedMethods.sendToStream(output, "Impossibile votare.");
+                                break;
+                            }
+                            ratePost(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+                            break;
+                        case "delete":
+                            if (args.length != 1) {
+                                SharedMethods.sendToStream(output, "Comando errato, impossibile cancellare il post.");
+                            } else {
+                                deletePost(Integer.parseInt(args[1]));
+                            }
+                        case "comment":
+                            if (args.length != 2) {
+                                SharedMethods.sendToStream(output, "Impossibile commentare, comando errato.");
+                            } else {
+                                StringBuilder comment = new StringBuilder();
+                                for (int i = 0; i < splitted.length; i++) {
+                                    comment.append(splitted[i] + " ");
+                                }
+                                comment(Integer.parseInt(args[1]), comment.toString());
+                            }
+                            break;
+                        case "showpost":
+                            if (args.length != 1) {
+                                SharedMethods.sendToStream(output, "Comando errato, impossibile mostrare il post.");
+                            } else {
+                                getPostById(Integer.parseInt(args[1]));
+                            }
+                            break;
+                        default:
+                            unknownCmd();
+                            break;
                     }
-                }catch(){
-
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
                 }
             }
-        }else{
+        } else {
             System.err.println("Errore durante la creazione della connessione.");
+
         }
     }
 }
