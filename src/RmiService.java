@@ -19,24 +19,20 @@ public class RmiService implements RmiServiceInterface {
     public boolean registerNewUser(String nickname, String password, HashSet<String> tags) throws RemoteException {
         nickname = nickname.toLowerCase();
         System.out.println("Inizio fase di registrazione dell'utente " + nickname);
-        if (tags.size() > 5) {
-            System.err.println("Troppi tag inseriti.");
+        if (tags.size() > 5 || tags.size() == 0) {
+            System.err.println("Errore nella lista tag.");
             return false;
-        } else if (tags.size() == 0) {
-            System.err.println("Necessario inserire almeno un tag.");
-            return false;
-        } else {
-            if (!usernameNeverUsed(nickname)) {
-                System.err.println("Username già registrato.");
-                return false;
-            } else {
-                SocialManager socialManager = WinsomeServerMain.socialManager;
-                User u = new User(nickname, password, tags);
-                socialManager.addNewUser(u);
-                System.out.println("Fatto!");
-                return true;
-            }
         }
+        if (!usernameNeverUsed(nickname)) {
+            System.err.println("Username già registrato.");
+            return false;
+        }
+        SocialManager socialManager = WinsomeServerMain.socialManager;
+        User u = new User(nickname, password, tags);
+        socialManager.addNewUser(u);
+        System.out.println("Fatto!");
+        return true;
+
     }
 
     // questo metodo fornice la lista dei followers di un utente, se non presente

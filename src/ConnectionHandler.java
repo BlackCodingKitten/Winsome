@@ -156,20 +156,21 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Effettua il login prima di inviare un post.");
         } else {
             String thisUser = clientSession.getUser();
+            DEBUG.messaggioDiDebug(thisUser);
             String postTitle = postArgument[1];
-            String post = null;
-            if (postArgument.length > 1) {
-                post = postArgument[3];
-            } else {
-                try {
-                    int idPost = socialManager.createNewPost(thisUser, postTitle, post);
-                    SharedMethods.sendToStream(output, "Post " + idPost + " pubblicato correttamente");
-                } catch (PostLengthException e) {
-                    SharedMethods.sendToStream(output, "Inserisci un titolo più corto.");
-                } catch (UserNotFoundException e) {
-                    SharedMethods.sendToStream(output, "Utente insesistente.");
-                }
+            DEBUG.messaggioDiDebug("titolo: " + postTitle);
+            String post = postArgument[3];
+            DEBUG.messaggioDiDebug(post);
+
+            try {
+                int idPost = socialManager.createNewPost(thisUser, postTitle, post);
+                SharedMethods.sendToStream(output, "Post " + idPost + " pubblicato correttamente");
+            } catch (PostLengthException e) {
+                SharedMethods.sendToStream(output, "Inserisci un titolo più corto.");
+            } catch (UserNotFoundException e) {
+                SharedMethods.sendToStream(output, "Utente insesistente.");
             }
+
         }
     }
 
