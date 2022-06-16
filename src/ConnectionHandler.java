@@ -156,10 +156,10 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Effettua il login prima di inviare un post.");
         } else {
             String thisUser = clientSession.getUser();
-            String postTitle = postArgument[1].trim();
+            String postTitle = postArgument[1];
             String post = null;
             if (postArgument.length > 1) {
-                post = postArgument[3].trim();
+                post = postArgument[3];
             } else {
                 try {
                     int idPost = socialManager.createNewPost(thisUser, postTitle, post);
@@ -479,6 +479,7 @@ public class ConnectionHandler implements Runnable {
                 try {
                     // leggo la richiesta del client
                     request = SharedMethods.readFromStream(input);
+                    DEBUG.messaggioDiDebug(request);
                     // annullo la task di shutdown perchè sto eseguendo delle attività
                     WinsomeServerMain.timer.cancel();
                     // splitto comando e argomenti
@@ -489,22 +490,27 @@ public class ConnectionHandler implements Runnable {
                     // gestisco la richiesta
                     switch (op) {
                         case "listusers":
+                            DEBUG.messaggioDiDebug("listusers");
                             listUserCommonTags();
                             break;
                         case "listfollowing":
+                            DEBUG.messaggioDiDebug("listfollowing");
                             getFollowingsList();
                             break;
                         case "blog":
+                            DEBUG.messaggioDiDebug("blog");
                             blog();
                             break;
                         case "showfeed":
+                            DEBUG.messaggioDiDebug("showfeed");
                             feed();
                             break;
                         case "wallet":
+                            DEBUG.messaggioDiDebug("wallet");
                             getWallet();
                             break;
                         case "walletbtc":
-                            // DEBUG.messaggioDiDebug("wallet bitcoin");
+                            DEBUG.messaggioDiDebug("wallet bitcoin");
                             getBitcoin();
                             break;
                         case "login":
@@ -526,26 +532,31 @@ public class ConnectionHandler implements Runnable {
                                 SharedMethods.sendToStream(output, "Effettua prima il login.");
                             }
                         case "follow":
+                            DEBUG.messaggioDiDebug("follow");
                             // controllo che il comando sia corretto
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output,
                                         "Comando incorretto, consulata lista dei comandi per un aiuto.");
                                 break;
                             } else {
+                                DEBUG.messaggioDiDebug(args[0]);
                                 followUser(args[0]);
                                 break;
                             }
                         case "unfollow":
+                            DEBUG.messaggioDiDebug("unfollow");
                             // controllo la sintessi del comando
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output,
                                         "Comando errato, consulata lista dei comandi per saperne di piu'.");
                             } else {
+                                DEBUG.messaggioDiDebug(args[1]);
                                 unfollowUser(args[1]);
                                 // DEBUG.messaggioDiDebug("unfollow");
                             }
                             break;
                         case "post":
+                            DEBUG.messaggioDiDebug("post");
                             // controllo la sintass del comando
                             if (!Pattern.matches("^post\\s+\".+\"\\s+\".+\"\\s*$", request)) {
                                 // in questo modo controllo anche che ci sia necesariamente almeno un carattere
@@ -554,46 +565,57 @@ public class ConnectionHandler implements Runnable {
                                 SharedMethods.sendToStream(output, "Comando errato, consulata la lisat comandi.");
                             } else {
                                 String[] post = new String[4];
-                                post = request.split(" ");
+                                post = request.split("\"");
+                                DEBUG.messaggioDiDebug(post[0] + "\n" + post[1] + "\n" + post[2] + "\n" + post[3]);
                                 post(post);
                                 break;
                             }
                         case "rewin":
+                            DEBUG.messaggioDiDebug("rewin");
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output,
                                         "Comado errato, impossibile fare la rewin del post.");
                             } else {
+                                DEBUG.messaggioDiDebug(args[1]);
                                 rewinPost(Integer.parseInt(args[1]));
                             }
                             break;
                         case "rate":
+                            DEBUG.messaggioDiDebug("rate");
                             if (args.length != 2) {
                                 SharedMethods.sendToStream(output, "Impossibile votare.");
                                 break;
                             }
+                            DEBUG.messaggioDiDebug(args[0] + args[1]);
                             ratePost(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
                             break;
                         case "delete":
+                            DEBUG.messaggioDiDebug("delete");
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output, "Comando errato, impossibile cancellare il post.");
                             } else {
+                                DEBUG.messaggioDiDebug(args[1]);
                                 deletePost(Integer.parseInt(args[1]));
                             }
                         case "comment":
+                            DEBUG.messaggioDiDebug("comment");
                             if (args.length != 2) {
                                 SharedMethods.sendToStream(output, "Impossibile commentare, comando errato.");
                             } else {
                                 StringBuilder comment = new StringBuilder();
                                 for (int i = 0; i < splitted.length; i++) {
+                                    DEBUG.messaggioDiDebug(splitted[i]);
                                     comment.append(splitted[i] + " ");
                                 }
                                 comment(Integer.parseInt(args[1]), comment.toString());
                             }
                             break;
                         case "showpost":
+                            DEBUG.messaggioDiDebug("showpost");
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output, "Comando errato, impossibile mostrare il post.");
                             } else {
+                                DEBUG.messaggioDiDebug(args[1]);
                                 getPostById(Integer.parseInt(args[1]));
                             }
                             break;

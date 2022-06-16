@@ -38,7 +38,7 @@ public class WinsomeClientMain {
     public static String multicastAddress;
     public static ConfigReader configReader;
 
-    public static HashSet<String> followerList = new HashSet<>();
+    public static Set<String> followerList = new HashSet<>();
 
     public static void main(String[] args) throws NotBoundException {
         // lettura del file config
@@ -108,8 +108,8 @@ public class WinsomeClientMain {
                 e.printStackTrace();
                 return;
             }
-            String completeRequest = "";
-            String op = "";
+            String completeRequest = null;
+            String op = null;
             NotifyEventInterface callback = null;
             String fromServer;
             boolean successRequest = true;// true se la request è eseguita correttamente false se la request fallisce
@@ -140,7 +140,7 @@ public class WinsomeClientMain {
                         successRequest = true;
                     } else {
                         completeRequest = SharedMethods.readFromConsole(inputReader);
-                        // debug.messaggioDiDebug("Richiesta fatta al server: " + completeRequest);
+                        DEBUG.messaggioDiDebug("Richiesta fatta al server: " + completeRequest);
                         if (completeRequest.equals("")) {
                             continue;
                         }
@@ -187,7 +187,7 @@ public class WinsomeClientMain {
                                 cInterface = (NotifyEventInterface) UnicastRemoteObject.exportObject(callback, 0);
 
                                 server.callbackRegister(nickname, cInterface);
-                                followerList = (HashSet) stub.followerList(nickname, otherArgumentsInCommandLine[1]);
+                                followerList = stub.followerList(nickname, otherArgumentsInCommandLine[1]);
                                 System.out.println("Bentornato nel magico mondo di Winsome " + nickname
                                         + " siamo lieti di rivederti.");
 
@@ -248,62 +248,62 @@ public class WinsomeClientMain {
                             }
                         case "listusers":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "listfollowing":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "blog":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "showfeed":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "wallet":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "walletbtc":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "follow":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "unfollow":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "rewin":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "rate":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "showpost":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "comment":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "delete":
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         case "post":
 
                             // tutte queste altre operazioni vengono gestite direttamente dal server senza
                             // bisogno di ulteriori controlli
                             SharedMethods.sendToStream(out, completeRequest);
-                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            System.out.println(SharedMethods.readFromStream(in));
                             break;
                         default:
                             // nessun comando riconosciuto
@@ -318,17 +318,20 @@ public class WinsomeClientMain {
                 System.out.println(
                         "Oh no l'orco cattivo è tornato e si è preso il nostro server.\nVuoi affrontarlo di nuovo? [S/N]");
                 if (SharedMethods.readFromConsole(inputReader).equalsIgnoreCase("S")) {
-                    if (op.equalsIgnoreCase("login") || op.equalsIgnoreCase("listfollowers")
-                            || op.equalsIgnoreCase("register") || op.equalsIgnoreCase("logout")
-                            || op.equalsIgnoreCase("forcedexit"))
-                        ;
-                    successRequest = false;
-                    // in questo modo se l'ultima richiesta è login o register o logout o
-                    // listfollowers o un'uscita forzata viene ricopiata direttamente senza che
-                    // l'utente debba riscrivere il comando
+                    if (op.equalsIgnoreCase("login") || op.equalsIgnoreCase("register") ){
+                        successRequest = false;
+                        // in questo modo se l'ultima richiesta è login o register o logout o
+                        // listfollowers o un'uscita forzata viene ricopiata direttamente senza che
+                        // l'utente debba riscrivere il comando
+                    }
                 } else {
-                    connectionState = false;
-                    System.out.println("Le nostre armate sono dalla tua parte.");
+                    try {
+                        socket.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    System.exit(0);
+                    System.out.println("Addio.");
                     break;
                 }
             } // end catch

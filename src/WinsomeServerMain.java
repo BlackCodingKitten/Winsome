@@ -133,7 +133,7 @@ public class WinsomeServerMain {
 
         while (true) {
             try {
-                timer.schedule(shutdownTask, shutdown);
+                // timer.schedule(shutdownTask, shutdown);
                 // accetta la connessione del client
                 Socket client = serverSocket.accept();
                 // aggiunge la connessione alla lista
@@ -191,9 +191,9 @@ public class WinsomeServerMain {
             UnicastRemoteObject.unexportObject(winsomeCallback, false);
         } catch (NoSuchObjectException e) {
             e.printStackTrace();
-            System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
-                    + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
-            System.exit(0);
         }
+        System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
+                + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
+        System.exit(0);
     }
 }
