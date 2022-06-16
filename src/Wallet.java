@@ -70,7 +70,7 @@ public class Wallet {
         }
         
         //debug.messaggioDiDebug("valore convertito da wincoins in bitcoins"+String.valueOf(getWallet() * exchangeRate));
-        return getWallet() * exchangeRate;
+        return exchangeRate;
     }
 
     // calcola e aggiorna il valore del portafoglio quando si fa un movimento,

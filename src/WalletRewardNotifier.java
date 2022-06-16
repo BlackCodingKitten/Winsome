@@ -52,8 +52,10 @@ public class WalletRewardNotifier implements Runnable {
                     // grave
                     // di solito i buffer diretti sono consigliati per le grandi dimensioni,
                     // ma oggi (8/06/2022) ho voglia di sperimentare
-                    ByteBuffer byteBuffer = ByteBuffer.allocateDirect(Integer.BYTES);// contiene direttemante la
-                                                                                     // lunghezza della stringa ricevuta
+
+                    // provo cambiando il buffer da dinamico a statico
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);// contiene direttemante la
+                                                                               // lunghezza della stringa ricevuta
                     DatagramPacket datagramPacket = new DatagramPacket(byteBuffer.array(), byteBuffer.limit());
                     multicastSocket.receive(datagramPacket);// il primo pacchetto contine solamente la dimensione della
                                                             // stringa successiva

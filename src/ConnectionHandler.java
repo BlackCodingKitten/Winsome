@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -152,15 +152,20 @@ public class ConnectionHandler implements Runnable {
     }
 
     // l'utente invia un post con titolo e corpo
-    private void post(ArrayList<String> postArgument) {
+    private void post(String[] postArgument) {
+        // post argument è composto da 4 stringhe:
+        // pA[0]=[post ]
+        // pA[1]= contiene il titolo
+        // pA[2]= è uno spazio vuoto
+        // pa[3]= contenuto del post
         if (clientSession == null) {
             SharedMethods.sendToStream(output, "Effettua il login prima di inviare un post.");
         } else {
             String thisUser = clientSession.getUser();
-            String postTitle = postArgument.get(0).trim();
+            String postTitle = postArgument[1].trim();
             String post = null;
-            if (postArgument.size() > 1) {
-                post = postArgument.get(1).trim();
+            if (postArgument.length > 1) {
+                post = postArgument[3].trim();
             } else {
                 try {
                     int idPost = socialManager.createNewPost(thisUser, postTitle, post);
@@ -423,9 +428,12 @@ public class ConnectionHandler implements Runnable {
             String thisUser = clientSession.getUser();
             Wallet thisUserWallet = socialManager.getWallet(thisUser);
             StringBuilder toSend = new StringBuilder();
-            double bitcoin = thisUserWallet.getWalletbitcoin();
-            double cRate = SharedMethods.approximateDouble((bitcoin / thisUserWallet.getWallet()));
+            double cRate = thisUserWallet.getWalletbitcoin();
+            // approssimo a 4 cifre decimali
+            cRate = SharedMethods.approximateDouble(cRate);
             // approssimo le cifre decimali
+            double bitcoin = cRate * thisUserWallet.getWallet();
+            // approissimo a 4 cifre decimali
             bitcoin = SharedMethods.approximateDouble(bitcoin);
             toSend.append("Il tasso di conversione in bitcoin è " + cRate + "\n");
             toSend.append("Il portafoglio di " + thisUser + " corrisponde a " + ColoredText.ANSI_PURPLE + bitcoin
@@ -497,7 +505,7 @@ public class ConnectionHandler implements Runnable {
                         case "wallet":
                             getWallet();
                             break;
-                        case "walletbitcoin":
+                        case "walletbtc":
                             // DEBUG.messaggioDiDebug("wallet bitcoin");
                             getBitcoin();
                             break;
@@ -547,12 +555,8 @@ public class ConnectionHandler implements Runnable {
                                 // e uno per il contenuto
                                 SharedMethods.sendToStream(output, "Comando errato, consulata la lisat comandi.");
                             } else {
-                                Matcher m = Pattern.compile("\"([^\"]*)\"").matcher(request);
-                                ArrayList<String> post = new ArrayList<>();
-                                while (m.find()) {
-                                    // ottengo i valori di post
-                                    post.add(m.group(1));
-                                }
+                                String[] post = new String[4];
+                                post = request.split(" ");
                                 post(post);
                                 break;
                             }

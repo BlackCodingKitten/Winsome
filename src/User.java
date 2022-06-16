@@ -1,3 +1,4 @@
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -7,11 +8,11 @@ public class User {
     // private static final DEBUG debug = new DEBUG();
 
     private final String nickname;// ->nickname con cui si salva l'utenet
-    private final Set<String> tags = new LinkedHashSet<>();// -> lista dei tag che inserisce l'utente
+    private final HashSet<String> tags = new LinkedHashSet<>();// -> lista dei tag che inserisce l'utente
     private final String password;// ->password dell'utente salvata
 
     // costruttore della classe user
-    public User(String nickname, String plaintext, Set<String> tags) {
+    public User(String nickname, String plaintext, HashSet<String> tags) {
         this.nickname = nickname.toLowerCase();
         for (String t : tags) {
             t = t.toUpperCase();// voglio che i tag siano scritti in maiuscolo
@@ -28,7 +29,7 @@ public class User {
     }
 
     // ritorna la lista dei tag
-    public Set<String> getTags() {
+    public HashSet<String> getTags() {
         return this.tags;
     }
 

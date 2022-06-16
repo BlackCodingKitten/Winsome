@@ -14,6 +14,7 @@ import java.io.BufferedReader;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 import Color.ColoredText;
 
@@ -96,7 +97,9 @@ public class WinsomeClientMain {
                     System.out.println("Tentativo di riconnessione in corso...");
                 }
             }
-            System.out.println("Congratulazioni " + "\\" + "_(*w*)_/ sei conesso al ServerWinsome.");
+            if (connectionState) {
+                System.out.println("\nCongratulazioni " + "\\" + "_(*w*)_/ sei conesso al ServerWinsome.\n");
+            }
             RmiServiceInterface stub;
             try {
                 Registry registry = LocateRegistry.getRegistry(serverAddress, serverRmiPort);
@@ -126,7 +129,7 @@ public class WinsomeClientMain {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 while (true) {
                     // Ricevo il comando dall'utente se è vuoto lo ignoro
-                    System.out.println("WinsomeServer è in attesa di istruzioni...");
+                    System.out.println("WinsomeServer in attesa di istruzioni...");
                     if (successRequest == false) {
                         // leggo l'input utente e lo ignoro
                         SharedMethods.readFromConsole(inputReader);
@@ -148,7 +151,7 @@ public class WinsomeClientMain {
                     // copio il resto degli argomenti in un'altro array
                     String[] otherArgumentsInCommandLine = new String[splitCommandLine.length - 1];
                     System.arraycopy(splitCommandLine, 1, otherArgumentsInCommandLine, 0,
-                            (splitCommandLine.length));
+                            otherArgumentsInCommandLine.length);
                     // effettuo la switch su op per vedere qual'è l'operazione richiesta dall'utente
                     switch (op) {
                         case "help":
@@ -197,7 +200,7 @@ public class WinsomeClientMain {
                             socket.close();
                             out.close();
                             in.close();
-                            break loop;
+                            System.exit(0);
                         case "register":
                             // operazione di register
                             // per prima cosa controllo che siano stati inseriti nome utente, password e max
@@ -208,8 +211,11 @@ public class WinsomeClientMain {
                                 break;
                             } else {
                                 // copio la lista dei tag dall'array otherArgumentInCommandLine
-                                HashSet<String> tags = new HashSet<>(Arrays.asList(otherArgumentsInCommandLine)
-                                        .subList(2, (otherArgumentsInCommandLine.length - 1)));
+                                HashSet<String> tags = new HashSet<>();
+                                for (int i = 2; i < otherArgumentsInCommandLine.length; i++) {
+                                    tags.add(otherArgumentsInCommandLine[i]);
+                                }
+
                                 boolean flag = stub.registerNewUser(otherArgumentsInCommandLine[0],
                                         otherArgumentsInCommandLine[1], tags);
                                 if (flag) {
@@ -229,7 +235,6 @@ public class WinsomeClientMain {
                                     System.out.println("Lista dei tuoi followers:");
                                     for (String follower : followerList) {
                                         System.out.println(follower);
-                                        break;
                                     }
                                 } else {
                                     System.out.println("Nessuno ti segue. Sei nuovo o sei solo antipatico?\n****** "
@@ -242,19 +247,59 @@ public class WinsomeClientMain {
                                 break;
                             }
                         case "listusers":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "listfollowing":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "blog":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "showfeed":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "wallet":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "walletbtc":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "follow":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "unfollow":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "rewin":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "rate":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "showpost":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "comment":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "delete":
+                            SharedMethods.sendToStream(out, completeRequest);
+                            System.out.println("WinsomeServer: " + SharedMethods.readFromStream(in));
+                            break;
                         case "post":
+
                             // tutte queste altre operazioni vengono gestite direttamente dal server senza
                             // bisogno di ulteriori controlli
                             SharedMethods.sendToStream(out, completeRequest);
@@ -346,30 +391,50 @@ public class WinsomeClientMain {
     // metetodo che stampa il comando help
     public static void help() {
         System.out.println("Hai bidogno di aiuto?\nEccoti una clista dei comadi pronta per te:");
-        System.out.println("help    Serve a mostrare questa lista, ma questo lo sai. :-)");
+        System.out.println(ColoredText.ANSI_PURPLE + "help" + ColoredText.ANSI_RESET
+                + "   Serve a mostrare questa lista, ma questo lo sai. :-)");
         System.out
-                .println("register <username> <password> <elnenca max 5 tag>  Serve per registrare nuovi utenti");
+                .println(ColoredText.ANSI_PURPLE + "register <username> <password> <elnenca max 5 tag> "
+                        + ColoredText.ANSI_RESET + " Serve per registrare nuovi utenti");
         System.out
-                .println("login <username> <password>   Serve per effettuare il login nel magico mondo di Winsome.");
-        System.out.println("logout   Serve per sloggare dal magico mondo di Winsome. :-(");
-        System.out.println(
-                "listuser   Serve a msotrarti tutti gli utenti che hanno passioni in comune con te.");
-        System.out.println("listfollowers    Serve a mostrarti chi sono gli utenti che ti seguno.");
-        System.out.println("listfollowing  Serve a mostrarti chi sono gli utenti che segui.");
-        System.out.println("blog      Serve a mostrare tutti i post nel tuo blog.");
-        System.out.println("showfeed   Serve a mostrare tutti i post nel tuo feed.");
-        System.out.println(
-                "wallet   Serve a farti vedere quanti wincoins hai accumulato nelle tue avventure qui su Winsome.");
-        System.out.println("walletbtc    Serve a mostrarti quanti bitcoins sono i tuoi wincoins.");
-        System.out.println("follow <username>   Serve per seguire un utente.");
-        System.out.println("unfollow <username>  Serve per smettere di seguire un utente.");
-        System.out.println("rewin <idpost>   Serve a rewinare(retwittare) un post nel tuo blog.");
-        System.out.println("rate <idpost> <-1/+1>   Serve per upvotare(+1) o downvotare(-1) un post.");
-        System.out.println("showpost <idpost>  Serve a mostrare il contenuto di un post.");
-        System.out.println("post \"<titolo>\" \"<testo>\"   Serve per creare un post.");
-        System.out.println("delete <idpost>  Serve per eliminare un post.");
-        System.out.println("comment <idpost> <testo del commento> Serve per commentare un post.");
-        System.out.println("forcedexit      Serve per forzare l'uscita dal social");
+                .println(ColoredText.ANSI_PURPLE + "login <username> <password> " + ColoredText.ANSI_RESET
+                        + "  Serve per effettuare il login nel magico mondo di Winsome.");
+        System.out.println(ColoredText.ANSI_PURPLE + "logout " + ColoredText.ANSI_RESET
+                + "  Serve per sloggare dal magico mondo di Winsome. :-(");
+        System.out.println(ColoredText.ANSI_PURPLE +
+                "listuser  " + ColoredText.ANSI_RESET
+                + " Serve a msotrarti tutti gli utenti che hanno passioni in comune con te.");
+        System.out.println(ColoredText.ANSI_PURPLE + "listfollowers " + ColoredText.ANSI_RESET
+                + "   Serve a mostrarti chi sono gli utenti che ti seguno.");
+        System.out.println(ColoredText.ANSI_PURPLE + "listfollowing " + ColoredText.ANSI_RESET
+                + " Serve a mostrarti chi sono gli utenti che segui.");
+        System.out.println(ColoredText.ANSI_PURPLE + "blog   " + ColoredText.ANSI_RESET
+                + "   Serve a mostrare tutti i post nel tuo blog.");
+        System.out.println(ColoredText.ANSI_PURPLE + "showfeed  " + ColoredText.ANSI_RESET
+                + " Serve a mostrare tutti i post nel tuo feed.");
+        System.out.println(ColoredText.ANSI_PURPLE +
+                "wallet  " + ColoredText.ANSI_RESET
+                + " Serve a farti vedere quanti wincoins hai accumulato nelle tue avventure qui su Winsome.");
+        System.out.println(ColoredText.ANSI_PURPLE + "walletbtc  " + ColoredText.ANSI_RESET
+                + "  Serve a mostrarti quanti bitcoins sono i tuoi wincoins.");
+        System.out.println(ColoredText.ANSI_PURPLE + "follow <username> " + ColoredText.ANSI_RESET
+                + "  Serve per seguire un utente.");
+        System.out.println(ColoredText.ANSI_PURPLE + "unfollow <username> " + ColoredText.ANSI_RESET
+                + " Serve per smettere di seguire un utente.");
+        System.out.println(ColoredText.ANSI_PURPLE + "rewin <idpost> " + ColoredText.ANSI_RESET
+                + "  Serve a rewinare(retwittare) un post nel tuo blog.");
+        System.out.println(ColoredText.ANSI_PURPLE + "rate <idpost> <-1/+1>  " + ColoredText.ANSI_RESET
+                + " Serve per upvotare(+1) o downvotare(-1) un post.");
+        System.out.println(ColoredText.ANSI_PURPLE + "showpost <idpost> " + ColoredText.ANSI_RESET
+                + " Serve a mostrare il contenuto di un post.");
+        System.out.println(ColoredText.ANSI_PURPLE + "post \"<titolo>\" \"<testo>\" " + ColoredText.ANSI_RESET
+                + "  Serve per creare un post.");
+        System.out.println(ColoredText.ANSI_PURPLE + "delete <idpost>" + ColoredText.ANSI_RESET
+                + "  Serve per eliminare un post.");
+        System.out.println(ColoredText.ANSI_PURPLE + "comment <idpost> " + ColoredText.ANSI_RESET
+                + "<testo del commento> Serve per commentare un post.");
+        System.out.println(ColoredText.ANSI_PURPLE + "forcedexit" + ColoredText.ANSI_RESET
+                + "      Serve per forzare l'uscita dal social");
     }
 
     // metodo per la stampa della barra di caricamento
@@ -386,7 +451,8 @@ public class WinsomeClientMain {
                 m.wait(79);
             }
         }
-        System.out.println(ColoredText.ANSI_RESET + "\n\t\tCaricamento completato \\_(^w^)_/");
+        System.out.println(ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE + "\n\t\tCaricamento completato \\_(^w^)_/"
+                + ColoredText.ANSI_RESET);
         return;
     }
 

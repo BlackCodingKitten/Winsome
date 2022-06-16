@@ -16,7 +16,7 @@ public class RmiService implements RmiServiceInterface {
     // lista dei tag troppo lunga
     // (possono essere ,max 5 );
     @Override
-    public boolean registerNewUser(String nickname, String password, Set<String> tags) throws RemoteException {
+    public boolean registerNewUser(String nickname, String password, HashSet<String> tags) throws RemoteException {
         nickname = nickname.toLowerCase();
         System.out.println("Inizio fase di registrazione dell'utente " + nickname);
         if (tags.size() > 5) {

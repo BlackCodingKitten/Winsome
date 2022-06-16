@@ -56,6 +56,7 @@ public class InputHandler implements Runnable {
                         // mostra una lista dei followers di un determinato utente
                         if (args.length != 1) {
                             System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
+                            break;
                         }
                         listFollower(args[0]);
                         break;
@@ -63,6 +64,7 @@ public class InputHandler implements Runnable {
                         // mostra una lista dei seguiti di un determinato utente
                         if (args.length != 1) {
                             System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
+                            break;
                         }
                         listFollowing(args[0]);
                         break;
@@ -70,6 +72,7 @@ public class InputHandler implements Runnable {
                         // aggiunge un follower ad un utente
                         if (args.length != 2) {
                             System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
+                            break;
                         }
                         addFollower(args[0], args[1]);
                         break;
@@ -77,6 +80,7 @@ public class InputHandler implements Runnable {
                         // rimuove un follower da un utente
                         if (args.length != 2) {
                             System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
+                            break;
                         }
                         removeFollower(args[0], args[1]);
                         break;
@@ -84,6 +88,7 @@ public class InputHandler implements Runnable {
                         // aggiunge un utente alla lista seguiti
                         if (args.length != 2) {
                             System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
+                            break;
                         }
                         addFollowing(args[0], args[1]);
                         break;
@@ -91,6 +96,7 @@ public class InputHandler implements Runnable {
                         // rimuove un seguito da un utente
                         if (args.length != 2) {
                             System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
+                            break;
                         }
                         removeFollowing(args[0], args[1]);
                         break;
@@ -106,6 +112,7 @@ public class InputHandler implements Runnable {
                         // avvia una nuova trasazione
                         if (args.length != 2) {
                             System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
+                            break;
                         }
                         transaction(args[0], Double.parseDouble(args[1]));
                         break;
@@ -238,7 +245,7 @@ public class InputHandler implements Runnable {
                 + " WinsomeStats " + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE_BACKGROUND
                 + ColoredText.ANSI_WHITE + "**************" + ColoredText.ANSI_RESET);
         System.out.println("Utenti totali registrati: " + socialManager.getUserCounter());
-        System.out.println("Socket attualmente in uso: " + WinsomeServerMain.socketlist.size());
+        System.out.println("Socket attualmente in uso: " + WinsomeServerMain.clientSocketList.size());
         System.out.println("Numero di thread attivi attualmente nel ThreadPool: " + pool.getActiveCount());
         System.out.println("Numero di thread totali nel Threadpool: " + pool.getPoolSize());
         System.out.println("Numero massimo di thread attivati contemporaneamente: " + pool.getLargestPoolSize());

@@ -183,12 +183,8 @@ public class JsonFileManager {
         boolean ignored = new File(FolderName).mkdirs(); // creo la cartella dove trenere i file se non esiste già
         try {
             File f = new File(path);
-            if (!f.exists()) {
-                if (!f.createNewFile()) {
-                    return false;
-                } else {
-                    return true;
-                }
+            if (!f.exists() || !f.createNewFile()) {
+                return false;
             } else {
                 return true;
             }
