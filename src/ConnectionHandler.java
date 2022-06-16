@@ -4,17 +4,11 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.w3c.dom.Text;
-
-import java.util.Objects;
+import java.util.Set;
 
 import Color.ColoredText;
 import CustomizedException.InvalidOperationException;
@@ -28,24 +22,24 @@ import CustomizedException.UserNotFoundException;
 /*gestisce la connessione con i client, prende una client socket , ascolta le chieste su quella socket , genera le risposte */
 //tutti i metodi di questa classe si riferiscono direttamente all'utente connesso alla client session corrispondente.
 public class ConnectionHandler implements Runnable {
-    private final ConfigReader configReader;
+
     private final Socket clientSocket;
     private ClientSession clientSession;
-    private final int key;
+    // private final int key; //ha il solo scopo di debug
     private final SocialManager socialManager;
     private PrintWriter output;
     private BufferedReader input;
+    private ConfigReader configReader;
 
     // Costruttore della classe connection handler
-    public ConnectionHandler(Socket c, int k, ConfigReader co, SocialManager s) {
+    public ConnectionHandler(Socket c, SocialManager s, ConfigReader cr) {
         this.clientSession = null;
-        this.configReader = co;
         this.socialManager = s;
         this.clientSocket = c;
-        this.key = k;
+        // this.key = k;
         this.output = null;
         this.input = null;
-
+        this.configReader = cr;
     }
 
     // comando sconosciuto
@@ -74,7 +68,7 @@ public class ConnectionHandler implements Runnable {
                 } else {
                     // non esiste una sessione per questo client
                     Date date = new Date();
-                    SharedMethods.sendToStream(output, "Login effettuato correttamente.\nBentornato oggi è "
+                    SharedMethods.sendToStream(output, "Login effettuato correttamente.\nBentornato oggi e'"
                             + date.toString() + " ora che ci sei inizia la festa.\n\\_(*w*)_/\\_(^-^)_/\\_(o.o)_/");
                 }
                 return;
@@ -97,7 +91,7 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Effettua prima il login, grazie.");
         } else {
             String thisUser = clientSession.getUser();
-            HashSet<Post> feed = (HashSet) socialManager.getUserFeed(thisUser);
+            Set<Post> feed = socialManager.getUserFeed(thisUser);
             if (feed.size() == 0) {
                 // se il feed è vuoto
                 SharedMethods.sendToStream(output, "Il tuo feed è vuoto.\nSei un nuovo utente?, digita \"help\"");
@@ -122,10 +116,10 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Login non effettuato.");
         } else {
             String thisUser = clientSession.getUser();
-            HashSet<String> thisUserTags = (HashSet) socialManager.getUser(thisUser).getTags();
+            Set<String> thisUserTags = socialManager.getUser(thisUser).getTags();
             // inutile il controllo se
             // l'utente ha almeno un tag, ottengo tutti quelli con almemo un tag uguale
-            HashSet<User> usersCommonTagList = (HashSet) socialManager.getCommonTagsUsers(thisUserTags);
+            Set<User> usersCommonTagList = socialManager.getCommonTagsUsers(thisUserTags);
             // rimuovo l'utente stesso dalla lista
             usersCommonTagList.remove(socialManager.getUser(thisUser));
             if (usersCommonTagList.size() == 0) {
@@ -216,7 +210,7 @@ public class ConnectionHandler implements Runnable {
             } catch (PostNotFoundException e) {
                 SharedMethods.sendToStream(output, "Il post che vuoi votare non esiste.");
             } catch (PostNotInFeedException e) {
-                SharedMethods.sendToStream(output, "Questo post non è nel tuo feed.");
+                SharedMethods.sendToStream(output, "Questo post non e' nel tuo feed.");
             } catch (InvalidOperationException e) {
                 SharedMethods.sendToStream(output, "Hai già votato questo post.");
             } catch (SameUserException e) {
@@ -262,7 +256,7 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Effettua il login prima.");
         } else {
             String thisUser = clientSession.getUser();
-            HashSet<String> followings = (HashSet) socialManager.getFollowings(thisUser);
+            Set<String> followings = socialManager.getFollowings(thisUser);
             if (followings.size() == 0) {
                 SharedMethods.sendToStream(output, "Non segui nessun utente.");
             } else {
@@ -435,7 +429,7 @@ public class ConnectionHandler implements Runnable {
             double bitcoin = cRate * thisUserWallet.getWallet();
             // approissimo a 4 cifre decimali
             bitcoin = SharedMethods.approximateDouble(bitcoin);
-            toSend.append("Il tasso di conversione in bitcoin è " + cRate + "\n");
+            toSend.append("Il tasso di conversione in bitcoin e' " + cRate + "\n");
             toSend.append("Il portafoglio di " + thisUser + " corrisponde a " + ColoredText.ANSI_PURPLE + bitcoin
                     + ColoredText.ANSI_RESET + " bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n");
             SharedMethods.sendToStream(output, toSend.toString());
@@ -480,9 +474,13 @@ public class ConnectionHandler implements Runnable {
         if (output != null && input != null) {
             String request;
             while (true) {
+                // lo schedulo all'inizio del ciclo così dopo ogni scambio di messaggi con il
+                // client si resetta
                 try {
                     // leggo la richiesta del client
                     request = SharedMethods.readFromStream(input);
+                    // annullo la task di shutdown perchè sto eseguendo delle attività
+                    WinsomeServerMain.timer.cancel();
                     // splitto comando e argomenti
                     String[] splitted = request.split(" ");
                     String op = splitted[0];
@@ -607,6 +605,7 @@ public class ConnectionHandler implements Runnable {
                     e.printStackTrace();
                     break;
                 }
+
             }
         } else {
             System.err.println("Errore durante la creazione della connessione.");

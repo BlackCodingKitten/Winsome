@@ -5,9 +5,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +28,7 @@ public class Rewards implements Runnable {
     private static final String reasonAuthor = "Ricompensa per il post: ";
     private static final String reasonCurator = "Ricompensa per aver fatto il curatore di :";
 
-    private volatile boolean stop = false;
+    private volatile static boolean stop = false;
 
     public Rewards(ConfigReader c, SocialManager s) {
         this.configReader = c;
@@ -44,8 +42,8 @@ public class Rewards implements Runnable {
     }
 
     // metodo che blocca il thread si assegnazione premi
-    public void stopServer() {
-        this.stop = true;
+    public static void stopServer() {
+        stop = true;
     }
 
     // metodo che salva la data dell'ultimo Reward sul file di config
@@ -55,8 +53,7 @@ public class Rewards implements Runnable {
 
     @Override
     public void run() {
-        try {
-            DatagramSocket serveDatagramSocket = new DatagramSocket(null);
+        try (DatagramSocket serveDatagramSocket = new DatagramSocket(null)) {
             // poteva essere fatto anche con getLocalHost()
             InetAddress inetAddress = InetAddress.getByName("localhost");
             InetSocketAddress serveSocketAddress = new InetSocketAddress(inetAddress, this.multicastPort);
@@ -102,7 +99,8 @@ public class Rewards implements Runnable {
                     /* ignored */
                 }
             }
-
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,7 +129,7 @@ public class Rewards implements Runnable {
 
         // inizio secondo logaritmo
         double log2 = 0;
-        HashSet<String> commentingUser = (HashSet) p.getListUserCommentingAfterDate(d);
+        Set<String> commentingUser = p.getListUserCommentingAfterDate(d);
         for (String u : commentingUser) {
             int totalComment = p.getCommentByUser(u).size();
             log2 = log2 + (2 / (1 + Math.pow(Math.E, -(totalComment - 1))));

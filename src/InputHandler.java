@@ -10,16 +10,14 @@ import Color.ColoredText;
 /*l'input handler si occupa della gestione delle richieste del server,
  è una classe ad esclusivo utilizzo per la parte amministrativa*/
 public class InputHandler implements Runnable {
-    private final ConfigReader configReader;
     private final SocialManager socialManager;
     private final ThreadPoolExecutor pool;
 
-    private volatile boolean stop = false;
+    private volatile static boolean stop = false;
 
     private String defaultReason = "Nessuna causale inserita.";
 
-    public InputHandler(ConfigReader configReader, SocialManager socialManager, ThreadPoolExecutor pool) {
-        this.configReader = configReader;
+    public InputHandler(SocialManager socialManager, ThreadPoolExecutor pool) {
         this.pool = pool;
         this.socialManager = socialManager;
     }
@@ -28,16 +26,16 @@ public class InputHandler implements Runnable {
     // la run viene eseguita all'avvio del server e aspetta i comandi dal client
     public void run() {
         Scanner input = new Scanner(System.in);
-        String clientRequest = null;
+        String adminRequest = null;
 
         while (!stop) {
-            clientRequest = SharedMethods.readFromConsole(input);
-            if (clientRequest.equalsIgnoreCase("")) {
+            adminRequest = SharedMethods.readFromConsole(input);
+            if (adminRequest.equalsIgnoreCase("")) {
                 // se la richiesta del client è vuota mi rimetto in attesa
                 continue;
             } else {
                 // faccio lo split dell'input utente diviso in comando e argomenti
-                String[] splittedInput = clientRequest.split(" ");
+                String[] splittedInput = adminRequest.split(" ");
                 // prendo il comando da eseguire
                 String command = splittedInput[0];// il comando è la prima parola
                 String[] args = new String[splittedInput.length - 1];
@@ -227,9 +225,9 @@ public class InputHandler implements Runnable {
         }
     }
 
-    private void stopWinsomeServer() {
+    public static void stopWinsomeServer() {
         System.out.println("WinsomeServer è in arresto...\nSperiamo che nessun orco lo rapisca nel sonno (-o-)\n");
-        this.stop = true;
+        stop = true;
         try {
             WinsomeServerMain.serverSocket.close();
         } catch (IOException e) {

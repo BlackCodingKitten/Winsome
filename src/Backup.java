@@ -11,7 +11,7 @@ public class Backup implements Runnable {
     private final SocialManager socialManager;
     private final Rewards rewardManager;
 
-    private volatile boolean stop = false;
+    private static volatile boolean stop = false;
 
     int backupInterval;
 
@@ -45,19 +45,20 @@ public class Backup implements Runnable {
                 this.socialManager.saveCurrentIdPostOnConfigFile();
                 //salvo  la data dell'ultimo reward
                 this.rewardManager.saveLastReward();
-                System.out.println("Salvataggio stato interno Winsome completato.");
+                //DEBUG.messaggioDiDebug("Salavtaggio dei dati completato");
             } catch (IOException e) {
                 System.err.println("Impossibile eseguire correttamente il salvataggio dei dati\n");
                 e.printStackTrace();
             }
 
         }
-        System.out.println("Salvataggio prima dello spegnimeto effettuato.\nChiusura sistema di backup in corso...");
+        
     }
 
     // metdo per chiudere il server in maniera sicura facendo un ultimo backup prima
     // dello spegnimento
-    public void stopServer() {
+    public static void stopServer() {
+        System.out.println("Salvataggio prima dello spegnimeto effettuato.\nChiusura sistema di backup in corso...");
         stop = true;
     }
 

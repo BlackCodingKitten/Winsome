@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.net.ssl.HttpsURLConnection;
-import Color.ColoredText;
+
 
 /*rappresenta il wallet di un utente, il valore corrente viene calcolato dalla lista di transazioni che l'untente ha fatto */
 public class Wallet {

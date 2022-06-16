@@ -11,6 +11,9 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
+import java.util.Timer;
+import java.util.TimerTask;
+
 /*questa è la classe Main lato server, che esegue le sue operazioni con l'aiuto del connection handler. 
  * ogni connection handler gestisce una singola connessione.
  * 
@@ -35,10 +38,12 @@ public class WinsomeServerMain {
     private static String RmiServerRegistry;
     private static int RmiServerPort;
     private static int callbackClientPort;
-    private static int shutdown;
     private static String RmiCallbackClientRegistry;
-    private static RmiCallback winsomeCallback;
-    private static RmiService winsomeService;
+    public static RmiCallback winsomeCallback;
+    public static RmiService winsomeService;
+    // gestori dello spegnimento per inattività
+    public static Timer timer = new Timer();
+    public static TimerTask shutdownTask = new Shutdown();
 
     public static void main(String[] args) {
         System.out.println("Server Winsome in fase di attivazione...\n");
@@ -53,9 +58,9 @@ public class WinsomeServerMain {
         serverPort = Integer.parseInt(configReader.getConfigValue("ServerPort"));
         RmiServerPort = Integer.parseInt(configReader.getConfigValue("RmiServerPort"));
         callbackClientPort = Integer.parseInt(configReader.getConfigValue("RmiClientCallbackPort"));
-        shutdown = Integer.parseInt(configReader.getConfigValue("TimeoutBeforeShutdown"));
         RmiCallbackClientRegistry = configReader.getConfigValue("RmiCallbackClientRegistryName");
         RmiServerRegistry = configReader.getConfigValue("ServerRmiRegistryName");
+        int shutdown = Integer.parseInt(configReader.getConfigValue("TimeoutBeforeShutdown"));
 
         System.out.println(
                 "Lettura file di configurazione terminata, impostazioni settate, WinsomeServer pronto all'avvio.");
@@ -79,12 +84,11 @@ public class WinsomeServerMain {
 
         // creazione del thread che gestisce l'input dell'amministratore del server per
         // controllare le statistiche
-        InputHandler admin = new InputHandler(configReader, socialManager, pool);
+        InputHandler admin = new InputHandler(socialManager, pool);
         Thread adminThread = new Thread(admin);
         // creazione del thread gestore del backup
         dataBackup = new Backup(configReader, fileManager, socialManager, rewards);
         Thread dataBackupThread = new Thread(dataBackup);
-
         // RmiService (register)
         winsomeService = new RmiService();
         try {
@@ -122,21 +126,21 @@ public class WinsomeServerMain {
             return;
         }
 
-        // avvio il thread del backup e quello dell'admin
+        // avvio il thread del backup e quello dell'admin e del thread shotdown
         dataBackupThread.start();
         adminThread.start();
-
-        int i = 1;// a solo scopo di debug
+        // int i = 1;// a solo scopo di debug
 
         while (true) {
             try {
+                timer.schedule(shutdownTask, shutdown);
                 // accetta la connessione del client
                 Socket client = serverSocket.accept();
                 // aggiunge la connessione alla lista
                 clientSocketList.add(client);
                 // assegna il client ad un connectionhandler che gestisce tutto
-                pool.submit(new ConnectionHandler(client, i, configReader, socialManager));
-                i++;
+                pool.submit(new ConnectionHandler(client, socialManager, configReader));
+                // i++;
             } catch (SocketException e) {
                 // si verifica quando si chiude forzatamente il server
                 // quando l'admin digita stopserver
@@ -177,6 +181,8 @@ public class WinsomeServerMain {
         // chiudo eseguendo il salvataggio finale
         dataBackup.stopServer();
         dataBackupThread.interrupt();
+        // annullamento della task di shutdown
+        timer.cancel();
 
         // chiusura del'rmi
         try {
@@ -184,9 +190,10 @@ public class WinsomeServerMain {
             UnicastRemoteObject.unexportObject(winsomeService, false);
             UnicastRemoteObject.unexportObject(winsomeCallback, false);
         } catch (NoSuchObjectException e) {
-            // ignored, tanto sta chiudendo il server
+            e.printStackTrace();
+            System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
+                    + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
+            System.exit(0);
         }
-        System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
-                + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
     }
 }

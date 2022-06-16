@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
+
 
 //Classe che si occupa della gestione dei file json
 
@@ -25,7 +25,7 @@ public class JsonFileManager {
     private static final String FollowingPath = "following.json";
 
     private final Gson gson;
-    private JsonReader jREader;
+
 
     // costruttore della classe manager
     public JsonFileManager() {
@@ -181,6 +181,11 @@ public class JsonFileManager {
 
     private boolean createBackupFile(String path) {
         boolean ignored = new File(FolderName).mkdirs(); // creo la cartella dove trenere i file se non esiste già
+        if(ignored){
+            //DEBUG.messaggioDiDebug("cartella creata");
+        }else{
+            //DEBUG.messaggioDiDebug("Cartella già esistente");
+        }
         try {
             File f = new File(path);
             if (!f.exists() || !f.createNewFile()) {
