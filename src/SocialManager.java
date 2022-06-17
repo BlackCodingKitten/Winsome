@@ -48,7 +48,7 @@ public class SocialManager {
         if (username.equalsIgnoreCase(following)) {
             throw new InvalidOperationException();
         }
-        if (!userList.contains(following)) {
+        if (!userList.containsKey(following)) {
             throw new UserNotFoundException();
         }
         if (!followersList.get(following).contains(username)) {
@@ -107,7 +107,8 @@ public class SocialManager {
 
     // metodo per eliminare un post
     public void deletePost(int id, String username) throws PostNotFoundException, InvalidOperationException {
-        Post post = postList.get(id);
+        Integer idPost = Integer.valueOf(id);
+        Post post = postList.get(idPost);
         if (post == null) {
             // se il post non esiste
             throw new PostNotFoundException();
@@ -116,7 +117,7 @@ public class SocialManager {
             // se l'utente che vuole eliminare il post non è l'autore
             throw new InvalidOperationException();
         }
-        postList.remove(id);
+        postList.remove(idPost);
     }
 
     // metodo per recuperare il feed di uno specifico utente
@@ -195,7 +196,8 @@ public class SocialManager {
 
     // metodo che prende uno specifico post dalla lista
     public Post getPost(int id) {
-        return postList.get(id);
+        Integer idPost = Integer.valueOf(id);
+        return postList.get(idPost);
     }
 
     // metodo per creare un post -> ritorna l'd del post
@@ -208,7 +210,7 @@ public class SocialManager {
         if (title.length() > maxTitleLength || text.length() > maxTextLength) {
             throw new PostLengthException();
         }
-        int newId = currentIdPost.getAndIncrement();
+        Integer newId = currentIdPost.getAndIncrement();
         postList.putIfAbsent(newId, new Post(username, title, text, newId));
         return newId;
     }
@@ -216,7 +218,8 @@ public class SocialManager {
     // metodo per aggiungere un commento ad un post
     public void commentPost(String username, int id, String comment)
             throws PostNotFoundException, PostNotInFeedException {
-        Post post = postList.get(id);
+
+        Post post = postList.get(Integer.valueOf(id));
         if (post == null) {
             // post non trovato
             throw new PostNotFoundException();
@@ -234,7 +237,7 @@ public class SocialManager {
     // metodo per votare un post
     public void ratePost(String username, int id, int value) throws UserNotFoundException, InvalidVoteValueException,
             PostNotFoundException, PostNotInFeedException, InvalidOperationException, SameUserException {
-        if (!userList.contains(username)) {
+        if (!userList.containsKey(username)) {
             // username non presente nella lista di quelli registrati
             throw new UserNotFoundException();
         }
@@ -242,7 +245,7 @@ public class SocialManager {
             // se il valore del voto non è 1 o -1
             throw new InvalidVoteValueException();
         }
-        Post ratePost = postList.get(id);
+        Post ratePost = postList.get(Integer.valueOf(id));
         if (ratePost == null) {
             // il post che si vuole votare non esiste
             throw new PostNotFoundException();
@@ -269,7 +272,7 @@ public class SocialManager {
 
     // metodo che stampa un post formattato
     public String formattedPost(int id) {
-        Post toFormatt = postList.get(id);
+        Post toFormatt = postList.get(Integer.valueOf(id));
         if (toFormatt == null) {
             return null;
         }
@@ -298,10 +301,10 @@ public class SocialManager {
     public void rewinPost(String username, int id)
             throws UserNotFoundException, PostNotFoundException, PostNotInFeedException, InvalidOperationException,
             SameUserException {
-        if (!userList.contains(username)) {
+        if (!userList.containsKey(username)) {
             throw new UserNotFoundException();
         }
-        Post post = postList.get(id);
+        Post post = postList.get(Integer.valueOf(id));
         if (post.getOwner().equalsIgnoreCase(username)) {
             throw new SameUserException();
         }
@@ -321,7 +324,7 @@ public class SocialManager {
             // d.messaggioDiDebug("L'utente sta cercando si seguirsi da solo");
             throw new SameUserException();
         }
-        if (!user.contains(user)) {
+        if (!userList.containsKey(user)) {
             throw new UserNotFoundException();
         }
         if (followingList.get(user).contains(user)) {
@@ -446,7 +449,7 @@ public class SocialManager {
 
     // metdo per vedere se esiste un utenet
     public boolean existUser(String u) {
-        return userList.contains(u);
+        return userList.containsKey(u);
     }
 
     /********************

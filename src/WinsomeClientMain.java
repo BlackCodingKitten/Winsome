@@ -223,7 +223,7 @@ public class WinsomeClientMain {
                                             + " la tua registrazione ha avuto successo.");
                                 } else {
                                     System.out.println(
-                                            "Siamo spiacenti non è possibile concludere la fase di registrazione.\nRitenta cambiando username");
+                                            "Siamo spiacenti non e' possibile concludere la fase di registrazione.\nRitenta cambiando username");
                                 }
                                 break;
                             }
@@ -318,7 +318,7 @@ public class WinsomeClientMain {
                 System.out.println(
                         "Oh no l'orco cattivo è tornato e si è preso il nostro server.\nVuoi affrontarlo di nuovo? [S/N]");
                 if (SharedMethods.readFromConsole(inputReader).equalsIgnoreCase("S")) {
-                    if (op.equalsIgnoreCase("login") || op.equalsIgnoreCase("register") ){
+                    if (op.equalsIgnoreCase("login") || op.equalsIgnoreCase("register")) {
                         successRequest = false;
                         // in questo modo se l'ultima richiesta è login o register o logout o
                         // listfollowers o un'uscita forzata viene ricopiata direttamente senza che
