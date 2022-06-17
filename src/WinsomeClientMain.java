@@ -187,7 +187,7 @@ public class WinsomeClientMain {
                                 cInterface = (NotifyEventInterface) UnicastRemoteObject.exportObject(callback, 0);
 
                                 server.callbackRegister(nickname, cInterface);
-                                followerList = stub.followerList(nickname, otherArgumentsInCommandLine[1]);
+                                followerList = stub.followerList(nickname);
                                 System.out.println("Bentornato nel magico mondo di Winsome " + nickname
                                         + " siamo lieti di rivederti.");
 

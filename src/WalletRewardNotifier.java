@@ -41,18 +41,6 @@ public class WalletRewardNotifier implements Runnable {
             // mi metto in ascolto dei pacchetti in arrivo
             while (listen) {
                 try {
-                    // allocateDirect(capacity) rende il buffer di byte diretto, ossia la JVM non
-                    // utilizzerà un buffer intermedio dove copiare il contenuto del buffer prima o
-                    // dopo ogni
-                    // chiamata di operazione I/O nativa del sistema, i buffer diretti hanno in
-                    // genere costi di allocazione
-                    // e dellocazione maggiori, ma il loro contenuto può risiedere al di fuori
-                    // dell'heap del garbadge-collector,
-                    // quindi l'implicazione sulla memoria dell'applicazione potrebbe non essere
-                    // grave
-                    // di solito i buffer diretti sono consigliati per le grandi dimensioni,
-                    // ma oggi (8/06/2022) ho voglia di sperimentare
-
                     // provo cambiando il buffer da dinamico a statico
                     ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);// contiene direttemante la
                                                                                // lunghezza della stringa ricevuta

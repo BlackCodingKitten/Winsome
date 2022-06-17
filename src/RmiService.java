@@ -38,14 +38,14 @@ public class RmiService implements RmiServiceInterface {
     // questo metodo fornice la lista dei followers di un utente, se non presente
     // restituisce la lista vuota
     @Override
-    public Set<String> followerList(String nickname, String password) throws RemoteException {
+    public Set<String> followerList(String nickname) throws RemoteException {
         SocialManager socialManager = WinsomeServerMain.socialManager;
         User user = socialManager.getUser(nickname);
         if (user != null) {
-            if (SharedMethods.isPasswordCorrect(user.getPassword(), password)) {
-                Set<String> followerList = socialManager.getFollowers(nickname);
-                return followerList;
-            }
+
+        Set<String> followerList = socialManager.getFollowers(nickname);
+        return followerList;
+
         }
         return new HashSet<>();// restituisco una lista vuota
     }
