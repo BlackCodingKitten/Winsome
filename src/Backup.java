@@ -1,5 +1,7 @@
 import java.io.IOException;
 
+import Color.ColoredText;
+
 /*questa è la classe che implementa il salvataggio dei dati nel file json
  * ogni tot tempo, specificato dal file di config del server alla voce BackupInterval
  vine inoltre eseguito un backup forzato al comando stop server perché essendo 
@@ -11,7 +13,7 @@ public class Backup implements Runnable {
     private final SocialManager socialManager;
     private final Rewards rewardManager;
 
-    private static volatile boolean stop = false;
+    private volatile boolean stop = false;
 
     int backupInterval;
 
@@ -41,25 +43,27 @@ public class Backup implements Runnable {
             try {
                 // chiamo il metodo del JsonFilemanager che mi salva tutto insieme
                 this.fileManager.save(this.socialManager);
-                //salvo l'id Post contenuto nel SocialManager
+                // salvo l'id Post contenuto nel SocialManager
                 this.socialManager.saveCurrentIdPostOnConfigFile();
-                //salvo  la data dell'ultimo reward
+                // salvo la data dell'ultimo reward
                 this.rewardManager.saveLastReward();
-                //DEBUG.messaggioDiDebug("Salavtaggio dei dati completato");
+                System.out.println("Salvataggio stato interno Winsome completato.");
             } catch (IOException e) {
                 System.err.println("Impossibile eseguire correttamente il salvataggio dei dati\n");
                 e.printStackTrace();
             }
 
         }
-        
+        System.out.println("Salvataggio prima dello spegnimeto effettuato.\nChiusura sistema di backup in corso...");
+        System.out.println(ColoredText.ANSI_PURPLE + "Chiusura completata Winsome sta schiacciando un pisolino"
+                + ColoredText.ANSI_RESET);
     }
 
     // metdo per chiudere il server in maniera sicura facendo un ultimo backup prima
     // dello spegnimento
-    public static void stopServer() {
-        System.out.println("Salvataggio prima dello spegnimeto effettuato.\nChiusura sistema di backup in corso...");
+    public void stopServer() {
         stop = true;
+
     }
 
 }

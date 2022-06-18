@@ -4,11 +4,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
+
 import java.util.Date;
 import java.util.HashSet;
+
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import java.util.regex.Pattern;
-import java.util.Set;
 
 import Color.ColoredText;
 import CustomizedException.InvalidOperationException;
@@ -22,24 +24,24 @@ import CustomizedException.UserNotFoundException;
 /*gestisce la connessione con i client, prende una client socket , ascolta le chieste su quella socket , genera le risposte */
 //tutti i metodi di questa classe si riferiscono direttamente all'utente connesso alla client session corrispondente.
 public class ConnectionHandler implements Runnable {
-
+    // private final ConfigReader configReader;
     private final Socket clientSocket;
     private ClientSession clientSession;
-    // private final int key; //ha il solo scopo di debug
+    // private final int key;
     private final SocialManager socialManager;
     private PrintWriter output;
     private BufferedReader input;
-    private ConfigReader configReader;
 
     // Costruttore della classe connection handler
-    public ConnectionHandler(Socket c, SocialManager s, ConfigReader cr) {
+    public ConnectionHandler(Socket c, int k, ConfigReader co, SocialManager s) {
         this.clientSession = null;
+        // this.configReader = co;
         this.socialManager = s;
         this.clientSocket = c;
         // this.key = k;
         this.output = null;
         this.input = null;
-        this.configReader = cr;
+
     }
 
     // comando sconosciuto
@@ -68,7 +70,7 @@ public class ConnectionHandler implements Runnable {
                 } else {
                     // non esiste una sessione per questo client
                     Date date = new Date();
-                    SharedMethods.sendToStream(output, "Login effettuato correttamente.\nBentornato oggi e'"
+                    SharedMethods.sendToStream(output, "Login effettuato correttamente.\nBentornato oggi è "
                             + date.toString() + " ora che ci sei inizia la festa.\n\\_(*w*)_/\\_(^-^)_/\\_(o.o)_/");
                 }
                 return;
@@ -91,7 +93,7 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Effettua prima il login, grazie.");
         } else {
             String thisUser = clientSession.getUser();
-            Set<Post> feed = socialManager.getUserFeed(thisUser);
+            HashSet<Post> feed = (HashSet<Post>) socialManager.getUserFeed(thisUser);
             if (feed.size() == 0) {
                 // se il feed è vuoto
                 SharedMethods.sendToStream(output, "Il tuo feed è vuoto.\nSei un nuovo utente?, digita \"help\"");
@@ -116,10 +118,10 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Login non effettuato.");
         } else {
             String thisUser = clientSession.getUser();
-            Set<String> thisUserTags = socialManager.getUser(thisUser).getTags();
+            HashSet<String> thisUserTags = (HashSet<String>) socialManager.getUser(thisUser).getTags();
             // inutile il controllo se
             // l'utente ha almeno un tag, ottengo tutti quelli con almemo un tag uguale
-            Set<User> usersCommonTagList = socialManager.getCommonTagsUsers(thisUserTags);
+            HashSet<User> usersCommonTagList = (HashSet<User>) socialManager.getCommonTagsUsers(thisUserTags);
             // rimuovo l'utente stesso dalla lista
             usersCommonTagList.remove(socialManager.getUser(thisUser));
             if (usersCommonTagList.size() == 0) {
@@ -165,31 +167,17 @@ public class ConnectionHandler implements Runnable {
             try {
                 int idPost = socialManager.createNewPost(thisUser, postTitle, post);
                 SharedMethods.sendToStream(output, "Post " + idPost + " pubblicato correttamente");
+                try {
+                    WinsomeServerMain.fileManager.fileSaver("config/jsonFile" + "/" + "post.json",
+                            socialManager.getPostList());
+                } catch (IOException e) {
+                    DEBUG.messaggioDiDebug("impossibile salvare su file");
+                }
             } catch (PostLengthException e) {
                 SharedMethods.sendToStream(output, "Inserisci un titolo più corto.");
             } catch (UserNotFoundException e) {
                 SharedMethods.sendToStream(output, "Utente insesistente.");
             }
-
-        }
-    }
-
-    // mostra il post di un utente dato il suo id
-    private void getPostById(int id) {
-        if (clientSession != null) {
-            Post post = socialManager.getPost(id);
-            // controllo che il post esista
-            if (post != null) {
-                // il post esiste
-                String toSend = socialManager.formattedPost(post.getpostId());
-                SharedMethods.sendToStream(output, toSend + "\n");
-            } else {
-                // post non trovato
-                SharedMethods.sendToStream(output, "Post inesistente.");
-            }
-        } else {
-            // clientSession = null
-            SharedMethods.sendToStream(output, "Fai prima il login.");
         }
     }
 
@@ -211,7 +199,7 @@ public class ConnectionHandler implements Runnable {
             } catch (PostNotFoundException e) {
                 SharedMethods.sendToStream(output, "Il post che vuoi votare non esiste.");
             } catch (PostNotInFeedException e) {
-                SharedMethods.sendToStream(output, "Questo post non e' nel tuo feed.");
+                SharedMethods.sendToStream(output, "Questo post non è nel tuo feed.");
             } catch (InvalidOperationException e) {
                 SharedMethods.sendToStream(output, "Hai già votato questo post.");
             } catch (SameUserException e) {
@@ -257,7 +245,7 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Effettua il login prima.");
         } else {
             String thisUser = clientSession.getUser();
-            Set<String> followings = socialManager.getFollowings(thisUser);
+            HashSet<String> followings = (HashSet<String>) socialManager.getFollowings(thisUser);
             if (followings.size() == 0) {
                 SharedMethods.sendToStream(output, "Non segui nessun utente.");
             } else {
@@ -306,17 +294,23 @@ public class ConnectionHandler implements Runnable {
 
     // metodo per seguire un altro utente
     private void followUser(String username) {
+        DEBUG.messaggioDiDebug("sono in follow user");
         if (clientSession == null) {
             SharedMethods.sendToStream(output, "Effettua prima il login.");
         } else {
+            DEBUG.messaggioDiDebug("client session esiste");
             username = username.toLowerCase();
-            String thisUser = clientSession.getUser();
+            String thisUser = clientSession.getUser().toLowerCase();
             try {
+                DEBUG.messaggioDiDebug("prima di eseguire le operazioni nel socialmanager");
                 socialManager.follow(thisUser, username);
+                DEBUG.messaggioDiDebug("ha eseguito il metodo nel social manager");
                 SharedMethods.sendToStream(output, "Adesso segui l'utente " + username + ".");
                 // invio la notifica
                 try {
+                    DEBUG.messaggioDiDebug("RMI");
                     RmiCallback.followeUpdate(username, "+" + thisUser);
+                    DEBUG.messaggioDiDebug("Rmi eseguito");
                 } catch (RemoteException michela) {
                     michela.printStackTrace();
                 }
@@ -398,7 +392,7 @@ public class ConnectionHandler implements Runnable {
                 toSend.append("Possiede:\t" + wallet + " Wincoins");
             }
             if (thisWalletMovements.size() != 0) {
-                toSend.append(ColoredText.ANSI_WHITE + "TRANSAZIONI:" + ColoredText.ANSI_RESET + "\n");
+                toSend.append(ColoredText.ANSI_PURPLE + "\nTRANSAZIONI:" + ColoredText.ANSI_RESET + "\n");
                 for (WalletMovement transaction : thisWalletMovements) {
                     double amount = SharedMethods.approximateDouble(transaction.getAmount());
                     toSend.append(transaction.getDate().toString() + "\t");
@@ -430,7 +424,7 @@ public class ConnectionHandler implements Runnable {
             double bitcoin = cRate * thisUserWallet.getWallet();
             // approissimo a 4 cifre decimali
             bitcoin = SharedMethods.approximateDouble(bitcoin);
-            toSend.append("Il tasso di conversione in bitcoin e' " + cRate + "\n");
+            toSend.append("Il tasso di conversione in bitcoin è " + cRate + "\n");
             toSend.append("Il portafoglio di " + thisUser + " corrisponde a " + ColoredText.ANSI_PURPLE + bitcoin
                     + ColoredText.ANSI_RESET + " bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n");
             SharedMethods.sendToStream(output, toSend.toString());
@@ -475,14 +469,9 @@ public class ConnectionHandler implements Runnable {
         if (output != null && input != null) {
             String request;
             while (true) {
-                // lo schedulo all'inizio del ciclo così dopo ogni scambio di messaggi con il
-                // client si resetta
                 try {
                     // leggo la richiesta del client
                     request = SharedMethods.readFromStream(input);
-                    DEBUG.messaggioDiDebug(request);
-                    // annullo la task di shutdown perchè sto eseguendo delle attività
-                    WinsomeServerMain.timer.cancel();
                     // splitto comando e argomenti
                     String[] splitted = request.split(" ");
                     String op = splitted[0];
@@ -495,23 +484,19 @@ public class ConnectionHandler implements Runnable {
                             listUserCommonTags();
                             break;
                         case "listfollowing":
-                            DEBUG.messaggioDiDebug("listfollowing");
                             getFollowingsList();
                             break;
                         case "blog":
-                            DEBUG.messaggioDiDebug("blog");
                             blog();
                             break;
                         case "showfeed":
-                            DEBUG.messaggioDiDebug("showfeed");
                             feed();
                             break;
                         case "wallet":
-                            DEBUG.messaggioDiDebug("wallet");
                             getWallet();
                             break;
                         case "walletbtc":
-                            DEBUG.messaggioDiDebug("wallet bitcoin");
+                            // DEBUG.messaggioDiDebug("wallet bitcoin");
                             getBitcoin();
                             break;
                         case "login":
@@ -532,93 +517,95 @@ public class ConnectionHandler implements Runnable {
                             } else {
                                 SharedMethods.sendToStream(output, "Effettua prima il login.");
                             }
+                            break;
                         case "follow":
-                            DEBUG.messaggioDiDebug("follow");
                             // controllo che il comando sia corretto
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output,
                                         "Comando incorretto, consulata lista dei comandi per un aiuto.");
                                 break;
                             } else {
-                                DEBUG.messaggioDiDebug(args[0]);
                                 followUser(args[0]);
                                 break;
                             }
                         case "unfollow":
-                            DEBUG.messaggioDiDebug("unfollow");
                             // controllo la sintessi del comando
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output,
                                         "Comando errato, consulata lista dei comandi per saperne di piu'.");
                             } else {
-                                DEBUG.messaggioDiDebug(args[1]);
-                                unfollowUser(args[1]);
+                                unfollowUser(args[0]);
                                 // DEBUG.messaggioDiDebug("unfollow");
                             }
                             break;
                         case "post":
-                            DEBUG.messaggioDiDebug("post");
                             // controllo la sintass del comando
                             if (!Pattern.matches("^post\\s+\".+\"\\s+\".+\"\\s*$", request)) {
                                 // in questo modo controllo anche che ci sia necesariamente almeno un carattere
                                 // per il titolo
                                 // e uno per il contenuto
-                                SharedMethods.sendToStream(output, "Comando errato, consulata la lisat comandi.");
+                                SharedMethods.sendToStream(output, "Comando errato, consulta la lista comandi.");
                             } else {
                                 String[] post = new String[4];
                                 post = request.split("\"");
-                                DEBUG.messaggioDiDebug(post[0] + "\n" + post[1] + "\n" + post[2] + "\n" + post[3]);
+                                DEBUG.messaggioDiDebug(
+                                        post[0] + "\n" + "Titolo: " + post[1] + "\n" + post[2] + "\n" + post[3]);
                                 post(post);
                                 break;
                             }
+                            break;
                         case "rewin":
-                            DEBUG.messaggioDiDebug("rewin");
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output,
                                         "Comado errato, impossibile fare la rewin del post.");
                             } else {
-                                DEBUG.messaggioDiDebug(args[1]);
-                                rewinPost(Integer.parseInt(args[1]));
+                                rewinPost(Integer.parseInt(args[0]));
                             }
                             break;
                         case "rate":
-                            DEBUG.messaggioDiDebug("rate");
                             if (args.length != 2) {
                                 SharedMethods.sendToStream(output, "Impossibile votare.");
                                 break;
                             }
-                            DEBUG.messaggioDiDebug(args[0] + args[1]);
                             ratePost(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
                             break;
                         case "delete":
-                            DEBUG.messaggioDiDebug("delete");
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output, "Comando errato, impossibile cancellare il post.");
                             } else {
-                                DEBUG.messaggioDiDebug(args[1]);
-                                deletePost(Integer.parseInt(args[1]));
+                                deletePost(Integer.parseInt(args[0]));
                             }
+                            break;
                         case "comment":
-                            DEBUG.messaggioDiDebug("comment");
-                            if (args.length != 2) {
+                            DEBUG.messaggioDiDebug("CommentSwitch");
+                            // request è composta da: comment+idpost+"testoDElCommento"
+                            String[] string = new String[2];
+                            string = request.split("\"");
+                            DEBUG.messaggioDiDebug("string [0] " + string[0]);
+                            DEBUG.messaggioDiDebug("String [1] " + string[1]);
+                            // facendo la split viene fuori: [comment idpost][testoDelCommento]
+                            if (request.split("\"").length < 2) {
                                 SharedMethods.sendToStream(output, "Impossibile commentare, comando errato.");
                             } else {
-                                StringBuilder comment = new StringBuilder();
-                                for (int i = 0; i < splitted.length; i++) {
-                                    DEBUG.messaggioDiDebug(splitted[i]);
-                                    comment.append(splitted[i] + " ");
-                                }
-                                comment(Integer.parseInt(args[1]), comment.toString());
+                                // string [0] =[comment idpost]
+                                int id = Integer.parseInt(string[0].split(" ")[1]);
+                                DEBUG.messaggioDiDebug("id post: " + String.valueOf(id));
+                                comment(id, string[1]);
                             }
                             break;
                         case "showpost":
                             DEBUG.messaggioDiDebug("showpost");
-                            if (args.length != 1) {
-                                SharedMethods.sendToStream(output, "Comando errato, impossibile mostrare il post.");
-                            } else {
-                                DEBUG.messaggioDiDebug(args[1]);
-                                getPostById(Integer.parseInt(args[1]));
-                            }
+                            DEBUG.messaggioDiDebug("showpost 2");
+                            /*
+                             * if (args.length < 1) {
+                             * DEBUG.messaggioDiDebug("args < 1");
+                             * SharedMethods.sendToStream(output,
+                             * "Comando errato, impossibile mostrare il post.");
+                             * } else {
+                             */
+                            DEBUG.messaggioDiDebug("id del post cercato: " + args[0]);
+                            getPostById(Integer.parseInt(args[0]));
+                            // }
                             break;
                         default:
                             unknownCmd();
@@ -628,11 +615,33 @@ public class ConnectionHandler implements Runnable {
                     e.printStackTrace();
                     break;
                 }
-
             }
         } else {
             System.err.println("Errore durante la creazione della connessione.");
 
         }
+    }
+
+    // mostra il post di un utente dato il suo id
+    private void getPostById(int id) {
+        if (clientSession != null) {
+            DEBUG.messaggioDiDebug("la client session esite.");
+            Post post = socialManager.getPost(id);
+            // controllo che il post esista
+            if (post != null) {
+                DEBUG.messaggioDiDebug("il post esiste");
+                // il post esiste
+                String toSend = socialManager.formattedPost(id);
+                SharedMethods.sendToStream(output, toSend + "\n");
+
+            } else {
+                // post non trovato
+                SharedMethods.sendToStream(output, "Post inesistente.");
+            }
+        } else {
+            // clientSession = null
+            SharedMethods.sendToStream(output, "Fai prima il login.");
+        }
+        DEBUG.messaggioDiDebug("getpostid fine");
     }
 }

@@ -1,6 +1,7 @@
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
+
 /*Classe utente, per ogni utente conosciamo, nickname, password e lista dei tag */
 
 public class User {

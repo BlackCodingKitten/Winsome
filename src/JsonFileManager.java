@@ -26,7 +26,6 @@ public class JsonFileManager {
 
     private final Gson gson;
 
-
     // costruttore della classe manager
     public JsonFileManager() {
         this.gson = new Gson();
@@ -182,9 +181,9 @@ public class JsonFileManager {
     private boolean createBackupFile(String path) {
         boolean ignored = new File(FolderName).mkdirs(); // creo la cartella dove trenere i file se non esiste già
         if(ignored){
-            //DEBUG.messaggioDiDebug("cartella creata");
+            //DEBUG.messaggioDiDebug("il file è stato creato");
         }else{
-            //DEBUG.messaggioDiDebug("Cartella già esistente");
+           // DEBUG.messaggioDiDebug("il file già esisteva");
         }
         try {
             File f = new File(path);

@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.net.ssl.HttpsURLConnection;
 
-
 /*rappresenta il wallet di un utente, il valore corrente viene calcolato dalla lista di transazioni che l'untente ha fatto */
 public class Wallet {
     //private static final DEBUG debug = new DEBUG();

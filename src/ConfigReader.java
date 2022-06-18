@@ -37,13 +37,14 @@ public class ConfigReader {
         // l'applicazione
         if (!configFile.exists()) {
             boolean ignoredFlag = new File(CONFIG_FOLDER).mkdirs();
-
-            if(ignoredFlag == true){
-             //debug.messaggioDiDebug("cartella creata correttemente");
-             }else{
-             //debug.messaggioDiDebug("cartella non creata");
-             }
-            
+            /*
+             * //DEBUG
+             * if(ignoredFlag == true){
+             * /* //debug.messaggioDiDebug("cartella creata correttemente");
+             * }else{
+             * //debug.messaggioDiDebug("cartella non creata");
+             * }
+             */
             OutputStream out = new FileOutputStream(CONFIG_FOLDER + "/" + this.filePath);
             this.prop = new Properties();
             if (flag == true) {
@@ -60,6 +61,7 @@ public class ConfigReader {
                  * tempo che il RewardsManager dovrà attendere ogni volta che fa un controllo
                  * prima di farne un altro
                  * tempo (in millisecondi)prima di chiudere forzatamente la pool di thread
+                 * ConnectionHandler
                  * data e dell'ultimo controllo del RewardsManager
                  * contatore dell'ultimo post di WinSome
                  */
@@ -72,7 +74,7 @@ public class ConfigReader {
                 this.prop.setProperty("MulticastPort", "4444");
                 this.prop.setProperty("BackupInterval", "10000");
                 this.prop.setProperty("RewardCheckSleep", "15000");
-                this.prop.setProperty("TimeoutBeforeShutdown", "60000");
+                this.prop.setProperty("TimeoutBeforeShutdown", "40000");
                 this.prop.setProperty("LastRewardCheck", "0");
                 this.prop.setProperty("CurrentPostId", "0");
                 // debug.messaggioDiDebug("file config serever creato correttamnte");

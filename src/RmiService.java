@@ -19,33 +19,37 @@ public class RmiService implements RmiServiceInterface {
     public boolean registerNewUser(String nickname, String password, HashSet<String> tags) throws RemoteException {
         nickname = nickname.toLowerCase();
         System.out.println("Inizio fase di registrazione dell'utente " + nickname);
-        if (tags.size() > 5 || tags.size() == 0) {
-            System.err.println("Errore nella lista tag.");
+        if (tags.size() > 5) {
+            System.err.println("Troppi tag inseriti.");
             return false;
-        }
-        if (!usernameNeverUsed(nickname)) {
-            System.err.println("Username già registrato.");
+        } else if (tags.size() == 0) {
+            System.err.println("Necessario inserire almeno un tag.");
             return false;
+        } else {
+            if (!usernameNeverUsed(nickname)) {
+                System.err.println("Username già registrato.");
+                return false;
+            } else {
+                SocialManager socialManager = WinsomeServerMain.socialManager;
+                User u = new User(nickname, password, tags);
+                socialManager.addNewUser(u);
+                System.out.println("Fatto!");
+                return true;
+            }
         }
-        SocialManager socialManager = WinsomeServerMain.socialManager;
-        User u = new User(nickname, password, tags);
-        socialManager.addNewUser(u);
-        System.out.println("Fatto!");
-        return true;
-
     }
 
     // questo metodo fornice la lista dei followers di un utente, se non presente
     // restituisce la lista vuota
     @Override
-    public Set<String> followerList(String nickname) throws RemoteException {
+    public Set<String> followerList(String nickname, String password) throws RemoteException {
         SocialManager socialManager = WinsomeServerMain.socialManager;
         User user = socialManager.getUser(nickname);
         if (user != null) {
-
-        Set<String> followerList = socialManager.getFollowers(nickname);
-        return followerList;
-
+            if (SharedMethods.isPasswordCorrect(user.getPassword(), password)) {
+                Set<String> followerList = socialManager.getFollowers(nickname);
+                return followerList;
+            }
         }
         return new HashSet<>();// restituisco una lista vuota
     }

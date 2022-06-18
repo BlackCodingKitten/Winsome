@@ -1,4 +1,5 @@
 import java.util.Set;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -107,8 +108,7 @@ public class SocialManager {
 
     // metodo per eliminare un post
     public void deletePost(int id, String username) throws PostNotFoundException, InvalidOperationException {
-        Integer idPost = Integer.valueOf(id);
-        Post post = postList.get(idPost);
+        Post post = postList.get(id);
         if (post == null) {
             // se il post non esiste
             throw new PostNotFoundException();
@@ -117,7 +117,7 @@ public class SocialManager {
             // se l'utente che vuole eliminare il post non è l'autore
             throw new InvalidOperationException();
         }
-        postList.remove(idPost);
+        postList.remove(id);
     }
 
     // metodo per recuperare il feed di uno specifico utente
@@ -151,7 +151,7 @@ public class SocialManager {
     public HashSet<Post> getBlog(String username) {
         HashSet<Post> blog = new HashSet<>();
         for (Post p : postList.values()) {
-            if (p.getOwner().equalsIgnoreCase(username) || p.isUserRewinedPost(username)) {
+            if (p.getOwner().equalsIgnoreCase(username) || p.isNotUserRewinedPost(username)) {
                 blog.add(p);
             }
         }
@@ -196,8 +196,7 @@ public class SocialManager {
 
     // metodo che prende uno specifico post dalla lista
     public Post getPost(int id) {
-        Integer idPost = Integer.valueOf(id);
-        return postList.get(idPost);
+        return postList.get(Integer.valueOf(id));
     }
 
     // metodo per creare un post -> ritorna l'd del post
@@ -210,7 +209,7 @@ public class SocialManager {
         if (title.length() > maxTitleLength || text.length() > maxTextLength) {
             throw new PostLengthException();
         }
-        Integer newId = currentIdPost.getAndIncrement();
+        int newId = currentIdPost.getAndIncrement();
         postList.putIfAbsent(newId, new Post(username, title, text, newId));
         return newId;
     }
@@ -218,18 +217,20 @@ public class SocialManager {
     // metodo per aggiungere un commento ad un post
     public void commentPost(String username, int id, String comment)
             throws PostNotFoundException, PostNotInFeedException {
-
-        Post post = postList.get(Integer.valueOf(id));
+        Post post = postList.get(id);
         if (post == null) {
+            DEBUG.messaggioDiDebug("il post non esiste.");
             // post non trovato
             throw new PostNotFoundException();
         } else {
+            DEBUG.messaggioDiDebug("il post esiste");
             if (!isPostInFeed(id, username)) {
+                DEBUG.messaggioDiDebug("il post non è nel feed");
                 // post non in feed
                 throw new PostNotInFeedException();
             } else {
-                // d.messaggioDiDebug("Post commentato");
                 post.addNewComment(username, comment);
+                DEBUG.messaggioDiDebug("Post commentato con: " + comment);
             }
         }
     }
@@ -245,7 +246,7 @@ public class SocialManager {
             // se il valore del voto non è 1 o -1
             throw new InvalidVoteValueException();
         }
-        Post ratePost = postList.get(Integer.valueOf(id));
+        Post ratePost = postList.get(id);
         if (ratePost == null) {
             // il post che si vuole votare non esiste
             throw new PostNotFoundException();
@@ -272,21 +273,27 @@ public class SocialManager {
 
     // metodo che stampa un post formattato
     public String formattedPost(int id) {
-        Post toFormatt = postList.get(Integer.valueOf(id));
+        Post toFormatt = postList.get(id);
         if (toFormatt == null) {
             return null;
         }
-        StringBuilder stringBuilder = new StringBuilder("Post nr^" + id + "\n");
-
-        stringBuilder.append(ColoredText.ANSI_PURPLE + "Titolo del post:" + toFormatt.getTitle().toUpperCase()
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(ColoredText.ANSI_WHITE_BACKGROUND + ColoredText.ANSI_PURPLE + "Post " + id
                 + ColoredText.ANSI_RESET + "\n");
-        stringBuilder.append("Da: " + toFormatt.getOwner() + "\tIn Data: ");
+        stringBuilder.append(ColoredText.ANSI_PURPLE + "Titolo del post:\t" + toFormatt.getTitle().toUpperCase()
+                + ColoredText.ANSI_RESET + "\n");
+        stringBuilder.append(ColoredText.ANSI_PURPLE + "Da: " + ColoredText.ANSI_RESET + toFormatt.getOwner()
+                + ColoredText.ANSI_PURPLE + "\tIn Data: " + ColoredText.ANSI_RESET);
         stringBuilder.append(toFormatt.getDate() + "\n");
-        stringBuilder.append("Testo: " + toFormatt.getText() + "\n\n");
-        stringBuilder.append("UpVote: " + toFormatt.getNumUpperVotes() + "\t");
-        stringBuilder.append("DownVote: " + toFormatt.getNumDownVotes() + "\n");
+        stringBuilder.append(ColoredText.ANSI_PURPLE + "Testo: " + ColoredText.ANSI_WHITE_BACKGROUND
+                + toFormatt.getText() + ColoredText.ANSI_RESET + "\n\n");
+        stringBuilder.append(
+                ColoredText.ANSI_PURPLE + "UpVote: " + ColoredText.ANSI_RESET + toFormatt.getNumUpperVotes() + "\t");
+        stringBuilder.append(
+                ColoredText.ANSI_PURPLE + "DownVote: " + ColoredText.ANSI_RESET + toFormatt.getNumDownVotes() + "\n");
         HashSet<Comment> commentList = toFormatt.getComments();
-        stringBuilder.append(String.valueOf(commentList.size()) + " utenti hanno commentato questo post.");
+        stringBuilder.append(String.valueOf(ColoredText.ANSI_PURPLE + commentList.size()) + ColoredText.ANSI_RESET
+                + " utenti hanno commentato questo post.");
         stringBuilder.append("\n");
         for (Comment c : commentList) {
             stringBuilder.append(ColoredText.ANSI_PURPLE + c.getOwner() + ":   " + ColoredText.ANSI_RESET);
@@ -304,7 +311,7 @@ public class SocialManager {
         if (!userList.containsKey(username)) {
             throw new UserNotFoundException();
         }
-        Post post = postList.get(Integer.valueOf(id));
+        Post post = postList.get(id);
         if (post.getOwner().equalsIgnoreCase(username)) {
             throw new SameUserException();
         }
@@ -320,40 +327,59 @@ public class SocialManager {
     // metoodo per seguire un'altro utente
     public void follow(String follower, String user)
             throws UserNotFoundException, InvalidOperationException, SameUserException {
+        DEBUG.messaggioDiDebug("sono dentro follow nel socialmanager");
         if (follower.equalsIgnoreCase(user)) {
             // d.messaggioDiDebug("L'utente sta cercando si seguirsi da solo");
             throw new SameUserException();
         }
+        DEBUG.messaggioDiDebug("i due utenti non sono uguali");
         if (!userList.containsKey(user)) {
             throw new UserNotFoundException();
         }
-        if (followingList.get(user).contains(user)) {
+        DEBUG.messaggioDiDebug("l'utente che si vuole seguire esiste");
+        if (followingList.getOrDefault(follower, new HashSet<>()).contains(user)) {
             throw new InvalidOperationException();
         }
+        DEBUG.messaggioDiDebug("prima delle operazioni interne di follow");
         addNewFollower(user, follower);
+        DEBUG.messaggioDiDebug("ho eseguito add new follower");
         addNewFollowing(follower, user);
+        DEBUG.messaggioDiDebug("ho eseguito add new following");
+        // salvo nel file json il nuovo follower
+        try {
+            WinsomeServerMain.fileManager.fileSaver("config/jsonFile" + "/" + "follower.json", followersList);
+            WinsomeServerMain.fileManager.fileSaver("config/jsonFile" + "/" + "following.json", followingList);
+            DEBUG.messaggioDiDebug("ho salvato nei file json.");
+        } catch (IOException e) {
+            /* ignored tanto c'è il backup automatico */
+        }
     }
 
     // metodo per aggiungere un utente alla follower list
     public void addNewFollower(String user, String follower) {
+        DEBUG.messaggioDiDebug("sono sentro add new follower");
         if (followersList.containsKey(user)) {
-            followingList.get(user).add(follower);
+            DEBUG.messaggioDiDebug("La lista esiste ");
+            followersList.get(user).add(follower);
+            DEBUG.messaggioDiDebug("ho aggiunto");
         } else {
-            HashSet<String> l = new HashSet<>();
-            l.add(follower);
-            followersList.put(user, l);
+            DEBUG.messaggioDiDebug("la lista non esisteva");
+            HashSet<String> newList = new HashSet<>();
+            newList.add(follower);
+            followersList.put(user, newList);
+            DEBUG.messaggioDiDebug("ho aggiunto");
         }
 
     }
 
     // aggiunge un elemento alla lista dei seguiti
     public void addNewFollowing(String follower, String user) {
-        if (followersList.containsKey(follower)) {
+        if (followingList.containsKey(follower)) {
             followingList.get(follower).add(user);
         } else {
-            HashSet<String> l = new HashSet<>();
-            l.add(user);
-            followingList.put(user, l);
+            HashSet<String> newList = new HashSet<>();
+            newList.add(user);
+            followingList.put(user, newList);
         }
     }
 
@@ -441,15 +467,12 @@ public class SocialManager {
 
     // metodo che aggiunge un utente
     public void addNewUser(User u) {
-        DEBUG.messaggioDiDebug("Nome utente del nuovo utente: " + u.getNickname());
-        String key = u.getNickname();
-        User value = u;
-        userList.putIfAbsent(key, value);
+        userList.putIfAbsent(u.getNickname(), u);
     }
 
     // metdo per vedere se esiste un utenet
     public boolean existUser(String u) {
-        return userList.containsKey(u);
+        return userList.contains(u);
     }
 
     /********************

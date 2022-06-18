@@ -155,7 +155,7 @@ public class Post {
     }
 
     // metodo per controllare se un utente ha già fatto il rewin
-    public boolean isUserRewinedPost(String user) {
+    public boolean isNotUserRewinedPost(String user) {
         if (this.postRewinUser.contains(user)) {
             return false;// -> ritorna false se l'utente è già in lista
         }
@@ -166,7 +166,7 @@ public class Post {
     // sollevare un'eccezione in caso l'utente
     // sia già presente
     public boolean addRewineUser(String user) {
-        if (isUserRewinedPost(user)) {
+        if (isNotUserRewinedPost(user)) {
             this.postRewinUser.add(user);
             return true; // utente inserito correttemente in lista
         }
