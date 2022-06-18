@@ -60,8 +60,6 @@ public class ConfigReader {
                  * intervallo di backup dei dati
                  * tempo che il RewardsManager dovrà attendere ogni volta che fa un controllo
                  * prima di farne un altro
-                 * tempo (in millisecondi)prima di chiudere forzatamente la pool di thread
-                 * ConnectionHandler
                  * data e dell'ultimo controllo del RewardsManager
                  * contatore dell'ultimo post di WinSome
                  */
@@ -72,9 +70,8 @@ public class ConfigReader {
                 this.prop.setProperty("RmiCallbackClientRegistryName", "WinsomeCallbackServer");
                 this.prop.setProperty("MulticastAddress", "239.255.32.32");
                 this.prop.setProperty("MulticastPort", "4444");
-                this.prop.setProperty("BackupInterval", "10000");
+                this.prop.setProperty("BackupInterval", "30000");// un backup ogni 30 secondi
                 this.prop.setProperty("RewardCheckSleep", "15000");
-                this.prop.setProperty("TimeoutBeforeShutdown", "40000");
                 this.prop.setProperty("LastRewardCheck", "0");
                 this.prop.setProperty("CurrentPostId", "0");
                 // debug.messaggioDiDebug("file config serever creato correttamnte");

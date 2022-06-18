@@ -80,7 +80,7 @@ public class WinsomeClientMain {
 
         // tentativo di collegamento con il server
         // debug.messaggioDiDebug("tentativo di connessione al server");
-        /*loop:*/ while (true) {
+        /* loop: */ while (true) {
             try {
                 socket = new Socket(serverAddress, serverPort);
                 connectionState = true;
@@ -115,7 +115,6 @@ public class WinsomeClientMain {
                 String completeRequest = "";
                 String op = "";
                 NotifyEventInterface callback = null;
-                String fromServer;
                 boolean successRequest = true;// true se la request è eseguita correttamente false se la request
                                               // fallisce
 
@@ -166,13 +165,17 @@ public class WinsomeClientMain {
                             case "logout":
                                 // operazione di logout
                                 SharedMethods.sendToStream(out, completeRequest);
-                                fromServer = SharedMethods.readFromStream(in);
+                                String fromServer = SharedMethods.readFromStream(in);
                                 // se il logout ha avuto successo lato sever
                                 if (fromServer.equalsIgnoreCase("OK")) {
                                     System.out.println("Logout avvenuto con successo.\nArrivederci!");
-                                    server.callbackUnregister(nickname);
-                                    UnicastRemoteObject.unexportObject(callback, false);
-                                    callback = null;
+                                    if (server != null) {
+                                        // se sono connesso ad un server rimuovo il client dalla lista dei callback
+                                        server.callbackUnregister(nickname);
+                                        UnicastRemoteObject.unexportObject(callback, false);
+                                        callback = null;
+                                        nickname = null;
+                                    }
                                 } else {
                                     // Se il logout non ha avuto successo:
                                     System.out.println(
@@ -182,8 +185,8 @@ public class WinsomeClientMain {
                             case "login":
                                 // operazione di login
                                 SharedMethods.sendToStream(out, completeRequest);
-                                fromServer = SharedMethods.readFromStream(in);
-                                if (fromServer.equalsIgnoreCase("OK")) {
+                                String fromServer2 = SharedMethods.readFromStream(in);
+                                if (fromServer2.equalsIgnoreCase("OK")) {
                                     nickname = otherArgumentsInCommandLine[0];
                                     // registrazione al servizio notifiche per la lista follower
 
@@ -197,14 +200,16 @@ public class WinsomeClientMain {
                                     server.callbackRegister(nickname, cInterface);
                                     followerList = (HashSet<String>) stub.followerList(nickname,
                                             otherArgumentsInCommandLine[1]);
-                                    System.out.println("Bentornato nel magico mondo di Winsome " + nickname
-                                            + " siamo lieti di rivederti.");
+                                    System.out.println(ColoredText.ANSI_PURPLE
+                                            + "Bentornato nel magico mondo di Winsome " + nickname
+                                            + " siamo lieti di rivederti." + ColoredText.ANSI_RESET);
+                                    break;
 
                                 } else {
                                     System.out.println(
-                                            "Ops, sembra che qualcosa sia andato storto (TT.TT) " + fromServer);
+                                            "Ops, sembra che qualcosa sia andato storto (TT.TT)\n" + fromServer2);
+                                    break;
                                 }
-                                break;
                             case "exit":
                                 // operazione di uscita forzata
                                 socket.close();
@@ -405,7 +410,8 @@ public class WinsomeClientMain {
 
     // metetodo che stampa il comando help
     public static void help() {
-        System.out.println("Hai bidogno di aiuto?\n"+ColoredText.ANSI_WHITE_BACKGROUND+ColoredText.ANSI_PURPLE+"Eccoti una clista dei comadi pronta per te:"+ColoredText.ANSI_RESET);
+        System.out.println("Hai bidogno di aiuto?\n" + ColoredText.ANSI_WHITE_BACKGROUND + ColoredText.ANSI_PURPLE
+                + "Ecco una lista dei comadi pronta per te:" + ColoredText.ANSI_RESET);
         System.out.println(ColoredText.ANSI_PURPLE + "help\t" + ColoredText.ANSI_RESET
                 + "Serve a mostrare questa lista, ma questo lo sai. :-)");
         System.out
@@ -446,8 +452,9 @@ public class WinsomeClientMain {
                 + "Serve per creare un post, mi raccomando le virgolette.");
         System.out.println(ColoredText.ANSI_PURPLE + "delete <idpost>\t" + ColoredText.ANSI_RESET
                 + " Serve per eliminare un post.");
-        System.out.println(ColoredText.ANSI_PURPLE + "comment <idpost>  \"<testo del commento>\"\t" + ColoredText.ANSI_RESET
-                + " Serve per commentare un post, mi raccomando le virgolette.");
+        System.out.println(
+                ColoredText.ANSI_PURPLE + "comment <idpost>  \"<testo del commento>\"\t" + ColoredText.ANSI_RESET
+                        + " Serve per commentare un post, mi raccomando le virgolette.");
         System.out.println(ColoredText.ANSI_PURPLE + "exit\t" + ColoredText.ANSI_RESET
                 + "Serve a chiudere questo client.");
     }

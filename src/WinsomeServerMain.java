@@ -35,7 +35,7 @@ public class WinsomeServerMain {
     private static String RmiServerRegistry;
     private static int RmiServerPort;
     private static int callbackClientPort;
-    //private static int shutdown;
+    // private static int shutdown;
     private static String RmiCallbackClientRegistry;
     private static RmiCallback winsomeCallback;
     private static RmiService winsomeService;
@@ -53,7 +53,8 @@ public class WinsomeServerMain {
         serverPort = Integer.parseInt(configReader.getConfigValue("ServerPort"));
         RmiServerPort = Integer.parseInt(configReader.getConfigValue("RmiServerPort"));
         callbackClientPort = Integer.parseInt(configReader.getConfigValue("RmiClientCallbackPort"));
-        //shutdown = Integer.parseInt(configReader.getConfigValue("TimeoutBeforeShutdown"));
+        // shutdown =
+        // Integer.parseInt(configReader.getConfigValue("TimeoutBeforeShutdown"));
         RmiCallbackClientRegistry = configReader.getConfigValue("RmiCallbackClientRegistryName");
         RmiServerRegistry = configReader.getConfigValue("ServerRmiRegistryName");
 

@@ -90,14 +90,6 @@ public class InputHandler implements Runnable {
                             System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
                             break;
                         }
-                        addFollowing(args[0], args[1]);
-                        break;
-                    case "removefollowing":
-                        // rimuove un seguito da un utente
-                        if (args.length != 2) {
-                            System.out.println("Comando errato, per sapere come eseguire il comando digita \"help\".");
-                            break;
-                        }
                         removeFollowing(args[0], args[1]);
                         break;
                     case "winsome":
@@ -200,11 +192,6 @@ public class InputHandler implements Runnable {
         }
     }
 
-    private void addFollowing(String u, String nfw) {
-        socialManager.addNewFollower(nfw, u);
-        socialManager.addNewFollowing(u, nfw);
-        System.out.println("L'utente " + u + " segue " + nfw);
-    }
 
     private void removeFollowing(String u, String rf) {
         socialManager.removeFollower(rf, u);

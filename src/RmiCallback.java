@@ -1,12 +1,12 @@
 import java.rmi.RemoteException;
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*e la classe che permette di registrarsi per poter ricevere notifiche di aggiornamento della lista follower */
 
 public class RmiCallback implements RmiCallbackInterface {
     // viene mantenuta un hashmap che usa il nome utente come chiave e associa la
     // relativa interfaccia su cio inviare la notifica
-    private static final HashMap<String, NotifyEventInterface> userClients = new HashMap<>();
+    private static final ConcurrentHashMap<String, NotifyEventInterface> userClients = new ConcurrentHashMap<>();
 
     // permette di registrarsi al callback
     @Override

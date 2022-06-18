@@ -67,16 +67,16 @@ public class Post {
         return allPostVotes;
     }
 
-    //ritorna un aloista di voti dopo unacera data
-    public ConcurrentHashMap<String, Vote> newPeopleLike(Date d){
+    // ritorna un aloista di voti dopo unacera data
+    public ConcurrentHashMap<String, Vote> newPeopleLike(Date d) {
         ConcurrentHashMap<String, Vote> voteList = new ConcurrentHashMap<>();
-        for(Vote v : allPostVotes.values()){
-            if (v.getDate().after(d)){
+        for (Vote v : allPostVotes.values()) {
+            if (v.getDate().after(d)) {
                 voteList.put(v.getUser(), v);
             }
         }
         return voteList;
-    } 
+    }
 
     // metodo getter della lista dei commenti
     public HashSet<Comment> getComments() {
@@ -166,10 +166,13 @@ public class Post {
     // sollevare un'eccezione in caso l'utente
     // sia già presente
     public boolean addRewineUser(String user) {
+        DEBUG.messaggioDiDebug("add rewin users in post;");
         if (isNotUserRewinedPost(user)) {
             this.postRewinUser.add(user);
+            DEBUG.messaggioDiDebug("il post e' stato rewinato");
             return true; // utente inserito correttemente in lista
         }
+        DEBUG.messaggioDiDebug("l'utente ha già fatto il rewin del post");
         return false;// utente già inserito impossibile inserirlo nuovamente
     }
 
@@ -184,11 +187,12 @@ public class Post {
     }
 
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return String.valueOf(this.postId).hashCode();
     }
+
     @Override
-    public boolean equals(Object p){
-        return this.postId == ((Post)p).getpostId();
+    public boolean equals(Object p) {
+        return this.postId == ((Post) p).getpostId();
     }
 }

@@ -54,7 +54,7 @@ public class Rewards implements Runnable {
 
     @Override
     public void run() {
-        
+
         try (DatagramSocket serveDatagramSocket = new DatagramSocket(null)) {
             // poteva essere fatto anche con getLocalHost()
             InetAddress inetAddress = InetAddress.getByName("localhost");
@@ -98,11 +98,11 @@ public class Rewards implements Runnable {
                 try {
                     Thread.sleep(Integer.parseInt(this.configReader.getConfigValue("RewardCheckSleep")));
                 } catch (InterruptedException e) {
-                    /* ignored */
+                    DEBUG.messaggioDiDebug("Interruptedexception");
                 }
             }
         } catch (IOException e) {
-            /* ignored */
+            DEBUG.messaggioDiDebug("IOexception");
         }
 
     }

@@ -62,17 +62,11 @@ public class ConnectionHandler implements Runnable {
         if (user != null && SharedMethods.isPasswordCorrect(password, user.getPassword())) {// controllo che nome utente
                                                                                             // e password siano corretti
             ClientSession thisClientSession = WinsomeServerMain.clientSessionList.get(nickname);
-            if (thisClientSession != null) {
-                if (thisClientSession.getSocket() == clientSocket) {
-                    // sessione già esistente per questo client
-                    SharedMethods.sendToStream(output,
-                            "Login gia' effettuato per questo account. Sara' il tuo gemello cattivo?");
-                } else {
-                    // non esiste una sessione per questo client
-                    Date date = new Date();
-                    SharedMethods.sendToStream(output, "Login effettuato correttamente.\nBentornato oggi è "
-                            + date.toString() + " ora che ci sei inizia la festa.\n\\_(*w*)_/\\_(^-^)_/\\_(o.o)_/");
-                }
+            if (thisClientSession != null && thisClientSession.getSocket() == clientSocket) {
+                // sessione già esistente per questo client
+                SharedMethods.sendToStream(output,
+                        "Login gia' effettuato" + ColoredText.ANSI_PURPLE + thisClientSession.getUser()
+                                + ColoredText.ANSI_RESET + "Sara' il tuo gemello cattivo?");
                 return;
             }
             // se thisClientSession = null
@@ -265,19 +259,23 @@ public class ConnectionHandler implements Runnable {
     // post e se è lui l'autore del post
     // e ovviamente se non è loggato in winsome
     private void rewinPost(int id) {
+        DEBUG.messaggioDiDebug("rewin nel connection handler");
         if (clientSession != null) {
+            DEBUG.messaggioDiDebug("la client session esiste");
             // l'utente è loggatoa
             String thisUser = clientSession.getUser();
             try {
+                DEBUG.messaggioDiDebug("sto per eseguire il metodo del social manager");
                 // faccio al rewin del post chimando il metodo dal SocialManager
                 socialManager.rewinPost(thisUser, id);
                 // gestisco ogni eccezione che lancia
+                DEBUG.messaggioDiDebug("ho eseguito il metodo del social manager");
             } catch (PostNotInFeedException e) {
                 SharedMethods.sendToStream(output, "Post non presente nel tuo feed.");
             } catch (SameUserException michela) {
                 SharedMethods.sendToStream(output, "Non puoi fare il rewin di un tuo post.");
             } catch (InvalidOperationException michela) {
-                SharedMethods.sendToStream(output, "Hai gia' fatto il rewin di quasto post.");
+                SharedMethods.sendToStream(output, "Hai gia' fatto il rewin di questo post.");
             } catch (UserNotFoundException michela) {
                 SharedMethods.sendToStream(output,
                         "C'e' stato un problema interno durante il rewin, per favore prova di nuovo.\n"
@@ -327,14 +325,20 @@ public class ConnectionHandler implements Runnable {
 
     // metodo per smettere di seguire un altro utente
     private void unfollowUser(String username) {
+        DEBUG.messaggioDiDebug("sono dentro unfollow user nel connection handler");
         if (clientSession != null) {
+            DEBUG.messaggioDiDebug("la client session non è null");
             username = username.toLowerCase();
             String thisUser = clientSession.getUser();
+            DEBUG.messaggioDiDebug(thisUser);
             try {
+                DEBUG.messaggioDiDebug("Sto per entrare nel social manager");
                 socialManager.unfollow(thisUser, username);
                 SharedMethods.sendToStream(output, "Hai smesso di seguire l'utente " + username);
-                // mando la notifica
+                DEBUG.messaggioDiDebug("Sono uscita dal social manager");
+                // nodifico la lista fato client
                 RmiCallback.followeUpdate(username, "-" + thisUser);
+                DEBUG.messaggioDiDebug("Processo Rmi finito");
             } catch (UserNotFoundException e) {
                 SharedMethods.sendToStream(output, "Utente inesistente.");
             } catch (RemoteException e) {
@@ -347,6 +351,7 @@ public class ConnectionHandler implements Runnable {
         } else {
             SharedMethods.sendToStream(output, "Per favore effettua prima il login.");
         }
+        DEBUG.messaggioDiDebug("Esco dalla funzione");
     }
 
     // mostra una lista dei post pubblicati e "rewinati dall'utente"
@@ -424,9 +429,9 @@ public class ConnectionHandler implements Runnable {
             double bitcoin = cRate * thisUserWallet.getWallet();
             // approissimo a 4 cifre decimali
             bitcoin = SharedMethods.approximateDouble(bitcoin);
-            toSend.append("Il tasso di conversione in bitcoin è " + cRate + "\n");
-            toSend.append("Il portafoglio di " + thisUser + " corrisponde a " + ColoredText.ANSI_PURPLE + bitcoin
-                    + ColoredText.ANSI_RESET + " bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n");
+            toSend.append(ColoredText.ANSI_PURPLE+"Il tasso di conversione in bitcoin è " +ColoredText.ANSI_WHITE_BACKGROUND+ cRate +ColoredText.ANSI_RESET +"\n");
+            toSend.append(ColoredText.ANSI_PURPLE+"Il portafoglio di " + thisUser + " corrisponde a " + ColoredText.ANSI_WHITE_BACKGROUND+ bitcoin
+                    + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE+" bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n"+ColoredText.ANSI_RESET);
             SharedMethods.sendToStream(output, toSend.toString());
         }
     }
@@ -437,21 +442,16 @@ public class ConnectionHandler implements Runnable {
         User user = socialManager.getUser(nickname);
         // controllo se esiste l'utente
         if (user != null) {
-            if (WinsomeServerMain.clientSessionList.get(nickname) != null) {
+            ClientSession thisClientSession = WinsomeServerMain.clientSessionList.get(nickname);
+            if (thisClientSession != null && thisClientSession.getSocket() == clientSocket) {
                 // se l'utente ha una clientSession attiva
-                ClientSession thisClientSession = WinsomeServerMain.clientSessionList.get(nickname);
-                if (thisClientSession.getSocket() == clientSocket) {
-                    WinsomeServerMain.clientSessionList.remove(nickname);
-                    SharedMethods.sendToStream(output, "OK");
-                } else {
-                    SharedMethods.sendToStream(output, "Non hai mai effettuato il login.");
-                }
-            } else {
-                // l'utente non ha una clienSession Attiva
-                SharedMethods.sendToStream(output, "Non hai mai effettuato il login.");
+                WinsomeServerMain.clientSessionList.remove(nickname);
+                SharedMethods.sendToStream(output, "OK");
             }
+            return;
         } else {
-            SharedMethods.sendToStream(output, "Utente non trovato, per favore registrati prima ed effettua il login.");
+            // l'utente non ha una clienSession Attiva
+            SharedMethods.sendToStream(output, "Non hai mai effettuato il login.");
         }
     }
 
@@ -496,7 +496,7 @@ public class ConnectionHandler implements Runnable {
                             getWallet();
                             break;
                         case "walletbtc":
-                            // DEBUG.messaggioDiDebug("wallet bitcoin");
+                            DEBUG.messaggioDiDebug("wallet bitcoin");
                             getBitcoin();
                             break;
                         case "login":
@@ -529,13 +529,16 @@ public class ConnectionHandler implements Runnable {
                                 break;
                             }
                         case "unfollow":
+                            DEBUG.messaggioDiDebug("Unfollow nello switch del connection handler");
                             // controllo la sintessi del comando
                             if (args.length != 1) {
+                                DEBUG.messaggioDiDebug("argomenti <1");
                                 SharedMethods.sendToStream(output,
                                         "Comando errato, consulata lista dei comandi per saperne di piu'.");
                             } else {
+                                DEBUG.messaggioDiDebug("Sto per svolgere il metodo nel connection handler");
                                 unfollowUser(args[0]);
-                                // DEBUG.messaggioDiDebug("unfollow");
+                                DEBUG.messaggioDiDebug("unfollow completato");
                             }
                             break;
                         case "post":
