@@ -122,14 +122,19 @@ public class SocialManager {
     // metodo per eliminare un post
     public void deletePost(int id, String username) throws PostNotFoundException, InvalidOperationException {
         Post post = postList.get(id);
+
         if (post == null) {
             // se il post non esiste
             throw new PostNotFoundException();
+        } else {
+            DEBUG.messaggioDiDebug(post.getOwner());
+            DEBUG.messaggioDiDebug(username);
+            if (post.getOwner().equalsIgnoreCase(username)) {
+                // se l'utente che vuole eliminare il post non è l'autore
+                throw new InvalidOperationException();
+            }
         }
-        if (post.getOwner().equalsIgnoreCase(username)) {
-            // se l'utente che vuole eliminare il post non è l'autore
-            throw new InvalidOperationException();
-        }
+
         postList.remove(id);
     }
 
@@ -324,6 +329,7 @@ public class SocialManager {
         if (!userList.containsKey(username)) {
             throw new UserNotFoundException();
         }
+        DEBUG.messaggioDiDebug("L'utente che fa la rewin esiste");
         Post post = postList.getOrDefault(id, null);
         if (post == null) {
             DEBUG.messaggioDiDebug("il post non esiste");
@@ -338,8 +344,10 @@ public class SocialManager {
             throw new PostNotInFeedException();
         }
         DEBUG.messaggioDiDebug("il post è nel feed");
-        boolean flag=post.addRewineUser(username);//metodo eseguito dalla classe post
-        if (flag) {
+        DEBUG.messaggioDiDebug("entro  in add rewin nella classe post");
+        boolean flag = post.addRewineUser(username);// metodo eseguito dalla classe post
+        if (!flag) {
+            // se ritorno false vuol dire che ho già fatto la rewin al post
             throw new InvalidOperationException();
         }
         DEBUG.messaggioDiDebug("rewine completato correttamente nel social media manager");

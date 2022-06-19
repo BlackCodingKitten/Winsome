@@ -88,8 +88,9 @@ public class WinsomeClientMain {
             } catch (IOException e) {
                 // nel caso il serever fosse irraggiungibile o cadesse la connessione è
                 // possibile provare a ricollegarsi "Affrontado l'orco"
-                System.out.println(
-                        "Oh nooo!!!! (x.x)\nSembra che il server sia prigioniero di un grosso e spaventoso orco.\nTi senti coraggioso/a? [S/N]\n Digita S per ritentare, N per uscire");
+                System.out.println(ColoredText.ANSI_PURPLE +
+                        "Oh nooo!!!! (x.x)\nSembra che il server sia prigioniero di un grosso e spaventoso orco.\nTi senti coraggioso/a? [S/N]\n Digita S per ritentare, N per uscire"
+                        + ColoredText.ANSI_RESET);
                 String tryAgain = SharedMethods.readFromConsole(inputReader);
                 if (tryAgain.equalsIgnoreCase("N")) {
                     System.out.print("Hai deciso di dartela a gambe. (-^-)\n");
@@ -102,7 +103,9 @@ public class WinsomeClientMain {
                 }
             }
             if (connectionState) {
-                System.out.println("\nCongratulazioni " + "\\" + "_(*w*)_/ sei conesso al ServerWinsome.\n");
+                System.out
+                        .println("\n" + ColoredText.ANSI_WHITE_BACKGROUND + ColoredText.ANSI_PURPLE + "Congratulazioni "
+                                + "\\" + "_(*w*)_/ sei conesso al ServerWinsome." + ColoredText.ANSI_RESET + "\n");
 
                 RmiServiceInterface stub;
                 try {
@@ -181,6 +184,10 @@ public class WinsomeClientMain {
                                     System.out.println(
                                             "Impossibile effettuare il logout, voglio tenerti qui con me per sempre\nMUAHAHAHA }:-) ");
                                 }
+                                socket.close();
+                                out.close();
+                                in.close();
+                                System.exit(0);
                                 break;
                             case "login":
                                 // operazione di login
@@ -298,32 +305,42 @@ public class WinsomeClientMain {
                                 break;
                             case "rewin":
                                 SharedMethods.sendToStream(out, completeRequest);
-                                System.out.println(SharedMethods.readFromStream(in));
+                                System.out.println(ColoredText.ANSI_PURPLE + SharedMethods.readFromStream(in)
+                                        + ColoredText.ANSI_RESET);
                                 break;
                             case "rate":
                                 SharedMethods.sendToStream(out, completeRequest);
-                                System.out.println(SharedMethods.readFromStream(in));
+                                System.out.println(ColoredText.ANSI_PURPLE + SharedMethods.readFromStream(in)
+                                        + ColoredText.ANSI_RESET);
                                 break;
                             case "showpost":
                                 SharedMethods.sendToStream(out, completeRequest);
                                 System.out.println(SharedMethods.readFromStream(in));
                                 break;
                             case "comment":
+                                if (!completeRequest.contains("\"")) {
+                                    System.out.println(ColoredText.ANSI_PURPLE
+                                            + "Impossibile pubblicare il commento, ricordati che il testo del commento va inserito tra "
+                                            + ColoredText.ANSI_WHITE_BACKGROUND + "\" \"" + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 SharedMethods.sendToStream(out, completeRequest);
-                                System.out.println(SharedMethods.readFromStream(in));
+                                System.out.println(ColoredText.ANSI_PURPLE
+                                        + SharedMethods.readFromStream(in) + ColoredText.ANSI_RESET);
                                 break;
                             case "delete":
                                 SharedMethods.sendToStream(out, completeRequest);
-                                System.out.println(SharedMethods.readFromStream(in));
+                                System.out.println(ColoredText.ANSI_PURPLE + SharedMethods.readFromStream(in)
+                                        + ColoredText.ANSI_RESET);
                                 break;
                             case "post":
                                 SharedMethods.sendToStream(out, completeRequest);
-                                System.out.println(SharedMethods.readFromStream(in));
+                                System.out.println(ColoredText.ANSI_PURPLE
+                                        + SharedMethods.readFromStream(in) + ColoredText.ANSI_RESET);
                                 break;
                             default:
                                 // nessun comando riconosciuto
-                                System.out.println("Operazione non riconosciuta, per favore riprova.");
-                                SharedMethods.readFromConsole(inputReader);
+                                System.out.println(ColoredText.ANSI_PURPLE+"Operazione non riconosciuta, per favore riprova."+ColoredText.ANSI_RESET);
 
                         }// end switch
                     } // end while richieste utente

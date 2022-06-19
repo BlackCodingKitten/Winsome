@@ -171,9 +171,10 @@ public class Post {
             this.postRewinUser.add(user);
             DEBUG.messaggioDiDebug("il post e' stato rewinato");
             return true; // utente inserito correttemente in lista
+        }else{
+            DEBUG.messaggioDiDebug("l'utente ha già fatto il rewin del post");
+            return false;// utente già inserito impossibile inserirlo nuovamente
         }
-        DEBUG.messaggioDiDebug("l'utente ha già fatto il rewin del post");
-        return false;// utente già inserito impossibile inserirlo nuovamente
     }
 
     // metodo getter del numero di iterazioni

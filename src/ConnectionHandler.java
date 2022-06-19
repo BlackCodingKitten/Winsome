@@ -222,7 +222,8 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "Effettua il login prima di cancellare un post.");
         } else {
             try {
-                socialManager.deletePost(id, clientSession.getUser());
+                String thisUser = clientSession.getUser();
+                socialManager.deletePost(id, thisUser);
                 SharedMethods.sendToStream(output, "Post eliminato correttamente.");
             } catch (PostNotFoundException e) {
                 SharedMethods.sendToStream(output, "Post da eliminare non trovato.");
@@ -235,24 +236,32 @@ public class ConnectionHandler implements Runnable {
     // stampa invia la lista dei segiti dell'utente o un messaggio che dice lista
     // vuota se non ne segue nessuno
     private void getFollowingsList() {
+        DEBUG.messaggioDiDebug("");
+        StringBuilder toSend = new StringBuilder();
         if (clientSession == null) {
             SharedMethods.sendToStream(output, "Effettua il login prima.");
+            return;
         } else {
             String thisUser = clientSession.getUser();
+            DEBUG.messaggioDiDebug("copio la lista dei following ");
             HashSet<String> followings = (HashSet<String>) socialManager.getFollowings(thisUser);
             if (followings.size() == 0) {
                 SharedMethods.sendToStream(output, "Non segui nessun utente.");
+                return;
             } else {
-                StringBuilder toSend = new StringBuilder();
-                toSend.append(ColoredText.ANSI_PURPLE + "LISTA DEI SEGUITI:" + ColoredText.ANSI_RESET);
+                DEBUG.messaggioDiDebug("la lista dei following non è vuota");
+                toSend.append(ColoredText.ANSI_PURPLE + "LISTA DEI SEGUITI:\n" + ColoredText.ANSI_RESET);
                 int i = 1;
                 for (String user : followings) {
-                    output.append(i + ")" + user + "\n");
+                    DEBUG.messaggioDiDebug(user);
+                    toSend.append(i + ")" + user + "\n");
                     i++;// contatore per l'elenco
+
                 }
-                SharedMethods.sendToStream(output, toSend.toString());
+                SharedMethods.sendToStream(output, toSend.toString()); 
             }
         }
+        
     }
 
     // l'utente connesso fa la rewin di un post, fallisce se ha già rewinato quel
@@ -429,9 +438,12 @@ public class ConnectionHandler implements Runnable {
             double bitcoin = cRate * thisUserWallet.getWallet();
             // approissimo a 4 cifre decimali
             bitcoin = SharedMethods.approximateDouble(bitcoin);
-            toSend.append(ColoredText.ANSI_PURPLE+"Il tasso di conversione in bitcoin è " +ColoredText.ANSI_WHITE_BACKGROUND+ cRate +ColoredText.ANSI_RESET +"\n");
-            toSend.append(ColoredText.ANSI_PURPLE+"Il portafoglio di " + thisUser + " corrisponde a " + ColoredText.ANSI_WHITE_BACKGROUND+ bitcoin
-                    + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE+" bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n"+ColoredText.ANSI_RESET);
+            toSend.append(ColoredText.ANSI_PURPLE + "Il tasso di conversione in bitcoin è "
+                    + ColoredText.ANSI_WHITE_BACKGROUND + cRate + ColoredText.ANSI_RESET + "\n");
+            toSend.append(ColoredText.ANSI_PURPLE + "Il portafoglio di " + thisUser + " corrisponde a "
+                    + ColoredText.ANSI_WHITE_BACKGROUND + bitcoin
+                    + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE
+                    + " bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n" + ColoredText.ANSI_RESET);
             SharedMethods.sendToStream(output, toSend.toString());
         }
     }
@@ -484,7 +496,9 @@ public class ConnectionHandler implements Runnable {
                             listUserCommonTags();
                             break;
                         case "listfollowing":
+                            DEBUG.messaggioDiDebug("list following nel connection handler");
                             getFollowingsList();
+                            DEBUG.messaggioDiDebug("fuori da list following nel connection handler");
                             break;
                         case "blog":
                             blog();
@@ -558,13 +572,19 @@ public class ConnectionHandler implements Runnable {
                             }
                             break;
                         case "rewin":
+                            DEBUG.messaggioDiDebug("rewin nel connection handler");
                             if (args.length != 1) {
                                 SharedMethods.sendToStream(output,
                                         "Comado errato, impossibile fare la rewin del post.");
+                                break;
                             } else {
+                                DEBUG.messaggioDiDebug("Sto per entrare nel socialmanager e fare la rewin del post "
+                                        + ColoredText.ANSI_BLACK_BACKGROUND + args[0] + ColoredText.ANSI_RESET);
                                 rewinPost(Integer.parseInt(args[0]));
+                                DEBUG.messaggioDiDebug("sono uscito dalla rewin nel connection handler");
+                                break;
                             }
-                            break;
+
                         case "rate":
                             if (args.length != 2) {
                                 SharedMethods.sendToStream(output, "Impossibile votare.");

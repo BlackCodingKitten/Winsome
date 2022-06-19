@@ -169,12 +169,7 @@ public class WinsomeServerMain {
         // chiusura di tutti i thread
         rewards.stopServer();
         rewardManager.interrupt();
-        try {
-            adminThread.join();
-        } catch (InterruptedException e) {
-            // se il thread è stato terminato restituisce un'eccezione
-            System.out.println("Funzionalità del server Admin interrotte.");
-        }
+        adminThread.interrupt();
         // chiudo eseguendo il salvataggio finale
         dataBackup.stopServer();
         dataBackupThread.interrupt();
@@ -189,5 +184,6 @@ public class WinsomeServerMain {
         }
         System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
                 + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
+        
     }
 }

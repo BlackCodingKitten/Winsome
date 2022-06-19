@@ -37,14 +37,14 @@ public class ConfigReader {
         // l'applicazione
         if (!configFile.exists()) {
             boolean ignoredFlag = new File(CONFIG_FOLDER).mkdirs();
-            /*
-             * //DEBUG
-             * if(ignoredFlag == true){
-             * /* //debug.messaggioDiDebug("cartella creata correttemente");
-             * }else{
-             * //debug.messaggioDiDebug("cartella non creata");
-             * }
-             */
+            
+              //DEBUG
+             if(ignoredFlag == true){
+             //DEBUG.messaggioDiDebug("cartella creata correttemente");
+              }else{
+            //DEBUG.messaggioDiDebug("cartella non creata");
+             }
+            
             OutputStream out = new FileOutputStream(CONFIG_FOLDER + "/" + this.filePath);
             this.prop = new Properties();
             if (flag == true) {

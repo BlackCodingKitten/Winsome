@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
-
 //Classe miscellanea di metodi per il server e il client
 
 public class SharedMethods {
@@ -25,7 +24,7 @@ public class SharedMethods {
         StringBuilder sBuilder = new StringBuilder();
         // leggo la lunghezza della stringa
         String length = in.readLine();
-        // debug.messaggioDiDebug("Lunghezza della stringa: " + length);
+        DEBUG.messaggioDiDebug("Lunghezza della stringa: " + length);
         if (length == null) {
             System.out.println("*****Errore!!!*****\nStringa di lunghezza nulla.");
             return null;
