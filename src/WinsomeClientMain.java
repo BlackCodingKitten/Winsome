@@ -25,6 +25,7 @@ che essenzialmente sono inviare richieste e attendere risposte dal server,
 public class WinsomeClientMain {
     public static final boolean CLIENT = false;
     // private static final DEBUG debug = new DEBUG();
+    private static int l = 1;
 
     public static String serverAddress;
     public static int serverPort;
@@ -75,7 +76,8 @@ public class WinsomeClientMain {
         String nickname = null;
 
         // creo e avvio il thread che ascolta le notifiche di aggiornamento del wallet
-        Thread walletNofierThread = new Thread(new WalletRewardNotifier(multicastAddress, multicastPort));
+        WalletRewardNotifier wNotifier = new WalletRewardNotifier(multicastAddress, multicastPort);
+        Thread walletNofierThread = new Thread(wNotifier);
         walletNofierThread.start();
 
         // tentativo di collegamento con il server
@@ -136,7 +138,13 @@ public class WinsomeClientMain {
                     BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     while (true) {
                         // Ricevo il comando dall'utente se è vuoto lo ignoro
-                        System.out.println("WinsomeServer in attesa di istruzioni...");
+                        if (nickname == null) {
+                            System.out.print(ColoredText.ANSI_PURPLE + ColoredText.ANSI_WHITE_BACKGROUND
+                                    + "UknownWinsomeClient" + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE + ">"
+                                    + ColoredText.ANSI_RESET);
+                        }
+                        System.out.print(ColoredText.ANSI_PURPLE + ColoredText.ANSI_WHITE_BACKGROUND + nickname
+                                + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE + ">" + ColoredText.ANSI_RESET);
                         if (successRequest == false) {
                             // leggo l'input utente e lo ignoro
                             SharedMethods.readFromConsole(inputReader);
@@ -222,6 +230,7 @@ public class WinsomeClientMain {
                                 socket.close();
                                 out.close();
                                 in.close();
+                                wNotifier.stopReading();
                                 System.exit(0);
                             case "register":
                                 // operazione di register
@@ -244,8 +253,9 @@ public class WinsomeClientMain {
                                         System.out.println("Congratulazioni " + otherArgumentsInCommandLine[0]
                                                 + " la tua registrazione ha avuto successo.");
                                     } else {
-                                        System.out.println(
-                                                "Siamo spiacenti non è possibile concludere la fase di registrazione.\nRitenta cambiando username");
+                                        System.out.println(ColoredText.ANSI_PURPLE +
+                                                "Siamo spiacenti non è possibile concludere la fase di registrazione .\nRicordati di inserire almeno un tag."
+                                                + ColoredText.ANSI_RESET);
                                     }
                                     break;
                                 }
@@ -254,9 +264,11 @@ public class WinsomeClientMain {
                                 // locale
                                 if (nickname != null) {
                                     if (followerList.size() > 0) {
-                                        System.out.println("Lista dei tuoi followers:");
+                                        System.out.println(ColoredText.ANSI_PURPLE
+                                                + "LISTA DEGLI UTENTI CHE TI SEGUONO:" + ColoredText.ANSI_RESET + "\n");
+                                        l = 0;
                                         for (String follower : followerList) {
-                                            System.out.println(follower);
+                                            System.out.println(l + ")" + follower);
                                         }
                                     } else {
                                         System.out.println("Nessuno ti segue. Sei nuovo o sei solo antipatico?\n****** "
@@ -340,7 +352,8 @@ public class WinsomeClientMain {
                                 break;
                             default:
                                 // nessun comando riconosciuto
-                                System.out.println(ColoredText.ANSI_PURPLE+"Operazione non riconosciuta, per favore riprova."+ColoredText.ANSI_RESET);
+                                System.out.println(ColoredText.ANSI_PURPLE
+                                        + "Operazione non riconosciuta, per favore riprova." + ColoredText.ANSI_RESET);
 
                         }// end switch
                     } // end while richieste utente
@@ -350,9 +363,6 @@ public class WinsomeClientMain {
                             "Oh no l'orco cattivo e' tornato e si e' preso il nostro server.\nVuoi affrontarlo di nuovo? [S/N]");
                     if (SharedMethods.readFromConsole(inputReader).equalsIgnoreCase("S")) {
                         connectionState = false;
-                        // in questo modo se l'ultima richiesta è login o register o logout o
-                        // listfollowers o un'uscita forzata viene ricopiata direttamente senza che
-                        // l'utente debba riscrivere il comando
                     } else {
                         System.out.print("Chiusura in corso...\n");
                         try {

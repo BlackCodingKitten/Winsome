@@ -183,7 +183,12 @@ public class ConnectionHandler implements Runnable {
             try {
                 String thisUser = clientSession.getUser();
                 socialManager.ratePost(thisUser, id, vote);
-                SharedMethods.sendToStream(output, "Hai votato " + vote + " il post " + id + ".");
+                if(vote > 0){
+                    SharedMethods.sendToStream(output, "Hai votato +" + vote + " il post " + id + ".");
+                }else{
+                    SharedMethods.sendToStream(output, "Hai votato " + vote + " il post " + id + "."+"\nCommenta per dire cosa non ti è piaciuto.");
+                }
+                
             } catch (InvalidVoteValueException e) {
                 SharedMethods.sendToStream(output, "Voto non valido.");
             } catch (UserNotFoundException e) {

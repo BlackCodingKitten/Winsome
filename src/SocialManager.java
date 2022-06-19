@@ -374,7 +374,7 @@ public class SocialManager {
         DEBUG.messaggioDiDebug("prima delle operazioni interne di follow");
         addNewFollower(user, follower);
         DEBUG.messaggioDiDebug("ho eseguito add new follower");
-        followingList.getOrDefault(user, new HashSet<String>()).add(follower);
+        addNewFollowing(follower, user);
         DEBUG.messaggioDiDebug("ho eseguito add new following");
         // salvo nel file json il nuovo follower
         try {
@@ -405,8 +405,28 @@ public class SocialManager {
 
     }
 
+    // metodo che aggiorna la lista following
+    public void addNewFollowing(String follower, String user) {
+        if (followingList.containsKey(follower)) {
+            DEBUG.messaggioDiDebug("la lista di following esiste");
+            followingList.get(follower).add(user);
+            return;
+        } else {
+            DEBUG.messaggioDiDebug("la lista dei following non esiste");
+            HashSet<String> newList = new HashSet<String>();
+            DEBUG.messaggioDiDebug("creo una nuova lista");
+            newList.add(follower);
+            DEBUG.messaggioDiDebug("aggiungo l'utente alla lista");
+            followingList.put(user, newList);
+            DEBUG.messaggioDiDebug("fatto");
+            return;
+        }
+
+    }
+
     // metodo per prendere una lista di follower di un dato utente
     public HashSet<String> getFollowers(String username) {
+
         return followersList.getOrDefault(username, new HashSet<String>());
 
     }
@@ -484,6 +504,8 @@ public class SocialManager {
     // metodo che aggiunge un utente
     public void addNewUser(User u) {
         userList.putIfAbsent(u.getNickname(), u);
+        followersList.put(u.getNickname(), new HashSet<String>());
+        followingList.put(u.getNickname(), new HashSet<String>());
     }
 
     // metdo per vedere se esiste un utenet

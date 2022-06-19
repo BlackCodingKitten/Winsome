@@ -184,6 +184,6 @@ public class WinsomeServerMain {
         }
         System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
                 + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
-        
+
     }
 }
