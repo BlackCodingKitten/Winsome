@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
 
-import java.util.Date;
 import java.util.HashSet;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -183,12 +182,13 @@ public class ConnectionHandler implements Runnable {
             try {
                 String thisUser = clientSession.getUser();
                 socialManager.ratePost(thisUser, id, vote);
-                if(vote > 0){
+                if (vote > 0) {
                     SharedMethods.sendToStream(output, "Hai votato +" + vote + " il post " + id + ".");
-                }else{
-                    SharedMethods.sendToStream(output, "Hai votato " + vote + " il post " + id + "."+"\nCommenta per dire cosa non ti è piaciuto.");
+                } else {
+                    SharedMethods.sendToStream(output, "Hai votato " + vote + " il post " + id + "."
+                            + "\nCommenta per dire cosa non ti è piaciuto.");
                 }
-                
+
             } catch (InvalidVoteValueException e) {
                 SharedMethods.sendToStream(output, "Voto non valido.");
             } catch (UserNotFoundException e) {
@@ -263,10 +263,10 @@ public class ConnectionHandler implements Runnable {
                     i++;// contatore per l'elenco
 
                 }
-                SharedMethods.sendToStream(output, toSend.toString()); 
+                SharedMethods.sendToStream(output, toSend.toString());
             }
         }
-        
+
     }
 
     // l'utente connesso fa la rewin di un post, fallisce se ha già rewinato quel
@@ -283,7 +283,8 @@ public class ConnectionHandler implements Runnable {
                 // faccio al rewin del post chimando il metodo dal SocialManager
                 socialManager.rewinPost(thisUser, id);
                 // gestisco ogni eccezione che lancia
-                DEBUG.messaggioDiDebug("ho eseguito il metodo del social manager");
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                        + "REwin del post eseguita, controlla il tuo blog." + ColoredText.ANSI_RESET);
             } catch (PostNotInFeedException e) {
                 SharedMethods.sendToStream(output, "Post non presente nel tuo feed.");
             } catch (SameUserException michela) {

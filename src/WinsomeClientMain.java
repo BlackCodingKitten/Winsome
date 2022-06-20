@@ -142,9 +142,11 @@ public class WinsomeClientMain {
                             System.out.print(ColoredText.ANSI_PURPLE + ColoredText.ANSI_WHITE_BACKGROUND
                                     + "UknownWinsomeClient" + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE + ">"
                                     + ColoredText.ANSI_RESET);
+                        } else {
+                            System.out.print(ColoredText.ANSI_PURPLE + ColoredText.ANSI_WHITE_BACKGROUND + nickname
+                                    + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE + ">" + ColoredText.ANSI_RESET);
                         }
-                        System.out.print(ColoredText.ANSI_PURPLE + ColoredText.ANSI_WHITE_BACKGROUND + nickname
-                                + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE + ">" + ColoredText.ANSI_RESET);
+
                         if (successRequest == false) {
                             // leggo l'input utente e lo ignoro
                             SharedMethods.readFromConsole(inputReader);
@@ -254,7 +256,7 @@ public class WinsomeClientMain {
                                                 + " la tua registrazione ha avuto successo.");
                                     } else {
                                         System.out.println(ColoredText.ANSI_PURPLE +
-                                                "Siamo spiacenti non è possibile concludere la fase di registrazione .\nRicordati di inserire almeno un tag."
+                                                "Siamo spiacenti non e' possibile concludere la fase di registrazione .\nRicordati che per registarti la sintassi è <username> <password> <TAGS, almeno 1>."
                                                 + ColoredText.ANSI_RESET);
                                     }
                                     break;
