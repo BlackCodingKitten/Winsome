@@ -284,7 +284,7 @@ public class ConnectionHandler implements Runnable {
                 socialManager.rewinPost(thisUser, id);
                 // gestisco ogni eccezione che lancia
                 SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
-                        + "REwin del post eseguita, controlla il tuo blog." + ColoredText.ANSI_RESET);
+                        + "Rewin del post eseguita, controlla il tuo blog." + ColoredText.ANSI_RESET);
             } catch (PostNotInFeedException e) {
                 SharedMethods.sendToStream(output, "Post non presente nel tuo feed.");
             } catch (SameUserException michela) {

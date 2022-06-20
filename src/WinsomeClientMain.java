@@ -81,12 +81,10 @@ public class WinsomeClientMain {
         walletNofierThread.start();
 
         // tentativo di collegamento con il server
-        // debug.messaggioDiDebug("tentativo di connessione al server");
-        /* loop: */ while (true) {
+         while (true) {
             try {
                 socket = new Socket(serverAddress, serverPort);
                 connectionState = true;
-                DEBUG.messaggioDiDebug(String.valueOf(connectionState));
             } catch (IOException e) {
                 // nel caso il serever fosse irraggiungibile o cadesse la connessione è
                 // possibile provare a ricollegarsi "Affrontado l'orco"

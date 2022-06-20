@@ -5,6 +5,7 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadPoolExecutor;
 
+
 import Color.ColoredText;
 
 /*l'input handler si occupa della gestione delle richieste del server,
@@ -23,7 +24,6 @@ public class InputHandler implements Runnable {
         this.pool = pool;
         this.socialManager = socialManager;
     }
-
     @Override
     // la run viene eseguita all'avvio del server e aspetta i comandi dal client
     public void run() {
