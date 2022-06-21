@@ -37,14 +37,14 @@ public class ConfigReader {
         // l'applicazione
         if (!configFile.exists()) {
             boolean ignoredFlag = new File(CONFIG_FOLDER).mkdirs();
-            
-              //DEBUG
-             if(ignoredFlag == true){
-             //DEBUG.messaggioDiDebug("cartella creata correttemente");
-              }else{
-            //DEBUG.messaggioDiDebug("cartella non creata");
-             }
-            
+
+            // DEBUG
+            if (ignoredFlag == true) {
+                // DEBUG.messaggioDiDebug("cartella creata correttemente");
+            } else {
+                // DEBUG.messaggioDiDebug("cartella non creata");
+            }
+
             OutputStream out = new FileOutputStream(CONFIG_FOLDER + "/" + this.filePath);
             this.prop = new Properties();
             if (flag == true) {
@@ -62,6 +62,7 @@ public class ConfigReader {
                  * prima di farne un altro
                  * data e dell'ultimo controllo del RewardsManager
                  * contatore dell'ultimo post di WinSome
+                 * Datagram socket port per il reward multicast
                  */
                 this.prop.setProperty("ServerPort", "1511");
                 this.prop.setProperty("RmiServerPort", "1115");
@@ -74,7 +75,7 @@ public class ConfigReader {
                 this.prop.setProperty("RewardCheckSleep", "15000");
                 this.prop.setProperty("LastRewardCheck", "0");
                 this.prop.setProperty("CurrentPostId", "0");
-                // debug.messaggioDiDebug("file config serever creato correttamnte");
+                this.prop.setProperty("DatagramSocketPort", "6800");
             } else {
                 // creazione del file di config per il client
                 /*
@@ -96,17 +97,14 @@ public class ConfigReader {
                 this.prop.setProperty("RmiCallbackClientRegistryName", "WinsomeCallbackServer");
                 this.prop.setProperty("MulticastAddress", "239.255.32.32");
                 this.prop.setProperty("MulticastPort", "4444");
-                // debug.messaggioDiDebug("file config client creato correttamnte");
             }
             this.prop.store(out, "Winsome Configuration File");
             out.close();
-            // debug.messaggioDiDebug("file storato correttamnte");
 
         } else {
             InputStream inStream = new FileInputStream(CONFIG_FOLDER + "/" + this.filePath);
             this.prop = new Properties();
             this.prop.load(inStream);
-            // debug.messaggioDiDebug("file config caricato correttamnte");
             inStream.close();
         }
 

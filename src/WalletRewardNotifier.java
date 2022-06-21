@@ -39,24 +39,22 @@ public class WalletRewardNotifier implements Runnable {
             // mi metto in ascolto dei pacchetti in arrivo
             while (true) {
                 try {
-                    ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES);
+                    ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);
                     // contiene direttemante la lunghezza della stringa ricevuta
                     DatagramPacket datagramPacket = new DatagramPacket(byteBuffer.array(), byteBuffer.limit());
                     multicastSocket.receive(datagramPacket);
                     // il primo pacchetto contine solamente la dimensione della stringa successiva
-                    String recived = new String(datagramPacket.getData(), datagramPacket.getOffset(),
-                            datagramPacket.getLength());
-                    int stringLength = Integer.parseInt(recived);
-                    DEBUG.messaggioDiDebug(String.valueOf(stringLength));
+                    int length = ByteBuffer.wrap(datagramPacket.getData()).getInt();
                     // allocazione
-                    byte[] byteBufferArray = new byte[stringLength];
-                    datagramPacket = new DatagramPacket(byteBufferArray, stringLength);
+                    ByteBuffer buffer = ByteBuffer.allocate(length);
+                    datagramPacket = new DatagramPacket(buffer.array(), buffer.limit());
                     multicastSocket.receive(datagramPacket);// secondo pacchetto che contine info
-                    String notif = new String(datagramPacket.getData(), 0, datagramPacket.getLength());
+                    String notif = new String(datagramPacket.getData(), datagramPacket.getOffset(),
+                            datagramPacket.getLength());
                     String message = "Sono stati emessi un totale di " + notif
-                            + " in premio, controlla il tuo Wallet per vedere se ne hai ricevuti.\n***** (°u°) *****";
+                            + "Wincoins in premio, usa il comando \"wallet\" per vedere se ne hai ricevuti.\n***** (°u°) *****";
                     System.out.print(
-                            ColoredText.ANSI_PURPLE + "NUOVA NOTIFICA: " + message + "\n" + ColoredText.ANSI_RESET);
+                            ColoredText.ANSI_PURPLE + "\nNUOVA NOTIFICA: " + message + "\n" + ColoredText.ANSI_RESET);
                     if (!listen) {
                         multicastSocket.close();
                     }

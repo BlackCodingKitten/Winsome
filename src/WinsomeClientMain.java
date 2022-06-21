@@ -193,8 +193,9 @@ public class WinsomeClientMain {
                                             + ColoredText.ANSI_RESET);
                                 } else {
                                     // Se il logout non ha avuto successo:
-                                    System.out.println(
-                                            "Impossibile effettuare il logout, voglio tenerti qui con me per sempre\nMUAHAHAHA }:-) ");
+                                    System.out.println(ColoredText.ANSI_PURPLE +
+                                            "Impossibile effettuare il logout, voglio tenerti qui con me per sempre."
+                                            + ColoredText.ANSI_RESET);
                                 }
                                 break;
                             case "login":
@@ -359,7 +360,7 @@ public class WinsomeClientMain {
                                             + ColoredText.ANSI_WHITE_BACKGROUND + "\" \"" + ColoredText.ANSI_RESET);
                                     break;
                                 }
-                                if (completeRequest.split("\"")[1].split(" ").length != 2) {
+                                if (completeRequest.split("\"")[0].split(" ").length != 2) {
                                     System.out.println(ColoredText.ANSI_PURPLE
                                             + "Hai dimenticato di inserire l'id del post che vuoi commentare"
                                             + ColoredText.ANSI_RESET);

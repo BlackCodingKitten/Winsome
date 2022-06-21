@@ -1,3 +1,4 @@
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -13,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.crypto.Data;
 
+import Color.ColoredText;
+
 /*questa classe gestisce il calcolo assegnazione e invio delle notifiche dei reward , apre una 
 connessione multicast in modo che i client possano collegarsi ed ascoltare le notifiche */
 
@@ -22,9 +25,9 @@ public class Rewards implements Runnable {
 
     private InetAddress multicaAddress;
     private int multicastPort;
+    private int datagramSocketPort;
 
     private String lastRewardCheck;
-    private Date date;
 
     private static final int RewardAuthor = 70;
     private static final int RewardCurator = 30;
@@ -42,6 +45,7 @@ public class Rewards implements Runnable {
         }
         this.multicastPort = Integer.parseInt(configReader.getConfigValue("MulticastPort"));
         this.lastRewardCheck = configReader.getConfigValue("LastRewardCheck");
+        this.datagramSocketPort = Integer.parseInt(configReader.getConfigValue("DatagramSocketPort"));
     }
 
     // metodo che blocca il thread si assegnazione premi
@@ -57,66 +61,57 @@ public class Rewards implements Runnable {
     @Override
     public void run() {
 
-        try (DatagramSocket serveDatagramSocket = new DatagramSocket(null)) {
-            // poteva essere fatto anche con getLocalHost()
-            DEBUG.messaggioDiDebug("questo1");
-            InetAddress inetAddress = InetAddress.getByName("localhost");
-            DEBUG.messaggioDiDebug("questo2");
-            InetSocketAddress serveSocketAddress = new InetSocketAddress(inetAddress, this.multicastPort);
-            DEBUG.messaggioDiDebug("questo3");
-            serveDatagramSocket.setReuseAddress(true);
-            // consente di collegare il socket anche se una precedente connessione è in
-            // stato di timeout
-            DEBUG.messaggioDiDebug("questo4");
-            serveDatagramSocket.bind(serveSocketAddress);
-            DEBUG.messaggioDiDebug("questo5");
-
-            byte[] byteArray;
-            DEBUG.messaggioDiDebug("questo6");
-
+        try (DatagramSocket serveDatagramSocket = new DatagramSocket(datagramSocketPort)) {
+            DatagramPacket datagramPacket;
             ConcurrentHashMap<Integer, Post> posts;
+
             // while(stopServer())
             while (!stop) {
-                this.date = new Date();
                 posts = socialManager.getPostList();
-                if (posts.size() > 0) {
-                    double reward = 0;
-                    double totalReward = 0;
-                    for (Post p : posts.values()) {
-                        reward = 1; // gainFormula(p, date);
-                        totalReward = totalReward + reward;
-                    }
-                    if (totalReward > 0) {
-                        byteArray = socialManager.formattedWincoin(totalReward).getBytes();
-                        DEBUG.messaggioDiDebug("questo7");
-                        // invio la lunghezza della stringa che il client riceverà
-                        ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES).putInt(byteArray.length);
-                        DEBUG.messaggioDiDebug("questo8");
-                        DatagramPacket dPacket = new DatagramPacket(buffer.array(), buffer.limit(), this.multicaAddress,
-                                this.multicastPort);
-                        DEBUG.messaggioDiDebug("questo9");
-                        // io exception generata qui
-                        DEBUG.messaggioDiDebug("Datagram packet contain: " + dPacket.getData().toString());
-                        serveDatagramSocket.send(dPacket);
-                        DEBUG.messaggioDiDebug("questo10");
-                        // invio della stringa vera e propria
-                        dPacket = new DatagramPacket(byteArray, byteArray.length, this.multicaAddress,
-                                this.multicastPort);
-                        DEBUG.messaggioDiDebug("questo11");
-                        serveDatagramSocket.send(dPacket);
-                        DEBUG.messaggioDiDebug("questo12");
-                        System.out.println("Notifica del guadagno totale di " + totalReward + " inviata.");
+                double total = 0;
+                Date date = new Date();
+
+                try {
+                    Thread.sleep(Integer.parseInt(configReader.getConfigValue("RewardCheckSleep")));
+
+                } catch (InterruptedException ignore) {
+                    // ignored
+                }
+
+                if (posts.size() != 0) {
+                    for (Post post : posts.values()) {
+                        total += gainFormula(post, date);
                     }
 
-                    this.lastRewardCheck = date.toString();
                 }
-                // metto a dormire il thread del reward manager per fargloi fare un altro
-                // controllo dopo tot tempo
-                try {
-                    Thread.sleep(Integer.parseInt(this.configReader.getConfigValue("RewardCheckSleep")));
-                } catch (InterruptedException e) {
-                    DEBUG.messaggioDiDebug("Interruptedexception");
+                //approssimo a 4 cifre decimali
+                total =SharedMethods.approximateDouble(total);
+                if (total > 0) {
+                    String toSend = ColoredText.ANSI_PURPLE + String.valueOf(total) + ColoredText.ANSI_RESET;
+                    // invio la lunghezza della stringa contenente il reward
+                    ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
+
+                    buffer.putInt(toSend.getBytes().length);
+
+                    datagramPacket = new DatagramPacket(buffer.array(), buffer.limit(), multicaAddress, multicastPort);
+
+                    serveDatagramSocket.send(datagramPacket);
+
+                    // dopo la dimensione invio la stringa contente il reward
+                    buffer.clear();
+
+                    buffer = ByteBuffer.allocate(toSend.getBytes().length);
+
+                    buffer.put(toSend.getBytes());
+
+                    datagramPacket = new DatagramPacket(buffer.array(), buffer.limit(), multicaAddress, multicastPort);
+
+                    serveDatagramSocket.send(datagramPacket);
+
                 }
+
+                this.lastRewardCheck = date.toString();
+                saveLastReward();
             }
         } catch (IOException e) {
             DEBUG.messaggioDiDebug("IOexception");
