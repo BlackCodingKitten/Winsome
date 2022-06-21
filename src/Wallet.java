@@ -17,7 +17,7 @@ public class Wallet {
     // costruttore della classe wallet
     public Wallet(String owner) {
         this.owner = owner;
-        this.transaction = new ConcurrentLinkedQueue<>();
+        this.transaction = new ConcurrentLinkedQueue<WalletMovement>();
         this.walletAmount = 0;
 
     }
@@ -36,7 +36,7 @@ public class Wallet {
     // metodo getter del valore del portafoglio
     public double getWallet() {
         this.walletAmount = getTotalAmount();
-        return this.walletAmount;
+        return SharedMethods.approximateDouble(this.walletAmount);
     }
 
     // calcola il totale del valore del portafoglio
@@ -45,8 +45,7 @@ public class Wallet {
         for (WalletMovement m : transaction) {
             amount = amount + m.getAmount();
         }
-        //debug.messaggioDiDebug("totale wincoins: "+String.valueOf(amount));
-        return amount;
+        return SharedMethods.approximateDouble(amount);
     }
 
     // metodo che permette di convertire la moneta winsome in bitcoin con un tasso
@@ -67,8 +66,6 @@ public class Wallet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        //debug.messaggioDiDebug("valore convertito da wincoins in bitcoins"+String.valueOf(getWallet() * exchangeRate));
         return exchangeRate;
     }
 
@@ -78,7 +75,6 @@ public class Wallet {
         this.transaction.add(new WalletMovement(reason, movementAmount));
         this.walletAmount = this.walletAmount + movementAmount;
         return this.walletAmount;
-
     }
 
 

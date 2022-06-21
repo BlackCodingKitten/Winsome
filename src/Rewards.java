@@ -29,10 +29,10 @@ public class Rewards implements Runnable {
 
     private String lastRewardCheck;
 
-    private static final int RewardAuthor = 70;
-    private static final int RewardCurator = 30;
+    private static final double RewardAuthor = 70 / 100; // -> 70%
+    private static final double RewardCurator = 30 / 100;// ->30%
     private static final String reasonAuthor = "Ricompensa per il post: ";
-    private static final String reasonCurator = "Ricompensa per aver fatto il curatore di :";
+    private static final String reasonCurator = "Ricompensa per aver fatto il curatore del post :";
 
     private volatile boolean stop = false;
 
@@ -84,8 +84,8 @@ public class Rewards implements Runnable {
                     }
 
                 }
-                //approssimo a 4 cifre decimali
-                total =SharedMethods.approximateDouble(total);
+                // approssimo a 4 cifre decimali
+                total = SharedMethods.approximateDouble(total);
                 if (total > 0) {
                     String toSend = ColoredText.ANSI_PURPLE + String.valueOf(total) + ColoredText.ANSI_RESET;
                     // invio la lunghezza della stringa contenente il reward
@@ -162,14 +162,15 @@ public class Rewards implements Runnable {
             if (curators.size() == 0) {
                 return reward;
             }
-            double curatorReward = (reward * (RewardCurator / 100)) / curators.size();
+            double curatorReward = reward / curators.size();
             for (String c : curators) {
-                // aggiorno i portafogli dei curatori
-                socialManager.getWallet(c).amountUpdate(reasonCurator + p.getpostId(), curatorReward);
+                // aggiorno i portafogli dei curatori:
+                socialManager.getWallet(c).amountUpdate(reasonCurator + p.getpostId(),
+                        SharedMethods.approximateDouble(curatorReward * RewardCurator));
             }
             // aggiorno il wallet dell'autore:
             socialManager.getWallet(p.getOwner()).amountUpdate(reasonAuthor + p.getpostId(),
-                    (reward * (RewardAuthor / 100)));
+                    SharedMethods.approximateDouble(reward * RewardAuthor));
 
         }
         return reward;
