@@ -123,8 +123,6 @@ public class WinsomeServerMain {
         dataBackupThread.start();
         adminThread.start();
 
-        int i = 1;// a solo scopo di debug
-
         while (true) {
             try {
                 // accetta la connessione del client
@@ -132,8 +130,7 @@ public class WinsomeServerMain {
                 // aggiunge la connessione alla lista
                 clientSocketList.add(client);
                 // assegna il client ad un connectionhandler che gestisce tutto
-                pool.submit(new ConnectionHandler(client, i, configReader, socialManager));
-                i++;
+                pool.submit(new ConnectionHandler(client, configReader, socialManager));
             } catch (SocketException e) {
                 // si verifica quando si chiude forzatamente il server
                 // quando l'admin digita stopserver

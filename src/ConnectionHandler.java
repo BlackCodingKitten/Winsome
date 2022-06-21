@@ -37,12 +37,11 @@ public class ConnectionHandler implements Runnable {
     }
 
     // Costruttore della classe connection handler
-    public ConnectionHandler(Socket c, int k, ConfigReader co, SocialManager s) {
+    public ConnectionHandler(Socket c, ConfigReader co, SocialManager s) {
         this.clientSession = null;
         // this.configReader = co;
         this.socialManager = s;
         this.clientSocket = c;
-        // this.key = k;
         this.output = null;
         this.input = null;
         logoutFlag = false;
