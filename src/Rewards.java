@@ -11,6 +11,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.crypto.Data;
+
 /*questa classe gestisce il calcolo assegnazione e invio delle notifiche dei reward , apre una 
 connessione multicast in modo che i client possano collegarsi ed ascoltare le notifiche */
 
@@ -57,13 +59,20 @@ public class Rewards implements Runnable {
 
         try (DatagramSocket serveDatagramSocket = new DatagramSocket(null)) {
             // poteva essere fatto anche con getLocalHost()
+            DEBUG.messaggioDiDebug("questo1");
             InetAddress inetAddress = InetAddress.getByName("localhost");
+            DEBUG.messaggioDiDebug("questo2");
             InetSocketAddress serveSocketAddress = new InetSocketAddress(inetAddress, this.multicastPort);
-            serveDatagramSocket.setReuseAddress(true);// consente di collegare il socket anche se una precedente
-                                                      // connessione è in stato di timeout
+            DEBUG.messaggioDiDebug("questo3");
+            serveDatagramSocket.setReuseAddress(true);
+            // consente di collegare il socket anche se una precedente connessione è in
+            // stato di timeout
+            DEBUG.messaggioDiDebug("questo4");
             serveDatagramSocket.bind(serveSocketAddress);
+            DEBUG.messaggioDiDebug("questo5");
 
             byte[] byteArray;
+            DEBUG.messaggioDiDebug("questo6");
 
             ConcurrentHashMap<Integer, Post> posts;
             // while(stopServer())
@@ -74,20 +83,28 @@ public class Rewards implements Runnable {
                     double reward = 0;
                     double totalReward = 0;
                     for (Post p : posts.values()) {
-                        reward = gainFormula(p, date);
+                        reward = 1; // gainFormula(p, date);
                         totalReward = totalReward + reward;
                     }
                     if (totalReward > 0) {
                         byteArray = socialManager.formattedWincoin(totalReward).getBytes();
+                        DEBUG.messaggioDiDebug("questo7");
                         // invio la lunghezza della stringa che il client riceverà
-                        ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES).putInt(byteArray.length);
+                        ByteBuffer buffer = ByteBuffer.allocate(Double.BYTES).putInt(byteArray.length);
+                        DEBUG.messaggioDiDebug("questo8");
                         DatagramPacket dPacket = new DatagramPacket(buffer.array(), buffer.limit(), this.multicaAddress,
                                 this.multicastPort);
+                        DEBUG.messaggioDiDebug("questo9");
+                        // io exception generata qui
+                        DEBUG.messaggioDiDebug("Datagram packet contain: " + dPacket.getData().toString());
                         serveDatagramSocket.send(dPacket);
+                        DEBUG.messaggioDiDebug("questo10");
                         // invio della stringa vera e propria
                         dPacket = new DatagramPacket(byteArray, byteArray.length, this.multicaAddress,
                                 this.multicastPort);
+                        DEBUG.messaggioDiDebug("questo11");
                         serveDatagramSocket.send(dPacket);
+                        DEBUG.messaggioDiDebug("questo12");
                         System.out.println("Notifica del guadagno totale di " + totalReward + " inviata.");
                     }
 
@@ -103,6 +120,7 @@ public class Rewards implements Runnable {
             }
         } catch (IOException e) {
             DEBUG.messaggioDiDebug("IOexception");
+            e.printStackTrace();
         }
 
     }

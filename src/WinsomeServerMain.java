@@ -17,8 +17,6 @@ import java.util.concurrent.Executors;
  */
 import java.util.concurrent.ThreadPoolExecutor;
 
-import Color.ColoredText;
-
 public class WinsomeServerMain {
     public static ConfigReader configReader;
     public static JsonFileManager fileManager;
@@ -53,8 +51,6 @@ public class WinsomeServerMain {
         serverPort = Integer.parseInt(configReader.getConfigValue("ServerPort"));
         RmiServerPort = Integer.parseInt(configReader.getConfigValue("RmiServerPort"));
         callbackClientPort = Integer.parseInt(configReader.getConfigValue("RmiClientCallbackPort"));
-        // shutdown =
-        // Integer.parseInt(configReader.getConfigValue("TimeoutBeforeShutdown"));
         RmiCallbackClientRegistry = configReader.getConfigValue("RmiCallbackClientRegistryName");
         RmiServerRegistry = configReader.getConfigValue("ServerRmiRegistryName");
 
@@ -182,8 +178,5 @@ public class WinsomeServerMain {
         } catch (NoSuchObjectException e) {
             // ignored, tanto sta chiudendo il server
         }
-        System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
-                + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
-
     }
 }

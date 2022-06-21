@@ -30,6 +30,11 @@ public class ConnectionHandler implements Runnable {
     private final SocialManager socialManager;
     private PrintWriter output;
     private BufferedReader input;
+    private boolean logoutFlag;
+
+    private void setFlag(boolean set) {
+        logoutFlag = set;
+    }
 
     // Costruttore della classe connection handler
     public ConnectionHandler(Socket c, int k, ConfigReader co, SocialManager s) {
@@ -40,7 +45,7 @@ public class ConnectionHandler implements Runnable {
         // this.key = k;
         this.output = null;
         this.input = null;
-
+        logoutFlag = false;
     }
 
     // comando sconosciuto
@@ -51,7 +56,7 @@ public class ConnectionHandler implements Runnable {
     // metodo di login: se utente e password sono corretti e non esiste già una
     // sessione associata a quei dati, genero una nuova sessione
     private void login(String nickname, String password) {
-        if (clientSession != null) {
+        if (clientSession != null && logoutFlag) {
             SharedMethods.sendToStream(output,
                     "Login gia' effettuato per questo account. Sara' il tuo gemello cattivo?");
             return;
@@ -72,6 +77,7 @@ public class ConnectionHandler implements Runnable {
             thisClientSession = new ClientSession(nickname, clientSocket);
             WinsomeServerMain.clientSessionList.put(nickname, thisClientSession);
             clientSession = thisClientSession;
+            setFlag(true);
             SharedMethods.sendToStream(output, "OK");
         } else {
             // nome utente password non corretti
@@ -224,16 +230,21 @@ public class ConnectionHandler implements Runnable {
     // metodo per cancellare un post
     private void deletePost(int id) {
         if (clientSession == null) {
-            SharedMethods.sendToStream(output, "Effettua il login prima di cancellare un post.");
+            SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                    + "Effettua il login prima di cancellare un post." + ColoredText.ANSI_RESET);
         } else {
             try {
                 String thisUser = clientSession.getUser();
                 socialManager.deletePost(id, thisUser);
-                SharedMethods.sendToStream(output, "Post eliminato correttamente.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Post eliminato correttamente.\nAvevi scritto cose compromettenti?."
+                                + ColoredText.ANSI_RESET);
             } catch (PostNotFoundException e) {
-                SharedMethods.sendToStream(output, "Post da eliminare non trovato.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Post da eliminare non trovato." + ColoredText.ANSI_RESET);
             } catch (InvalidOperationException e) {
-                SharedMethods.sendToStream(output, "Puoi elimnare solo i post che hai scritto te.");
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                        + "Puoi elimnare solo i post che hai scritto te." + ColoredText.ANSI_RESET);
             }
         }
     }
@@ -241,24 +252,22 @@ public class ConnectionHandler implements Runnable {
     // stampa invia la lista dei segiti dell'utente o un messaggio che dice lista
     // vuota se non ne segue nessuno
     private void getFollowingsList() {
-        DEBUG.messaggioDiDebug("");
         StringBuilder toSend = new StringBuilder();
         if (clientSession == null) {
-            SharedMethods.sendToStream(output, "Effettua il login prima.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Effettua il login prima." + ColoredText.ANSI_RESET);
             return;
         } else {
             String thisUser = clientSession.getUser();
-            DEBUG.messaggioDiDebug("copio la lista dei following ");
             HashSet<String> followings = (HashSet<String>) socialManager.getFollowings(thisUser);
             if (followings.size() == 0) {
-                SharedMethods.sendToStream(output, "Non segui nessun utente.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Non segui nessun utente." + ColoredText.ANSI_RESET);
                 return;
             } else {
-                DEBUG.messaggioDiDebug("la lista dei following non è vuota");
                 toSend.append(ColoredText.ANSI_PURPLE + "LISTA DEI SEGUITI:\n" + ColoredText.ANSI_RESET);
                 int i = 1;
                 for (String user : followings) {
-                    DEBUG.messaggioDiDebug(user);
                     toSend.append(i + ")" + user + "\n");
                     i++;// contatore per l'elenco
 
@@ -273,31 +282,33 @@ public class ConnectionHandler implements Runnable {
     // post e se è lui l'autore del post
     // e ovviamente se non è loggato in winsome
     private void rewinPost(int id) {
-        DEBUG.messaggioDiDebug("rewin nel connection handler");
         if (clientSession != null) {
-            DEBUG.messaggioDiDebug("la client session esiste");
             // l'utente è loggatoa
             String thisUser = clientSession.getUser();
             try {
-                DEBUG.messaggioDiDebug("sto per eseguire il metodo del social manager");
                 // faccio al rewin del post chimando il metodo dal SocialManager
                 socialManager.rewinPost(thisUser, id);
                 // gestisco ogni eccezione che lancia
                 SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
                         + "Rewin del post eseguita, controlla il tuo blog." + ColoredText.ANSI_RESET);
             } catch (PostNotInFeedException e) {
-                SharedMethods.sendToStream(output, "Post non presente nel tuo feed.");
-            } catch (SameUserException michela) {
-                SharedMethods.sendToStream(output, "Non puoi fare il rewin di un tuo post.");
-            } catch (InvalidOperationException michela) {
-                SharedMethods.sendToStream(output, "Hai gia' fatto il rewin di questo post.");
-            } catch (UserNotFoundException michela) {
                 SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Post non presente nel tuo feed." + ColoredText.ANSI_RESET);
+            } catch (SameUserException michela) {
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Non puoi fare il rewin di un tuo post." + ColoredText.ANSI_RESET);
+            } catch (InvalidOperationException michela) {
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Hai gia' fatto il rewin di questo post." + ColoredText.ANSI_RESET);
+            } catch (UserNotFoundException michela) {
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE +
                         "C'e' stato un problema interno durante il rewin, per favore prova di nuovo.\n"
-                                + ColoredText.ANSI_PURPLE_BACKGROUND + "Winsome si scusa per il disagio."
-                                + ColoredText.ANSI_RESET);
+                        + ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
+                        + "Winsome si scusa per il disagio."
+                        + ColoredText.ANSI_RESET);
             } catch (PostNotFoundException michela) {
-                SharedMethods.sendToStream(output, "Post insesistente, controlla l'id.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Post insesistente, controlla l'id." + ColoredText.ANSI_RESET);
             }
 
         } else {
@@ -307,31 +318,28 @@ public class ConnectionHandler implements Runnable {
 
     // metodo per seguire un altro utente
     private void followUser(String username) {
-        DEBUG.messaggioDiDebug("sono in follow user");
         if (clientSession == null) {
             SharedMethods.sendToStream(output, "Effettua prima il login.");
         } else {
-            DEBUG.messaggioDiDebug("client session esiste");
             username = username.toLowerCase();
             String thisUser = clientSession.getUser().toLowerCase();
             try {
-                DEBUG.messaggioDiDebug("prima di eseguire le operazioni nel socialmanager");
                 socialManager.follow(thisUser, username);
-                DEBUG.messaggioDiDebug("ha eseguito il metodo nel social manager");
                 SharedMethods.sendToStream(output, "Adesso segui l'utente " + username + ".");
                 // invio la notifica
                 try {
-                    DEBUG.messaggioDiDebug("RMI");
+                    // notifica di aggiornamento del follower
                     RmiCallback.followeUpdate(username, "+" + thisUser);
-                    DEBUG.messaggioDiDebug("Rmi eseguito");
                 } catch (RemoteException michela) {
                     michela.printStackTrace();
                 }
             } catch (UserNotFoundException e) {
-                SharedMethods.sendToStream(output, "Impossibile seguire un utente non registrato.");
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                        + "Impossibile seguire un utente non registrato." + ColoredText.ANSI_RESET);
             } catch (SameUserException e) {
                 SharedMethods.sendToStream(output,
-                        "Stai cercando di seguire te stesso, sei cosi' interessante? <(.^.)>");
+                        ColoredText.ANSI_PURPLE + "Stai cercando di seguire te stesso, sei cosi' interessante? <(.^.)>"
+                                + ColoredText.ANSI_RESET);
             } catch (InvalidOperationException e) {
                 SharedMethods.sendToStream(output, "Segui gia' l'utente " + username);
             }
@@ -464,8 +472,10 @@ public class ConnectionHandler implements Runnable {
             if (thisClientSession != null && thisClientSession.getSocket() == clientSocket) {
                 // se l'utente ha una clientSession attiva
                 WinsomeServerMain.clientSessionList.remove(nickname);
+                setFlag(false);
                 SharedMethods.sendToStream(output, "OK");
             }
+
             return;
         } else {
             // l'utente non ha una clienSession Attiva

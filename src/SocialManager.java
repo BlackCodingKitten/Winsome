@@ -129,7 +129,7 @@ public class SocialManager {
         } else {
             DEBUG.messaggioDiDebug(post.getOwner());
             DEBUG.messaggioDiDebug(username);
-            if (post.getOwner().equalsIgnoreCase(username)) {
+            if (!post.getOwner().equalsIgnoreCase(username)) {
                 // se l'utente che vuole eliminare il post non è l'autore
                 throw new InvalidOperationException();
             }

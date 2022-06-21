@@ -63,7 +63,8 @@ public class Backup implements Runnable {
     // dello spegnimento
     public void stopServer() {
         stop = true;
-
+        System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
+                + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
     }
 
 }

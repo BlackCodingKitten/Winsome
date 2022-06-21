@@ -10,20 +10,20 @@ public class RmiCallback implements RmiCallbackInterface {
 
     // permette di registrarsi al callback
     @Override
-    public void callbackRegister(String nickname, NotifyEventInterface cInterface) throws RemoteException {
+    public synchronized void callbackRegister(String nickname, NotifyEventInterface cInterface) throws RemoteException {
         NotifyEventInterface check = userClients.putIfAbsent(nickname, cInterface);
         if (check != null) {
-            System.out.println("***** (TT__TT) *****\nUtente già iscritto al servizio di notifica.");
+            System.out.println(nickname + " e' gia' loggato.");
         } else {
-            System.out.println("***** (^o^) *****\nIscrizione al servizio di notifica avvenuta con succcesso.");
+            System.out.println(nickname + " login.");
         }
     }
 
     // permette di rimuoversi dalla lista di utenti che ricevono notifiche
     @Override
-    public void callbackUnregister(String nickname) throws RemoteException {
+    public synchronized void callbackUnregister(String nickname) throws RemoteException {
         userClients.remove(nickname);
-        System.out.println("***** (^///^) *****\nUtente rimosso dal servizio di notifica con successo.");
+        System.out.println(nickname + "  logout.");
     }
 
     public static void followeUpdate(String username, String notif) throws RemoteException {

@@ -81,7 +81,7 @@ public class WinsomeClientMain {
         walletNofierThread.start();
 
         // tentativo di collegamento con il server
-         while (true) {
+        while (true) {
             try {
                 socket = new Socket(serverAddress, serverPort);
                 connectionState = true;
@@ -89,16 +89,19 @@ public class WinsomeClientMain {
                 // nel caso il serever fosse irraggiungibile o cadesse la connessione è
                 // possibile provare a ricollegarsi "Affrontado l'orco"
                 System.out.println(ColoredText.ANSI_PURPLE +
-                        "Oh nooo!!!! (x.x)\nSembra che il server sia prigioniero di un grosso e spaventoso orco.\nTi senti coraggioso/a? [S/N]\n Digita S per ritentare, N per uscire"
+                        "Oh nooo!!!! (x.x)\nSembra che il server sia prigioniero di un grosso e spaventoso orco.\nTi senti coraggioso/a? [S/N]\nDigita S per ritentare, N per uscire"
                         + ColoredText.ANSI_RESET);
                 String tryAgain = SharedMethods.readFromConsole(inputReader);
                 if (tryAgain.equalsIgnoreCase("N")) {
-                    System.out.print("Hai deciso di dartela a gambe. (-^-)\n");
+                    System.out.print(ColoredText.ANSI_PURPLE + "Hai deciso di dartela a gambe. (-^-)\n"
+                            + ColoredText.ANSI_RESET);
                     connectionState = false;
-                    System.out.println("Uscita in corso...");
+                    System.out.println(ColoredText.ANSI_WHITE_BACKGROUND + ColoredText.ANSI_PURPLE
+                            + "Uscita in corso..." + ColoredText.ANSI_RESET);
                     System.exit(0);
                 } else if (tryAgain.equalsIgnoreCase("S")) {
-                    System.out.println("Tentativo di riconnessione in corso...");
+                    System.out.println(ColoredText.ANSI_PURPLE + "Tentativo di riconnessione in corso..."
+                            + ColoredText.ANSI_RESET);
                     continue;
                 }
             }
@@ -155,15 +158,15 @@ public class WinsomeClientMain {
                             successRequest = true;
                         } else {
                             completeRequest = SharedMethods.readFromConsole(inputReader);
-                            // debug.messaggioDiDebug("Richiesta fatta al server: " + completeRequest);
                             if (completeRequest.equals("")) {
                                 continue;
                             }
                         }
 
                         String[] splitCommandLine = completeRequest.split(" ");
-                        op = splitCommandLine[0]; // il primo elemnto dell'array splitCommandLine è l'operazione da
-                                                  // eseguire
+                        op = splitCommandLine[0].toLowerCase();
+                        DEBUG.messaggioDiDebug(op);
+                        // il primo elemnto dell'array splitCommandLine è l'operazione da eseguire
                         // copio il resto degli argomenti in un'altro array
                         String[] otherArgumentsInCommandLine = new String[splitCommandLine.length - 1];
                         System.arraycopy(splitCommandLine, 1, otherArgumentsInCommandLine, 0,
@@ -178,24 +181,21 @@ public class WinsomeClientMain {
                                 SharedMethods.sendToStream(out, completeRequest);
                                 String fromServer = SharedMethods.readFromStream(in);
                                 // se il logout ha avuto successo lato sever
-                                if (fromServer.equalsIgnoreCase("OK")) {
-                                    System.out.println("Logout avvenuto con successo.\nArrivederci!");
-                                    if (server != null) {
-                                        // se sono connesso ad un server rimuovo il client dalla lista dei callback
+                                if (fromServer.equals("OK") && server != null) {
+                                    try {
                                         server.callbackUnregister(nickname);
-                                        UnicastRemoteObject.unexportObject(callback, false);
-                                        callback = null;
-                                        nickname = null;
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
                                     }
+                                    nickname = null;
+                                    System.out.println(ColoredText.ANSI_PURPLE
+                                            + "Logout avvenuto con successo, avanti il prossimo."
+                                            + ColoredText.ANSI_RESET);
                                 } else {
                                     // Se il logout non ha avuto successo:
                                     System.out.println(
                                             "Impossibile effettuare il logout, voglio tenerti qui con me per sempre\nMUAHAHAHA }:-) ");
                                 }
-                                socket.close();
-                                out.close();
-                                in.close();
-                                System.exit(0);
                                 break;
                             case "login":
                                 // operazione di login
@@ -265,19 +265,22 @@ public class WinsomeClientMain {
                                 if (nickname != null) {
                                     if (followerList.size() > 0) {
                                         System.out.println(ColoredText.ANSI_PURPLE
-                                                + "LISTA DEGLI UTENTI CHE TI SEGUONO:" + ColoredText.ANSI_RESET + "\n");
-                                        l = 0;
+                                                + "LISTA DEGLI UTENTI CHE TI SEGUONO:" + ColoredText.ANSI_RESET);
+                                        l = 1;// serve solo per stampare la lista numerata
                                         for (String follower : followerList) {
                                             System.out.println(l + ")" + follower);
+                                            l++;
                                         }
                                     } else {
-                                        System.out.println("Nessuno ti segue. Sei nuovo o sei solo antipatico?\n****** "
-                                                + "\\" + "_(a.a)_/ ******");
+                                        System.out.println(ColoredText.ANSI_PURPLE
+                                                + "Nessuno ti segue. Sei nuovo o sei solo antipatico?\n****** "
+                                                + "\\" + "_(a.a)_/ ******" + ColoredText.ANSI_RESET);
                                         break;
                                     }
                                 } else {
-                                    System.out.println(
-                                            "Non posso sapere chi ti segue se non so chi sei, effettua il login prima.");
+                                    System.out.println(ColoredText.ANSI_PURPLE +
+                                            "Non posso sapere chi ti segue se non so chi sei, effettua il login prima."
+                                            + ColoredText.ANSI_RESET);
                                     break;
                                 }
                                 break;
@@ -309,23 +312,43 @@ public class WinsomeClientMain {
                                 break;
                             case "follow":
                                 SharedMethods.sendToStream(out, completeRequest);
-                                System.out.println(SharedMethods.readFromStream(in));
+                                System.out.println(ColoredText.ANSI_PURPLE + SharedMethods.readFromStream(in)
+                                        + ColoredText.ANSI_RESET);
                                 break;
                             case "unfollow":
                                 SharedMethods.sendToStream(out, completeRequest);
-                                System.out.println(SharedMethods.readFromStream(in));
+                                System.out.println(ColoredText.ANSI_PURPLE + SharedMethods.readFromStream(in)
+                                        + ColoredText.ANSI_RESET);
                                 break;
                             case "rewin":
+                                if (completeRequest.split(" ").length != 2) {
+                                    System.out.print(ColoredText.ANSI_PURPLE
+                                            + "Hai dimenticato di inserire l'id del post da rewinare."
+                                            + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 SharedMethods.sendToStream(out, completeRequest);
                                 System.out.println(ColoredText.ANSI_PURPLE + SharedMethods.readFromStream(in)
                                         + ColoredText.ANSI_RESET);
                                 break;
                             case "rate":
+                                if (completeRequest.split(" ").length != 3) {
+                                    System.out.print(ColoredText.ANSI_PURPLE
+                                            + "Sintassi del comando non corretta digita \"help\""
+                                            + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 SharedMethods.sendToStream(out, completeRequest);
                                 System.out.println(ColoredText.ANSI_PURPLE + SharedMethods.readFromStream(in)
                                         + ColoredText.ANSI_RESET);
                                 break;
                             case "showpost":
+                                if (completeRequest.split(" ").length != 2) {
+                                    System.out.print(ColoredText.ANSI_PURPLE
+                                            + "Hai dimenticato di inserire l'id del post cercato."
+                                            + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 SharedMethods.sendToStream(out, completeRequest);
                                 System.out.println(SharedMethods.readFromStream(in));
                                 break;
@@ -336,11 +359,23 @@ public class WinsomeClientMain {
                                             + ColoredText.ANSI_WHITE_BACKGROUND + "\" \"" + ColoredText.ANSI_RESET);
                                     break;
                                 }
+                                if (completeRequest.split("\"")[1].split(" ").length != 2) {
+                                    System.out.println(ColoredText.ANSI_PURPLE
+                                            + "Hai dimenticato di inserire l'id del post che vuoi commentare"
+                                            + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 SharedMethods.sendToStream(out, completeRequest);
                                 System.out.println(ColoredText.ANSI_PURPLE
                                         + SharedMethods.readFromStream(in) + ColoredText.ANSI_RESET);
                                 break;
                             case "delete":
+                                if (completeRequest.split(" ").length != 2) {
+                                    System.out.println(ColoredText.ANSI_PURPLE
+                                            + "Hai dimenticato di inserire l'id del post da eliminare"
+                                            + ColoredText.ANSI_WHITE);
+                                    break;
+                                }
                                 SharedMethods.sendToStream(out, completeRequest);
                                 System.out.println(ColoredText.ANSI_PURPLE + SharedMethods.readFromStream(in)
                                         + ColoredText.ANSI_RESET);
@@ -353,28 +388,39 @@ public class WinsomeClientMain {
                             default:
                                 // nessun comando riconosciuto
                                 System.out.println(ColoredText.ANSI_PURPLE
-                                        + "Operazione non riconosciuta, per favore riprova." + ColoredText.ANSI_RESET);
+                                        + "Operazione non riconosciuta, per favore inserisci un comando valido.\nSe hai bisogno di aiuto digita \"help\"."
+                                        + ColoredText.ANSI_RESET);
 
                         }// end switch
                     } // end while richieste utente
                 } catch (IOException y) {
                     // persa la connessione col server
                     System.out.println(
-                            "Oh no l'orco cattivo e' tornato e si e' preso il nostro server.\nVuoi affrontarlo di nuovo? [S/N]");
+                            "Oh no un perfido stregone si e' preso il nostro server.\nVuoi affrontarlo? [S/N]\nS per riconnetterti al server, N per uscire");
                     if (SharedMethods.readFromConsole(inputReader).equalsIgnoreCase("S")) {
                         connectionState = false;
                     } else {
-                        System.out.print("Chiusura in corso...\n");
+                        System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
+                                + "Chiusura in corso..." + ColoredText.ANSI_RESET);
                         try {
                             socket.close();
                             if (callback != null) {
                                 try {
                                     UnicastRemoteObject.unexportObject(callback, false);
                                 } catch (NoSuchObjectException p) {
-                                    /* ignored */}
+                                    /* ignored */
+                                }
                             }
                         } catch (IOException ignored) {
+                            // ignored
                         }
+                        try {
+                            socket.close();
+                        } catch (IOException e) {
+                            // ignored
+                        }
+                        inputReader.close();
+                        wNotifier.stopReading();
                         System.exit(0);
                     }
                 }
@@ -385,54 +431,51 @@ public class WinsomeClientMain {
     // recupera l'indirizzo dal file di config
     public static void setServerAddress() {
         serverAddress = configReader.getConfigValue("ServerAddress");
-        // debug.messaggioDiDebug("serverAddress " + serverAddress);
+
     }
 
     // recupera la porta del server dal file di config
     public static void setServerPort() {
         serverPort = Integer.parseInt(configReader.getConfigValue("ServerPort"));
-        // debug.messaggioDiDebug("serverPort: " + serverPort);
+
     }
 
     // recupero la porta dell'interfaccia rmi che permette al client di registrarsi
     // dal file di config
     public static void setServerRmiPort() {
         serverRmiPort = Integer.parseInt(configReader.getConfigValue("RmiServerPort"));
-        // debug.messaggioDiDebug("serverRmiPort:" + serverRmiPort);
+
     }
 
     // recupero il nome del registry dell'interfaccia Rmi presente nel configFile
     public static void setServerRmiRegistryName() {
         serverRmiRegistryName = configReader.getConfigValue("ServerRmiRegistryName");
-        // debug.messaggioDiDebug("serverRmiREgistryName: " + serverRmiRegistryName);
+
     }
 
     // recupero dal file di config la porta dell'interfaccia che permette al server
     // diconoscere i cambiamenti nella lista follower
     public static void setClientRmiPort() {
         clientRmiPort = Integer.parseInt(configReader.getConfigValue("RmiClientCallbackPort"));
-        // debug.messaggioDiDebug("clientRmiPort: " + clientRmiPort);
+
     }
 
     // recupero del nome del registry dell'interfaccia RmiCallback sia presente nel
     // file di config
     public static void setServerRmiCallbackRegistryName() {
         serverRmiCallbackRegistryName = configReader.getConfigValue("RmiCallbackClientRegistryName");
-        // debug.messaggioDiDebug("serverRmiCallbackRegistryName:" +
-        // serverRmiCallbackRegistryName);
+
     }
 
     // recupero l'indirizzo multicast per le notifiche di aggiornamento del wallet
     public static void setMulticastPort() {
         multicastPort = Integer.parseInt(configReader.getConfigValue("MulticastPort"));
-        // debug.messaggioDiDebug("multicastPort: " + multicastPort);
     }
 
     // recupero dal file di config l'indirizzo multicast a cui il server invia le
     // notifiche di aggiornamento wallet
     public static void setMulticastAddress() {
         multicastAddress = configReader.getConfigValue("MulticastAddress");
-        // debug.messaggioDiDebug("multicastAddress: " + multicastAddress);
     }
 
     // metetodo che stampa il comando help
