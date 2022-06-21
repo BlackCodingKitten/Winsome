@@ -216,6 +216,7 @@ public class ConnectionHandler implements Runnable {
     // metodo per commentare un post
     private void comment(int id, String comment) {
         if (clientSession == null) {
+            //se il client non è loggato
             SharedMethods.sendToStream(output, "Effettua prima il login.");
         } else {
             try {
@@ -616,12 +617,9 @@ public class ConnectionHandler implements Runnable {
                             }
                             break;
                         case "comment":
-                            DEBUG.messaggioDiDebug("CommentSwitch");
                             // request è composta da: comment+idpost+"testoDElCommento"
                             String[] string = new String[2];
                             string = request.split("\"");
-                            DEBUG.messaggioDiDebug("string [0] " + string[0]);
-                            DEBUG.messaggioDiDebug("String [1] " + string[1]);
                             // facendo la split viene fuori: [comment idpost][testoDelCommento]
                             if (request.split("\"").length < 2) {
                                 SharedMethods.sendToStream(output, "Impossibile commentare, comando errato.");
