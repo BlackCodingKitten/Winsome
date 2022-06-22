@@ -251,11 +251,12 @@ public class WinsomeClientMain {
                                     boolean flag = stub.registerNewUser(otherArgumentsInCommandLine[0],
                                             otherArgumentsInCommandLine[1], tags);
                                     if (flag) {
-                                        System.out.println("Congratulazioni " + otherArgumentsInCommandLine[0]
-                                                + " la tua registrazione ha avuto successo.");
+                                        System.out.println(ColoredText.ANSI_PURPLE + "Congratulazioni "
+                                                + otherArgumentsInCommandLine[0]
+                                                + " la tua registrazione ha avuto successo." + ColoredText.ANSI_RESET);
                                     } else {
                                         System.out.println(ColoredText.ANSI_PURPLE +
-                                                "Siamo spiacenti non e' possibile concludere la fase di registrazione .\nRicordati che per registarti la sintassi è <username> <password> <TAGS, almeno 1>."
+                                                "Siamo spiacenti non e' possibile concludere la fase di registrazione .\nRicordati che per registarti la sintassi e' <username> <password> <TAGS, almeno 1>."
                                                 + ColoredText.ANSI_RESET);
                                     }
                                     break;
@@ -325,7 +326,7 @@ public class WinsomeClientMain {
                                 if (completeRequest.split(" ").length != 2) {
                                     System.out.print(ColoredText.ANSI_PURPLE
                                             + "Hai dimenticato di inserire l'id del post da rewinare."
-                                            + ColoredText.ANSI_RESET);
+                                            + ColoredText.ANSI_RESET + "\n");
                                     break;
                                 }
                                 SharedMethods.sendToStream(out, completeRequest);

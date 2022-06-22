@@ -141,7 +141,7 @@ public class SocialManager {
     // metodo per recuperare il feed di uno specifico utente
     public HashSet<Post> getUserFeed(String username) {
 
-        HashSet<Post> postInFeed = new HashSet<>();
+        HashSet<Post> postInFeed = new HashSet<Post>();
         HashSet<Post> blog;
         HashSet<String> userFolloweds = getFollowedByUser(username);
         for (String nickname : userFolloweds) {
@@ -169,11 +169,10 @@ public class SocialManager {
     public HashSet<Post> getBlog(String username) {
         HashSet<Post> blog = new HashSet<>();
         for (Post p : postList.values()) {
-            if (p.getOwner().equalsIgnoreCase(username) || p.isNotUserRewinedPost(username)) {
+            if (p.getOwner().equalsIgnoreCase(username) || !p.isNotUserRewinedPost(username)) {
                 blog.add(p);
             }
         }
-        // d.messaggioDiDebug("Raccolti i post dell'utente");
         return blog;
     }
 
@@ -335,16 +334,12 @@ public class SocialManager {
             DEBUG.messaggioDiDebug("il post non esiste");
             throw new PostNotFoundException();
         }
-        DEBUG.messaggioDiDebug("il post esiste");
         if (post.getOwner().equalsIgnoreCase(username)) {
             throw new SameUserException();
         }
-        DEBUG.messaggioDiDebug("l'utente che fa la rewin NON è l'autore del post");
         if (!isPostInFeed(id, username)) {
             throw new PostNotInFeedException();
         }
-        DEBUG.messaggioDiDebug("il post è nel feed");
-        DEBUG.messaggioDiDebug("entro  in add rewin nella classe post");
         boolean flag = post.addRewineUser(username);// metodo eseguito dalla classe post
         if (!flag) {
             // se ritorno false vuol dire che ho già fatto la rewin al post
