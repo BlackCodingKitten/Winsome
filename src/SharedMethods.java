@@ -74,8 +74,9 @@ public class SharedMethods {
 
     // approximateDouble() approssima un numero a 4 cifre dopo la virgola
 
-    public static double approximateDouble(double num) {
-        return Math.round(num * (Math.pow(10, 4))) / Math.pow(10, 4);
-    }
+   // public static double approximateDouble(double num) {
+     //   return (double) Math.round(num * (Math.pow(10, 4))) / Math.pow(10, 4);
+
+   // }
 
 }

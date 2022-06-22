@@ -4,6 +4,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -80,10 +81,9 @@ public class Rewards implements Runnable {
                     }
 
                 }
-                // approssimo a 4 cifre decimali
-                total = SharedMethods.approximateDouble(total);
                 if (total > 0) {
-                    String toSend = ColoredText.ANSI_PURPLE + String.valueOf(total) + ColoredText.ANSI_RESET;
+                    DecimalFormat df = new DecimalFormat("0.0000");
+                    String toSend = df.format(total);
                     // invio la lunghezza della stringa contenente il reward
                     ByteBuffer buffer = ByteBuffer.allocate(Integer.BYTES);
 
@@ -151,7 +151,10 @@ public class Rewards implements Runnable {
         reward = logSum / numIt;
 
         if (reward != 0) {
-            // aggiorno i wallet di autore e curatori
+            // aggiorno il wallet dell'autore:
+            socialManager.getWallet(p.getOwner()).amountUpdate(reasonAuthor + p.getpostId(),
+                    reward * RewardAuthor);
+            // aggiorno i wallet dei curatori
             Set<String> curators = new LinkedHashSet<>();
             curators.addAll(voteList.keySet());
             curators.addAll(commentingUser);
@@ -162,11 +165,8 @@ public class Rewards implements Runnable {
             for (String c : curators) {
                 // aggiorno i portafogli dei curatori:
                 socialManager.getWallet(c).amountUpdate(reasonCurator + p.getpostId(),
-                        SharedMethods.approximateDouble(curatorReward * RewardCurator));
+                        curatorReward * RewardCurator);
             }
-            // aggiorno il wallet dell'autore:
-            socialManager.getWallet(p.getOwner()).amountUpdate(reasonAuthor + p.getpostId(),
-                    SharedMethods.approximateDouble(reward * RewardAuthor));
 
         }
         return reward;

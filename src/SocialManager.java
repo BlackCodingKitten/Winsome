@@ -465,7 +465,7 @@ public class SocialManager {
 
     // metodo che formatta la valuta winsome in una stringa
     public String formattedWincoin(double i) {
-        String out = String.format("%." + 4 + "f", SharedMethods.approximateDouble(i));
+        String out = String.format("%." + 4 + "f", i);
         if (i <= 1) {
             return out + WINCOIN;
         } else {

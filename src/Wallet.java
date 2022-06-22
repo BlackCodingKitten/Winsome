@@ -36,7 +36,7 @@ public class Wallet {
     // metodo getter del valore del portafoglio
     public double getWallet() {
         this.walletAmount = getTotalAmount();
-        return SharedMethods.approximateDouble(this.walletAmount);
+        return this.walletAmount;
     }
 
     // calcola il totale del valore del portafoglio
@@ -45,7 +45,7 @@ public class Wallet {
         for (WalletMovement m : transaction) {
             amount = amount + m.getAmount();
         }
-        return SharedMethods.approximateDouble(amount);
+        return amount;
     }
 
     // metodo che permette di convertire la moneta winsome in bitcoin con un tasso

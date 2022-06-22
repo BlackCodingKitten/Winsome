@@ -4,7 +4,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.rmi.RemoteException;
-
+import java.text.DecimalFormat;
 import java.util.HashSet;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -215,7 +215,7 @@ public class ConnectionHandler implements Runnable {
     // metodo per commentare un post
     private void comment(int id, String comment) {
         if (clientSession == null) {
-            //se il client non è loggato
+            // se il client non è loggato
             SharedMethods.sendToStream(output, "Effettua prima il login.");
         } else {
             try {
@@ -407,24 +407,25 @@ public class ConnectionHandler implements Runnable {
 
     // mostra dettagliatamete il wallet all'utente
     private void getWallet() {
+        DecimalFormat df = new DecimalFormat("0.0000");
         if (clientSession != null) {
             Wallet thisUserWallet = socialManager.getWallet(clientSession.getUser());
             ConcurrentLinkedQueue<WalletMovement> thisWalletMovements = thisUserWallet.getTransactionList();
             StringBuilder toSend = new StringBuilder();
             toSend.append(ColoredText.ANSI_PURPLE + "WALLET DI " + clientSession.getUser().toUpperCase()
                     + ColoredText.ANSI_RESET + "\n");
-            double wallet = SharedMethods.approximateDouble(thisUserWallet.getWallet());
+            double wallet = thisUserWallet.getWallet();
             if (wallet == 1) {
-                toSend.append("Possiede:\t" + wallet + " Wincoin");
+                toSend.append("Possiede:\t" + df.format(wallet) + " Wincoin");
             } else {
-                toSend.append("Possiede:\t" + wallet + " Wincoins");
+                toSend.append("Possiede:\t" + df.format(wallet) + " Wincoins");
             }
             if (thisWalletMovements.size() != 0) {
                 toSend.append(ColoredText.ANSI_PURPLE + "\nTRANSAZIONI:" + ColoredText.ANSI_RESET + "\n");
                 for (WalletMovement transaction : thisWalletMovements) {
-                    double amount = SharedMethods.approximateDouble(transaction.getAmount());
+                    double amount = transaction.getAmount();
                     toSend.append(transaction.getDate().toString() + "\t");
-                    toSend.append(amount + "\nReason:\t");
+                    toSend.append(df.format(amount) + "\nReason:\t");
                     toSend.append(transaction.getReason() + "\n");
                 }
             } else {
@@ -439,6 +440,7 @@ public class ConnectionHandler implements Runnable {
 
     // metodo per la conversione del wallet di un utente in bitcoins
     private void getBitcoin() {
+        DecimalFormat df = new DecimalFormat("0.0000");
         if (clientSession == null) {
             SharedMethods.sendToStream(output, "Effettua il login per convertire il tuo wallet in bitcoin.");
         } else {
@@ -446,16 +448,12 @@ public class ConnectionHandler implements Runnable {
             Wallet thisUserWallet = socialManager.getWallet(thisUser);
             StringBuilder toSend = new StringBuilder();
             double cRate = thisUserWallet.getWalletbitcoin();
-            // approssimo a 4 cifre decimali
-            cRate = SharedMethods.approximateDouble(cRate);
-            // approssimo le cifre decimali
             double bitcoin = cRate * thisUserWallet.getWallet();
-            // approissimo a 4 cifre decimali
-            bitcoin = SharedMethods.approximateDouble(bitcoin);
+
             toSend.append(ColoredText.ANSI_PURPLE + "Il tasso di conversione in bitcoin è "
-                    + ColoredText.ANSI_WHITE_BACKGROUND + cRate + ColoredText.ANSI_RESET + "\n");
+                    + ColoredText.ANSI_WHITE_BACKGROUND + df.format(cRate) + ColoredText.ANSI_RESET + "\n");
             toSend.append(ColoredText.ANSI_PURPLE + "Il portafoglio di " + thisUser + " corrisponde a "
-                    + ColoredText.ANSI_WHITE_BACKGROUND + bitcoin
+                    + ColoredText.ANSI_WHITE_BACKGROUND + df.format(bitcoin)
                     + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE
                     + " bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n" + ColoredText.ANSI_RESET);
             SharedMethods.sendToStream(output, toSend.toString());
