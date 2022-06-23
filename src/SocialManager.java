@@ -46,30 +46,22 @@ public class SocialManager {
 
     // metodo per fare l'unfollow di un utente
     public void unfollow(String username, String following) throws InvalidOperationException, UserNotFoundException {
-        DEBUG.messaggioDiDebug("Sono in unfollow nel social manager");
+
         if (username.equalsIgnoreCase(following)) {
             throw new InvalidOperationException();
         }
-        DEBUG.messaggioDiDebug("userneame è diverso da following");
+
         if (!userList.containsKey(following)) {
             throw new UserNotFoundException();
         }
-        DEBUG.messaggioDiDebug("l'utente seguito esiste");
+
         if (!followersList.getOrDefault(following, new HashSet<String>()).contains(username)) {
             throw new InvalidOperationException();
         }
-        DEBUG.messaggioDiDebug("l'utente è contenuto nella lista dei seguiti");
-        DEBUG.messaggioDiDebug("Entro in remove follower");
+
         removeFollower(following, username);
-        DEBUG.messaggioDiDebug("esco da remove follower ");
-        DEBUG.messaggioDiDebug("entro in remove following");
         removeFollowing(username, following);
-        DEBUG.messaggioDiDebug("Esco da remove following");
-        try {
-            WinsomeServerMain.fileManager.fileSaver("config/jsonFile/following.json", followingList);
-        } catch (IOException e) {
-            DEBUG.messaggioDiDebug("impossibile salvare i following su file");
-        }
+
     }
 
     // metodo get della lista dei post
@@ -127,8 +119,7 @@ public class SocialManager {
             // se il post non esiste
             throw new PostNotFoundException();
         } else {
-            DEBUG.messaggioDiDebug(post.getOwner());
-            DEBUG.messaggioDiDebug(username);
+
             if (!post.getOwner().equalsIgnoreCase(username)) {
                 // se l'utente che vuole eliminare il post non è l'autore
                 throw new InvalidOperationException();
@@ -236,18 +227,18 @@ public class SocialManager {
             throws PostNotFoundException, PostNotInFeedException {
         Post post = postList.get(id);
         if (post == null) {
-            DEBUG.messaggioDiDebug("il post non esiste.");
+
             // post non trovato
             throw new PostNotFoundException();
         } else {
-            DEBUG.messaggioDiDebug("il post esiste");
+
             if (!isPostInFeed(id, username)) {
-                DEBUG.messaggioDiDebug("il post non è nel feed");
+
                 // post non in feed
                 throw new PostNotInFeedException();
             } else {
                 post.addNewComment(username, comment);
-                DEBUG.messaggioDiDebug("Post commentato con: " + comment);
+
             }
         }
     }
@@ -328,10 +319,10 @@ public class SocialManager {
         if (!userList.containsKey(username)) {
             throw new UserNotFoundException();
         }
-        DEBUG.messaggioDiDebug("L'utente che fa la rewin esiste");
+
         Post post = postList.getOrDefault(id, null);
         if (post == null) {
-            DEBUG.messaggioDiDebug("il post non esiste");
+
             throw new PostNotFoundException();
         }
         if (post.getOwner().equalsIgnoreCase(username)) {
@@ -345,37 +336,36 @@ public class SocialManager {
             // se ritorno false vuol dire che ho già fatto la rewin al post
             throw new InvalidOperationException();
         }
-        DEBUG.messaggioDiDebug("rewine completato correttamente nel social media manager");
 
     }
 
     // metoodo per seguire un'altro utente
     public void follow(String follower, String user)
             throws UserNotFoundException, InvalidOperationException, SameUserException {
-        DEBUG.messaggioDiDebug("sono dentro follow nel socialmanager");
+
         if (follower.equalsIgnoreCase(user)) {
             // d.messaggioDiDebug("L'utente sta cercando si seguirsi da solo");
             throw new SameUserException();
         }
-        DEBUG.messaggioDiDebug("i due utenti non sono uguali");
+
         if (!userList.containsKey(user)) {
             throw new UserNotFoundException();
         }
-        DEBUG.messaggioDiDebug("l'utente che si vuole seguire esiste");
+
         if (followingList.getOrDefault(follower, new HashSet<String>()).contains(user)) {
-            DEBUG.messaggioDiDebug("segui già l'utente");
+
             throw new InvalidOperationException();
         }
-        DEBUG.messaggioDiDebug("prima delle operazioni interne di follow");
+
         addNewFollower(user, follower);
-        DEBUG.messaggioDiDebug("ho eseguito add new follower");
+
         addNewFollowing(follower, user);
-        DEBUG.messaggioDiDebug("ho eseguito add new following");
+
         // salvo nel file json il nuovo follower
         try {
             WinsomeServerMain.fileManager.fileSaver("config/jsonFile" + "/" + "follower.json", followersList);
             WinsomeServerMain.fileManager.fileSaver("config/jsonFile" + "/" + "following.json", followingList);
-            DEBUG.messaggioDiDebug("ho salvato nei file json.");
+
         } catch (IOException e) {
             /* ignored tanto c'è il backup automatico */
         }
@@ -383,19 +373,17 @@ public class SocialManager {
 
     // metodo per aggiungere un utente alla follower list
     public void addNewFollower(String user, String follower) {
-        DEBUG.messaggioDiDebug("sono sentro add new follower");
+
         if (followersList.containsKey(user)) {
-            DEBUG.messaggioDiDebug("La lista esiste ");
+
             followersList.get(user).add(follower);
-            DEBUG.messaggioDiDebug("ho aggiunto");
+
         } else {
-            DEBUG.messaggioDiDebug("la lista non esisteva");
 
             HashSet<String> newList = new HashSet<>();
             newList.add(follower);
             followersList.put(user, newList);
 
-            DEBUG.messaggioDiDebug("ho aggiunto");
         }
 
     }
@@ -403,17 +391,17 @@ public class SocialManager {
     // metodo che aggiorna la lista following
     public void addNewFollowing(String follower, String user) {
         if (followingList.containsKey(follower)) {
-            DEBUG.messaggioDiDebug("la lista di following esiste");
+
             followingList.get(follower).add(user);
             return;
         } else {
-            DEBUG.messaggioDiDebug("la lista dei following non esiste");
+
             HashSet<String> newList = new HashSet<String>();
-            DEBUG.messaggioDiDebug("creo una nuova lista");
+
             newList.add(follower);
-            DEBUG.messaggioDiDebug("aggiungo l'utente alla lista");
+
             followingList.put(user, newList);
-            DEBUG.messaggioDiDebug("fatto");
+
             return;
         }
 
@@ -435,13 +423,12 @@ public class SocialManager {
     // metodo per remuovere un follower
     public void removeFollower(String username, String follower) {
         followersList.get(username).remove(follower);
-        DEBUG.messaggioDiDebug("Ho eseguito la rimozione del follower");
     }
 
     // rimuove un elemento dalla lista dei seguiti
     public void removeFollowing(String username, String following) {
         followingList.get(username).remove(following);
-        DEBUG.messaggioDiDebug("Rimozione following completata");
+
     }
 
     // restituisce l'oggetto User corrispondente all'usernme

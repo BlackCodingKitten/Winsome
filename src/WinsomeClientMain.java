@@ -24,7 +24,6 @@ che essenzialmente sono inviare richieste e attendere risposte dal server,
 
 public class WinsomeClientMain {
     public static final boolean CLIENT = false;
-    // private static final DEBUG debug = new DEBUG();
     private static int l = 1;
 
     public static String serverAddress;
@@ -165,7 +164,6 @@ public class WinsomeClientMain {
 
                         String[] splitCommandLine = completeRequest.split(" ");
                         op = splitCommandLine[0].toLowerCase();
-                        DEBUG.messaggioDiDebug(op);
                         // il primo elemnto dell'array splitCommandLine è l'operazione da eseguire
                         // copio il resto degli argomenti in un'altro array
                         String[] otherArgumentsInCommandLine = new String[splitCommandLine.length - 1];
@@ -220,10 +218,9 @@ public class WinsomeClientMain {
                                             + "Bentornato nel magico mondo di Winsome " + nickname
                                             + " siamo lieti di rivederti." + ColoredText.ANSI_RESET);
                                     break;
-
                                 } else {
-                                    System.out.println(
-                                            "Ops, sembra che qualcosa sia andato storto (TT.TT)\n" + fromServer2);
+                                    System.out.println(ColoredText.ANSI_PURPLE+
+                                            "Ops, sembra che qualcosa sia andato storto\n"+ColoredText.ANSI_RESET + fromServer2);
                                     break;
                                 }
                             case "exit":

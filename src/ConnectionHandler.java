@@ -57,7 +57,8 @@ public class ConnectionHandler implements Runnable {
     private void login(String nickname, String password) {
         if (clientSession != null && logoutFlag) {
             SharedMethods.sendToStream(output,
-                    "Login gia' effettuato per questo account. Sara' il tuo gemello cattivo?");
+                    ColoredText.ANSI_PURPLE + "Login gia' effettuato per questo account. Sara' il tuo gemello cattivo?"
+                            + ColoredText.ANSI_RESET);
             return;
         }
         nickname = nickname.toLowerCase();
@@ -80,7 +81,8 @@ public class ConnectionHandler implements Runnable {
             SharedMethods.sendToStream(output, "OK");
         } else {
             // nome utente password non corretti
-            SharedMethods.sendToStream(output, "Errore!!\nPer favore ricontrolla nome utente e password.");
+            SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                    + "Errore!!\nPer favore ricontrolla nome utente e password." + ColoredText.ANSI_RESET);
         }
 
     }
@@ -88,18 +90,20 @@ public class ConnectionHandler implements Runnable {
     // metodo che mostra il feed di un utente
     private void feed() {
         if (clientSession == null) {
-            SharedMethods.sendToStream(output, "Effettua prima il login, grazie.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Effettua prima il login, grazie." + ColoredText.ANSI_RESET);
         } else {
             String thisUser = clientSession.getUser();
             HashSet<Post> feed = (HashSet<Post>) socialManager.getUserFeed(thisUser);
             if (feed.size() == 0) {
                 // se il feed è vuoto
-                SharedMethods.sendToStream(output, "Il tuo feed è vuoto.\nSei un nuovo utente?, digita \"help\"");
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                        + "Il tuo feed è vuoto.\nSei un nuovo utente?, digita \"help\"." + ColoredText.ANSI_RESET);
                 return;
             }
             // se il feed ha almeno 1 post
             StringBuilder toSend = new StringBuilder();
-            toSend.append(ColoredText.ANSI_PURPLE + "******FEED DI " + ColoredText.ANSI_WHITE_BACKGROUND
+            toSend.append(ColoredText.ANSI_PURPLE + "******FEED DI "
                     + thisUser.toUpperCase() + ColoredText.ANSI_RESET + "\n");
             for (Post pt : feed) {
                 toSend.append(socialManager.formattedPost(pt.getpostId()));
@@ -113,7 +117,8 @@ public class ConnectionHandler implements Runnable {
     private void listUserCommonTags() {
         if (clientSession == null) {
             // l'utente non ha efffettuato il login
-            SharedMethods.sendToStream(output, "Login non effettuato.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Login non effettuato." + ColoredText.ANSI_RESET);
         } else {
             String thisUser = clientSession.getUser();
             HashSet<String> thisUserTags = (HashSet<String>) socialManager.getUser(thisUser).getTags();
@@ -123,7 +128,8 @@ public class ConnectionHandler implements Runnable {
             // rimuovo l'utente stesso dalla lista
             usersCommonTagList.remove(socialManager.getUser(thisUser));
             if (usersCommonTagList.size() == 0) {
-                SharedMethods.sendToStream(output, "Nessun utente ha tag in comune con te. (TT.TT)");
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                        + "Nessun utente ha tag in comune con te. (TT.TT)" + ColoredText.ANSI_RESET);
                 return;
             }
             StringBuilder toSend = new StringBuilder();
@@ -153,28 +159,25 @@ public class ConnectionHandler implements Runnable {
         // pA[2]= è uno spazio vuoto
         // pa[3]= contenuto del post
         if (clientSession == null) {
-            SharedMethods.sendToStream(output, "Effettua il login prima di inviare un post.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Effettua il login prima di inviare un post." + ColoredText.ANSI_RESET);
         } else {
             String thisUser = clientSession.getUser();
-            DEBUG.messaggioDiDebug(thisUser);
             String postTitle = postArgument[1];
-            DEBUG.messaggioDiDebug("titolo: " + postTitle);
             String post = postArgument[3];
-            DEBUG.messaggioDiDebug(post);
 
             try {
                 int idPost = socialManager.createNewPost(thisUser, postTitle, post);
-                SharedMethods.sendToStream(output, "Post " + idPost + " pubblicato correttamente");
-                try {
-                    WinsomeServerMain.fileManager.fileSaver("config/jsonFile" + "/" + "post.json",
-                            socialManager.getPostList());
-                } catch (IOException e) {
-                    DEBUG.messaggioDiDebug("impossibile salvare su file");
-                }
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Post " + ColoredText.ANSI_WHITE_BACKGROUND + idPost
+                                + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE + " pubblicato correttamente"
+                                + ColoredText.ANSI_RESET);
             } catch (PostLengthException e) {
-                SharedMethods.sendToStream(output, "Inserisci un titolo più corto.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Inserisci un titolo più corto." + ColoredText.ANSI_RESET);
             } catch (UserNotFoundException e) {
-                SharedMethods.sendToStream(output, "Utente insesistente.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Utente insesistente." + ColoredText.ANSI_RESET);
             }
         }
     }
@@ -182,32 +185,41 @@ public class ConnectionHandler implements Runnable {
     // metodo per votare un post
     private void ratePost(int id, int vote) {
         if (clientSession == null) {
-            SharedMethods.sendToStream(output, "Prima di poter votare devi effetttuare il login.");
+            SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                    + "Prima di poter votare devi effetttuare il login." + ColoredText.ANSI_RESET);
         } else {
             try {
                 String thisUser = clientSession.getUser();
                 socialManager.ratePost(thisUser, id, vote);
                 if (vote > 0) {
-                    SharedMethods.sendToStream(output, "Hai votato +" + vote + " il post " + id + ".");
+                    SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE + "Hai votato +" + vote + " il post "
+                            + id + "." + ColoredText.ANSI_RESET);
                 } else {
-                    SharedMethods.sendToStream(output, "Hai votato " + vote + " il post " + id + "."
-                            + "\nCommenta per dire cosa non ti è piaciuto.");
+                    SharedMethods.sendToStream(output,
+                            ColoredText.ANSI_PURPLE + "Hai votato " + vote + " il post " + id + "."
+                                    + "\nCommenta per dire cosa non ti è piaciuto." + ColoredText.ANSI_RESET);
                 }
 
             } catch (InvalidVoteValueException e) {
-                SharedMethods.sendToStream(output, "Voto non valido.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Voto non valido." + ColoredText.ANSI_RESET);
             } catch (UserNotFoundException e) {
                 // errore del server
-                SharedMethods.sendToStream(output, "Errore interno, per favore riprova.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Errore interno, per favore riprova." + ColoredText.ANSI_RESET);
                 e.printStackTrace();
             } catch (PostNotFoundException e) {
-                SharedMethods.sendToStream(output, "Il post che vuoi votare non esiste.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Il post che vuoi votare non esiste." + ColoredText.ANSI_RESET);
             } catch (PostNotInFeedException e) {
-                SharedMethods.sendToStream(output, "Questo post non è nel tuo feed.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Questo post non è nel tuo feed." + ColoredText.ANSI_RESET);
             } catch (InvalidOperationException e) {
-                SharedMethods.sendToStream(output, "Hai già votato questo post.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Hai già votato questo post." + ColoredText.ANSI_RESET);
             } catch (SameUserException e) {
-                SharedMethods.sendToStream(output, "Non puoi votare il tuo stesso post.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Non puoi votare il tuo stesso post." + ColoredText.ANSI_RESET);
             }
         }
     }
@@ -216,13 +228,20 @@ public class ConnectionHandler implements Runnable {
     private void comment(int id, String comment) {
         if (clientSession == null) {
             // se il client non è loggato
-            SharedMethods.sendToStream(output, "Effettua prima il login.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Effettua prima il login." + ColoredText.ANSI_RESET);
         } else {
             try {
                 socialManager.commentPost(clientSession.getUser(), id, comment);
-                SharedMethods.sendToStream(output, "Commento pubblicato correttamente.");
-            } catch (PostNotFoundException | PostNotInFeedException e) {
-                SharedMethods.sendToStream(output, "Impossibile pubblicare il commento.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Commento pubblicato correttamente." + ColoredText.ANSI_RESET);
+            } catch (PostNotFoundException e) {
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                        + "Impossibile pubblicare il commento, post inesistente." + ColoredText.ANSI_RESET);
+            } catch (PostNotInFeedException e) {
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Impossibile pubblicare il commento, post non presente nel tuo feed."
+                                + ColoredText.ANSI_RESET);
             }
         }
     }
@@ -268,7 +287,7 @@ public class ConnectionHandler implements Runnable {
                 toSend.append(ColoredText.ANSI_PURPLE + "LISTA DEI SEGUITI:\n" + ColoredText.ANSI_RESET);
                 int i = 1;
                 for (String user : followings) {
-                    toSend.append(i + ")" + user + "\n");
+                    toSend.append(ColoredText.ANSI_PURPLE + i + ")" + ColoredText.ANSI_RESET + user + "\n");
                     i++;// contatore per l'elenco
 
                 }
@@ -312,14 +331,16 @@ public class ConnectionHandler implements Runnable {
             }
 
         } else {
-            SharedMethods.sendToStream(output, "Effettua prima il login. Digita \"help\" per scoprire come.");
+            SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                    + "Effettua prima il login. Digita \"help\" per scoprire come." + ColoredText.ANSI_RESET);
         }
     }
 
     // metodo per seguire un altro utente
     private void followUser(String username) {
         if (clientSession == null) {
-            SharedMethods.sendToStream(output, "Effettua prima il login.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Effettua prima il login." + ColoredText.ANSI_RESET);
         } else {
             username = username.toLowerCase();
             String thisUser = clientSession.getUser().toLowerCase();
@@ -348,20 +369,20 @@ public class ConnectionHandler implements Runnable {
 
     // metodo per smettere di seguire un altro utente
     private void unfollowUser(String username) {
-        DEBUG.messaggioDiDebug("sono dentro unfollow user nel connection handler");
+
         if (clientSession != null) {
-            DEBUG.messaggioDiDebug("la client session non è null");
+
             username = username.toLowerCase();
             String thisUser = clientSession.getUser();
-            DEBUG.messaggioDiDebug(thisUser);
+
             try {
-                DEBUG.messaggioDiDebug("Sto per entrare nel social manager");
+
                 socialManager.unfollow(thisUser, username);
                 SharedMethods.sendToStream(output, "Hai smesso di seguire l'utente " + username);
-                DEBUG.messaggioDiDebug("Sono uscita dal social manager");
+
                 // nodifico la lista fato client
                 RmiCallback.followeUpdate(username, "-" + thisUser);
-                DEBUG.messaggioDiDebug("Processo Rmi finito");
+
             } catch (UserNotFoundException e) {
                 SharedMethods.sendToStream(output, "Utente inesistente.");
             } catch (RemoteException e) {
@@ -374,7 +395,7 @@ public class ConnectionHandler implements Runnable {
         } else {
             SharedMethods.sendToStream(output, "Per favore effettua prima il login.");
         }
-        DEBUG.messaggioDiDebug("Esco dalla funzione");
+
     }
 
     // mostra una lista dei post pubblicati e "rewinati dall'utente"
@@ -506,13 +527,13 @@ public class ConnectionHandler implements Runnable {
                     // gestisco la richiesta
                     switch (op) {
                         case "listusers":
-                            DEBUG.messaggioDiDebug("listusers");
+                            
                             listUserCommonTags();
                             break;
                         case "listfollowing":
-                            DEBUG.messaggioDiDebug("list following nel connection handler");
+                            
                             getFollowingsList();
-                            DEBUG.messaggioDiDebug("fuori da list following nel connection handler");
+                            
                             break;
                         case "blog":
                             blog();
@@ -524,7 +545,7 @@ public class ConnectionHandler implements Runnable {
                             getWallet();
                             break;
                         case "walletbtc":
-                            DEBUG.messaggioDiDebug("wallet bitcoin");
+                            
                             getBitcoin();
                             break;
                         case "login":
@@ -557,16 +578,16 @@ public class ConnectionHandler implements Runnable {
                                 break;
                             }
                         case "unfollow":
-                            DEBUG.messaggioDiDebug("Unfollow nello switch del connection handler");
+                            
                             // controllo la sintessi del comando
                             if (args.length != 1) {
-                                DEBUG.messaggioDiDebug("argomenti <1");
+                            
                                 SharedMethods.sendToStream(output,
                                         "Comando errato, consulata lista dei comandi per saperne di piu'.");
                             } else {
-                                DEBUG.messaggioDiDebug("Sto per svolgere il metodo nel connection handler");
+                            
                                 unfollowUser(args[0]);
-                                DEBUG.messaggioDiDebug("unfollow completato");
+
                             }
                             break;
                         case "post":
@@ -579,23 +600,17 @@ public class ConnectionHandler implements Runnable {
                             } else {
                                 String[] post = new String[4];
                                 post = request.split("\"");
-                                DEBUG.messaggioDiDebug(
-                                        post[0] + "\n" + "Titolo: " + post[1] + "\n" + post[2] + "\n" + post[3]);
                                 post(post);
                                 break;
                             }
                             break;
                         case "rewin":
-                            DEBUG.messaggioDiDebug("rewin nel connection handler");
                             if (args.length != 1) {
-                                SharedMethods.sendToStream(output,
-                                        "Comado errato, impossibile fare la rewin del post.");
+                                SharedMethods.sendToStream(output,ColoredText.ANSI_PURPLE+
+                                        "Comado errato, impossibile fare la rewin del post."+ColoredText.ANSI_RESET);
                                 break;
                             } else {
-                                DEBUG.messaggioDiDebug("Sto per entrare nel socialmanager e fare la rewin del post "
-                                        + ColoredText.ANSI_BLACK_BACKGROUND + args[0] + ColoredText.ANSI_RESET);
                                 rewinPost(Integer.parseInt(args[0]));
-                                DEBUG.messaggioDiDebug("sono uscito dalla rewin nel connection handler");
                                 break;
                             }
 
@@ -623,23 +638,11 @@ public class ConnectionHandler implements Runnable {
                             } else {
                                 // string [0] =[comment idpost]
                                 int id = Integer.parseInt(string[0].split(" ")[1]);
-                                DEBUG.messaggioDiDebug("id post: " + String.valueOf(id));
                                 comment(id, string[1]);
                             }
                             break;
                         case "showpost":
-                            DEBUG.messaggioDiDebug("showpost");
-                            DEBUG.messaggioDiDebug("showpost 2");
-                            /*
-                             * if (args.length < 1) {
-                             * DEBUG.messaggioDiDebug("args < 1");
-                             * SharedMethods.sendToStream(output,
-                             * "Comando errato, impossibile mostrare il post.");
-                             * } else {
-                             */
-                            DEBUG.messaggioDiDebug("id del post cercato: " + args[0]);
                             getPostById(Integer.parseInt(args[0]));
-                            // }
                             break;
                         default:
                             unknownCmd();
@@ -659,11 +662,11 @@ public class ConnectionHandler implements Runnable {
     // mostra il post di un utente dato il suo id
     private void getPostById(int id) {
         if (clientSession != null) {
-            DEBUG.messaggioDiDebug("la client session esite.");
+
             Post post = socialManager.getPost(id);
             // controllo che il post esista
             if (post != null) {
-                DEBUG.messaggioDiDebug("il post esiste");
+
                 // il post esiste
                 String toSend = socialManager.formattedPost(id);
                 SharedMethods.sendToStream(output, toSend + "\n");
@@ -676,6 +679,6 @@ public class ConnectionHandler implements Runnable {
             // clientSession = null
             SharedMethods.sendToStream(output, "Fai prima il login.");
         }
-        DEBUG.messaggioDiDebug("getpostid fine");
+
     }
 }

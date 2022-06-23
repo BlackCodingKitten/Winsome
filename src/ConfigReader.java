@@ -72,7 +72,7 @@ public class ConfigReader {
                 this.prop.setProperty("MulticastAddress", "239.255.32.32");
                 this.prop.setProperty("MulticastPort", "4444");
                 this.prop.setProperty("BackupInterval", "30000");// un backup ogni 30 secondi
-                this.prop.setProperty("RewardCheckSleep", "15000");
+                this.prop.setProperty("RewardCheckSleep", "30000");
                 this.prop.setProperty("LastRewardCheck", "0");
                 this.prop.setProperty("CurrentPostId", "0");
                 this.prop.setProperty("DatagramSocketPort", "6800");

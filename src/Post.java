@@ -166,13 +166,11 @@ public class Post {
     // sollevare un'eccezione in caso l'utente
     // sia già presente
     public boolean addRewineUser(String user) {
-        DEBUG.messaggioDiDebug("add rewin users in post;");
+        
         if (isNotUserRewinedPost(user)) {
             this.postRewinUser.add(user);
-            DEBUG.messaggioDiDebug("il post e' stato rewinato");
             return true; // utente inserito correttemente in lista
         } else {
-            DEBUG.messaggioDiDebug("l'utente ha già fatto il rewin del post");
             return false;// utente già inserito impossibile inserirlo nuovamente
         }
     }

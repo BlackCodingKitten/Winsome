@@ -54,7 +54,7 @@ public class WalletRewardNotifier implements Runnable {
                     String message = "Sono stati emessi un totale di " + notif
                             + " Wincoins in premio, usa il comando \"wallet\" per vedere se ne hai ricevuti.";
                     System.out.print(
-                            ColoredText.ANSI_PURPLE + "\nNUOVA NOTIFICA: " + message + "\n" + ColoredText.ANSI_RESET);
+                            ColoredText.ANSI_BLUE + "\nNUOVA NOTIFICA: " + message + "\n" + ColoredText.ANSI_RESET);
                     if (!listen) {
                         multicastSocket.close();
                     }

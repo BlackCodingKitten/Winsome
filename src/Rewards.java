@@ -8,7 +8,6 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import Color.ColoredText;
@@ -26,8 +25,8 @@ public class Rewards implements Runnable {
 
     private String lastRewardCheck;
 
-    private static final double RewardAuthor = 70 / 100; // -> 70%
-    private static final double RewardCurator = 30 / 100;// ->30%
+    private static final double rewardAuthor = 0.7000; // -> 70%
+    private static final double rewardCurator = 0.3000;// ->30%
     private static final String reasonAuthor = "Ricompensa per il post: ";
     private static final String reasonCurator = "Ricompensa per aver fatto il curatore del post :";
 
@@ -110,7 +109,6 @@ public class Rewards implements Runnable {
                 saveLastReward();
             }
         } catch (IOException e) {
-            DEBUG.messaggioDiDebug("IOexception");
             e.printStackTrace();
         }
 
@@ -149,23 +147,24 @@ public class Rewards implements Runnable {
 
         double logSum = log2 + log;
         reward = logSum / numIt;
-
         if (reward != 0) {
             // aggiorno il wallet dell'autore:
-            socialManager.getWallet(p.getOwner()).amountUpdate(reasonAuthor + p.getpostId(),
-                    reward * RewardAuthor);
+            double autR = reward * rewardAuthor;
+            socialManager.getWallet(p.getOwner()).amountUpdate(reasonAuthor, autR);
             // aggiorno i wallet dei curatori
-            Set<String> curators = new LinkedHashSet<>();
+
+            HashSet<String> curators = new LinkedHashSet<>();
+
             curators.addAll(voteList.keySet());
             curators.addAll(commentingUser);
             if (curators.size() == 0) {
                 return reward;
             }
-            double curatorReward = reward / curators.size();
+            double cuR = (reward * rewardCurator) / (double) curators.size();
             for (String c : curators) {
                 // aggiorno i portafogli dei curatori:
                 socialManager.getWallet(c).amountUpdate(reasonCurator + p.getpostId(),
-                        curatorReward * RewardCurator);
+                        cuR);
             }
 
         }

@@ -24,7 +24,7 @@ public class SharedMethods {
         StringBuilder sBuilder = new StringBuilder();
         // leggo la lunghezza della stringa
         String length = in.readLine();
-        DEBUG.messaggioDiDebug("Lunghezza della stringa: " + length);
+        
         if (length == null) {
             System.out.println("*****Errore!!!*****\nStringa di lunghezza nulla.");
             return null;

@@ -193,7 +193,7 @@ public class JsonFileManager {
                 return true;
             }
         } catch (IOException e) {
-            DEBUG.messaggioDiDebug("eccezione nella creazione file json");
+           
             return false;
         }
     }
