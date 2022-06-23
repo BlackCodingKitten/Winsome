@@ -174,7 +174,9 @@ public class ConnectionHandler implements Runnable {
                                 + ColoredText.ANSI_RESET);
             } catch (PostLengthException e) {
                 SharedMethods.sendToStream(output,
-                        ColoredText.ANSI_PURPLE + "Inserisci un titolo più corto." + ColoredText.ANSI_RESET);
+                        ColoredText.ANSI_PURPLE
+                                + "Superato il limte di caratteri, inserisci un titolo o un testo più corti."
+                                + ColoredText.ANSI_RESET);
             } catch (UserNotFoundException e) {
                 SharedMethods.sendToStream(output,
                         ColoredText.ANSI_PURPLE + "Utente insesistente." + ColoredText.ANSI_RESET);
@@ -196,7 +198,7 @@ public class ConnectionHandler implements Runnable {
                             + id + "." + ColoredText.ANSI_RESET);
                 } else {
                     SharedMethods.sendToStream(output,
-                            ColoredText.ANSI_PURPLE + "Hai votato " + vote + " il post " + id + "."
+                            ColoredText.ANSI_PURPLE + "Hai votato " + formattedVote(vote) + " il post " + id + "."
                                     + "\nCommenta per dire cosa non ti è piaciuto." + ColoredText.ANSI_RESET);
                 }
 
@@ -222,6 +224,14 @@ public class ConnectionHandler implements Runnable {
                         ColoredText.ANSI_PURPLE + "Non puoi votare il tuo stesso post." + ColoredText.ANSI_RESET);
             }
         }
+    }
+
+    // stampa +1 o -1 a seconda del voto
+    private String formattedVote(int v) {
+        if (v == 1) {
+            return "+1";
+        }
+        return "-1";
     }
 
     // metodo per commentare un post
@@ -450,11 +460,13 @@ public class ConnectionHandler implements Runnable {
                     toSend.append(transaction.getReason() + "\n");
                 }
             } else {
-                toSend.append("Nessuna transazione in lista.");
+                toSend.append(ColoredText.ANSI_PURPLE + "\nTRANSAZIONI:" + ColoredText.ANSI_RESET + "\n"
+                        + "Nessuna transazione in lista.");
             }
             SharedMethods.sendToStream(output, toSend.toString());
         } else {
-            SharedMethods.sendToStream(output, "Necessario fare il login per vedere il proprio portafogli.");
+            SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                    + "Necessario fare il login per vedere il proprio portafogli." + ColoredText.ANSI_RESET);
         }
 
     }
@@ -472,11 +484,12 @@ public class ConnectionHandler implements Runnable {
             double bitcoin = cRate * thisUserWallet.getWallet();
 
             toSend.append(ColoredText.ANSI_PURPLE + "Il tasso di conversione in bitcoin è "
-                    + ColoredText.ANSI_WHITE_BACKGROUND + df.format(cRate) + ColoredText.ANSI_RESET + "\n");
+                    + ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE + df.format(cRate)
+                    + ColoredText.ANSI_RESET + "\n");
             toSend.append(ColoredText.ANSI_PURPLE + "Il portafoglio di " + thisUser + " corrisponde a "
-                    + ColoredText.ANSI_WHITE_BACKGROUND + df.format(bitcoin)
+                    + ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE + df.format(bitcoin)
                     + ColoredText.ANSI_RESET + ColoredText.ANSI_PURPLE
-                    + " bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n" + ColoredText.ANSI_RESET);
+                    + " Bitcoin.\nSpiacenti anche oggi sei povero. (TT.TT)\n" + ColoredText.ANSI_RESET);
             SharedMethods.sendToStream(output, toSend.toString());
         }
     }
@@ -491,14 +504,15 @@ public class ConnectionHandler implements Runnable {
             if (thisClientSession != null && thisClientSession.getSocket() == clientSocket) {
                 // se l'utente ha una clientSession attiva
                 WinsomeServerMain.clientSessionList.remove(nickname);
-                setFlag(false);
+                setFlag(false);// la flag server per poter effettuare un nuovo login dopo il logout
                 SharedMethods.sendToStream(output, "OK");
             }
 
             return;
         } else {
             // l'utente non ha una clienSession Attiva
-            SharedMethods.sendToStream(output, "Non hai mai effettuato il login.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Non hai mai effettuato il login." + ColoredText.ANSI_RESET);
         }
     }
 
@@ -527,13 +541,10 @@ public class ConnectionHandler implements Runnable {
                     // gestisco la richiesta
                     switch (op) {
                         case "listusers":
-                            
                             listUserCommonTags();
                             break;
                         case "listfollowing":
-                            
                             getFollowingsList();
-                            
                             break;
                         case "blog":
                             blog();
@@ -545,7 +556,6 @@ public class ConnectionHandler implements Runnable {
                             getWallet();
                             break;
                         case "walletbtc":
-                            
                             getBitcoin();
                             break;
                         case "login":
@@ -553,9 +563,12 @@ public class ConnectionHandler implements Runnable {
                             if (args.length != 2) {
                                 // non sono stati mandati utente e password
                                 SharedMethods.sendToStream(output,
-                                        "Comando di login incorretto, digita \"help\" per un aiuto.");
+                                        ColoredText.ANSI_PURPLE
+                                                + "Comando di login incorretto, digita \"help\" per un aiuto."
+                                                + ColoredText.ANSI_RESET);
                                 break;
                             } else {
+                                // esegui il login
                                 login(args[0], args[1]);
                                 break;
                             }
@@ -564,30 +577,30 @@ public class ConnectionHandler implements Runnable {
                                 // l'utente non ha loggato
                                 logout(clientSession.getUser());
                             } else {
-                                SharedMethods.sendToStream(output, "Effettua prima il login.");
+                                SharedMethods.sendToStream(output,
+                                        ColoredText.ANSI_PURPLE + "Effettua prima il login." + ColoredText.ANSI_RESET);
                             }
                             break;
                         case "follow":
                             // controllo che il comando sia corretto
                             if (args.length != 1) {
-                                SharedMethods.sendToStream(output,
-                                        "Comando incorretto, consulata lista dei comandi per un aiuto.");
+                                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE +
+                                        "Comando incorretto, consulata lista dei comandi per un aiuto."
+                                        + ColoredText.ANSI_RESET);
                                 break;
                             } else {
                                 followUser(args[0]);
                                 break;
                             }
                         case "unfollow":
-                            
                             // controllo la sintessi del comando
                             if (args.length != 1) {
-                            
                                 SharedMethods.sendToStream(output,
-                                        "Comando errato, consulata lista dei comandi per saperne di piu'.");
+                                        ColoredText.ANSI_PURPLE
+                                                + "Comando errato, consulata lista dei comandi per saperne di piu'."
+                                                + ColoredText.ANSI_RESET);
                             } else {
-                            
                                 unfollowUser(args[0]);
-
                             }
                             break;
                         case "post":
@@ -596,18 +609,20 @@ public class ConnectionHandler implements Runnable {
                                 // in questo modo controllo anche che ci sia necesariamente almeno un carattere
                                 // per il titolo
                                 // e uno per il contenuto
-                                SharedMethods.sendToStream(output, "Comando errato, consulta la lista comandi.");
+                                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                                        + "Comando errato, consulta la lista comandi." + ColoredText.ANSI_RESET);
                             } else {
                                 String[] post = new String[4];
                                 post = request.split("\"");
+                                // post = [post ][titolo][contenuto del post]
                                 post(post);
                                 break;
                             }
                             break;
                         case "rewin":
                             if (args.length != 1) {
-                                SharedMethods.sendToStream(output,ColoredText.ANSI_PURPLE+
-                                        "Comado errato, impossibile fare la rewin del post."+ColoredText.ANSI_RESET);
+                                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE +
+                                        "Comado errato, impossibile fare la rewin del post." + ColoredText.ANSI_RESET);
                                 break;
                             } else {
                                 rewinPost(Integer.parseInt(args[0]));
@@ -616,14 +631,16 @@ public class ConnectionHandler implements Runnable {
 
                         case "rate":
                             if (args.length != 2) {
-                                SharedMethods.sendToStream(output, "Impossibile votare.");
+                                SharedMethods.sendToStream(output,
+                                        ColoredText.ANSI_PURPLE + "Impossibile votare." + ColoredText.ANSI_RESET);
                                 break;
                             }
                             ratePost(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
                             break;
                         case "delete":
                             if (args.length != 1) {
-                                SharedMethods.sendToStream(output, "Comando errato, impossibile cancellare il post.");
+                                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                                        + "Comando errato, impossibile cancellare il post." + ColoredText.ANSI_RESET);
                             } else {
                                 deletePost(Integer.parseInt(args[0]));
                             }
@@ -634,7 +651,9 @@ public class ConnectionHandler implements Runnable {
                             string = request.split("\"");
                             // facendo la split viene fuori: [comment idpost][testoDelCommento]
                             if (request.split("\"").length < 2) {
-                                SharedMethods.sendToStream(output, "Impossibile commentare, comando errato.");
+                                SharedMethods.sendToStream(output,
+                                        "Impossibile commentare, comando errato, ricordati di inesrire il testo tra "
+                                                + ColoredText.ANSI_WHITE_BACKGROUND + "\" \"" + ColoredText.ANSI_RESET);
                             } else {
                                 // string [0] =[comment idpost]
                                 int id = Integer.parseInt(string[0].split(" ")[1]);
@@ -645,6 +664,7 @@ public class ConnectionHandler implements Runnable {
                             getPostById(Integer.parseInt(args[0]));
                             break;
                         default:
+                            // comando sconosciuto
                             unknownCmd();
                             break;
                     }
@@ -654,7 +674,8 @@ public class ConnectionHandler implements Runnable {
                 }
             }
         } else {
-            System.err.println("Errore durante la creazione della connessione.");
+            System.err.println(ColoredText.ANSI_PURPLE + "Errore durante la creazione della connessione."
+                    + ColoredText.ANSI_RESET);
 
         }
     }
@@ -673,11 +694,13 @@ public class ConnectionHandler implements Runnable {
 
             } else {
                 // post non trovato
-                SharedMethods.sendToStream(output, "Post inesistente.");
+                SharedMethods.sendToStream(output,
+                        ColoredText.ANSI_PURPLE + "Post inesistente." + ColoredText.ANSI_RESET);
             }
         } else {
             // clientSession = null
-            SharedMethods.sendToStream(output, "Fai prima il login.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Fai prima il login." + ColoredText.ANSI_RESET);
         }
 
     }
