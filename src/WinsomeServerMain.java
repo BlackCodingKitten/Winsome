@@ -44,7 +44,7 @@ public class WinsomeServerMain {
             configReader = new ConfigReader(true);
             // con la flag true dico al config file che è un server
         } catch (IOException e) {
-            System.err.println("Impossibile avviare il server, errore nei file di configuarzionoe.");
+            System.err.println("Impossibile avviare il server, errore nei file di configuarzione.");
             return;
         }
 
@@ -58,7 +58,7 @@ public class WinsomeServerMain {
                 "Lettura file di configurazione terminata, impostazioni settate, WinsomeServer pronto all'avvio.");
         // dopo aver recuperato le informazioni dal file di config avvio il server
 
-        System.out.println("Inizializzazione funzionalità Winsome, Attendere prego");
+        System.out.println("Inizializzazione funzionalità di Winsome, Attendere prego");
         socialManager = new SocialManager(configReader);
         rewards = new Rewards(configReader, socialManager);
         // avvio il thread del reward manager
@@ -74,10 +74,6 @@ public class WinsomeServerMain {
         // servono eli riusa appena possibile
         ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newCachedThreadPool();
 
-        // creazione del thread che gestisce l'input dell'amministratore del server per
-        // controllare le statistiche
-        InputHandler admin = new InputHandler(configReader, socialManager, pool);
-        Thread adminThread = new Thread(admin);
         // creazione del thread gestore del backup
         dataBackup = new Backup(configReader, fileManager, socialManager, rewards);
         Thread dataBackupThread = new Thread(dataBackup);
@@ -119,9 +115,8 @@ public class WinsomeServerMain {
             return;
         }
 
-        // avvio il thread del backup e quello dell'admin
+        // avvio il thread del backup
         dataBackupThread.start();
-        adminThread.start();
 
         while (true) {
             try {
@@ -162,7 +157,6 @@ public class WinsomeServerMain {
         // chiusura di tutti i thread
         rewards.stopServer();
         rewardManager.interrupt();
-        adminThread.interrupt();
         // chiudo eseguendo il salvataggio finale
         dataBackup.stopServer();
         dataBackupThread.interrupt();

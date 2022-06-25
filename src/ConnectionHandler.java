@@ -403,7 +403,8 @@ public class ConnectionHandler implements Runnable {
             }
 
         } else {
-            SharedMethods.sendToStream(output, "Per favore effettua prima il login.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Per favore effettua prima il login." + ColoredText.ANSI_RESET);
         }
 
     }
@@ -412,19 +413,21 @@ public class ConnectionHandler implements Runnable {
     private void blog() {
         if (clientSession == null) {
             // se l'utente non è loggato
-            SharedMethods.sendToStream(output, "Prima effettua il login.");
+            SharedMethods.sendToStream(output,
+                    ColoredText.ANSI_PURPLE + "Prima effettua il login." + ColoredText.ANSI_RESET);
         } else {
             String thisUser = clientSession.getUser();
             // prende il blog dell'utente tramite il socialmanager
             HashSet<Post> posts = socialManager.getBlog(thisUser);
             if (posts.size() == 0) {
                 // blog vuoto
-                SharedMethods.sendToStream(output,
-                        "Non hai pubblicato e rewinato nulla, che aspetti? Inizia a guadagnare\nPer scoprire come pubblicare un post digita \"help\".");
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE +
+                        "Non hai pubblicato e rewinato nulla, che aspetti? Inizia a guadagnare\nPer scoprire come pubblicare un post digita \"help\"."
+                        + ColoredText.ANSI_RESET);
             } else {
                 // blog con almeno un post
                 StringBuilder toSend = new StringBuilder();
-                toSend.append(ColoredText.ANSI_BLACK_BACKGROUND + ColoredText.ANSI_PURPLE + "*****BLOG*****"
+                toSend.append(ColoredText.ANSI_WHITE_BACKGROUND + ColoredText.ANSI_PURPLE + "*****BLOG*****"
                         + ColoredText.ANSI_RESET + "\n");
                 for (Post p : posts) {
                     // prende il post pronto per la stampa dal metodo di formatter del social
@@ -625,6 +628,12 @@ public class ConnectionHandler implements Runnable {
                                         "Comado errato, impossibile fare la rewin del post." + ColoredText.ANSI_RESET);
                                 break;
                             } else {
+                                if (!SharedMethods.isNumber(args[0])) {
+                                    SharedMethods.sendToStream(output,
+                                            ColoredText.ANSI_PURPLE + "Formato id post incorretto, inserisci un intero."
+                                                    + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 rewinPost(Integer.parseInt(args[0]));
                                 break;
                             }
@@ -635,6 +644,13 @@ public class ConnectionHandler implements Runnable {
                                         ColoredText.ANSI_PURPLE + "Impossibile votare." + ColoredText.ANSI_RESET);
                                 break;
                             }
+                            if (!SharedMethods.isNumber(args[0])) {
+                                SharedMethods.sendToStream(output,
+                                        ColoredText.ANSI_PURPLE
+                                                + "Formato dell'id del post incorretto, inserisci un intero."
+                                                + ColoredText.ANSI_RESET);
+                                break;
+                            }
                             ratePost(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
                             break;
                         case "delete":
@@ -642,6 +658,13 @@ public class ConnectionHandler implements Runnable {
                                 SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
                                         + "Comando errato, impossibile cancellare il post." + ColoredText.ANSI_RESET);
                             } else {
+                                if (!SharedMethods.isNumber(args[0])) {
+                                    SharedMethods.sendToStream(output,
+                                            ColoredText.ANSI_PURPLE
+                                                    + "Formato dell'id del post incorretto, deve essere un intero."
+                                                    + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 deletePost(Integer.parseInt(args[0]));
                             }
                             break;
@@ -656,11 +679,24 @@ public class ConnectionHandler implements Runnable {
                                                 + ColoredText.ANSI_WHITE_BACKGROUND + "\" \"" + ColoredText.ANSI_RESET);
                             } else {
                                 // string [0] =[comment idpost]
+                                if (!SharedMethods.isNumber(string[0].split(" ")[1])) {
+                                    SharedMethods.sendToStream(output,
+                                            ColoredText.ANSI_PURPLE
+                                                    + "Formato incorretto dell'id del post, deve essere un intero."
+                                                    + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 int id = Integer.parseInt(string[0].split(" ")[1]);
                                 comment(id, string[1]);
                             }
                             break;
                         case "showpost":
+                            if (!SharedMethods.isNumber(args[0])) {
+                                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                                        + "Per favore ricontrolla l'id del post, ti ricordo che deve essere una intero."
+                                        + ColoredText.ANSI_RESET);
+                                break;
+                            }
                             getPostById(Integer.parseInt(args[0]));
                             break;
                         default:
@@ -689,7 +725,7 @@ public class ConnectionHandler implements Runnable {
             if (post != null) {
 
                 // il post esiste
-                String toSend = socialManager.formattedPost(id);
+                String toSend = "\n" + socialManager.formattedPost(id);
                 SharedMethods.sendToStream(output, toSend + "\n");
 
             } else {

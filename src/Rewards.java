@@ -150,7 +150,7 @@ public class Rewards implements Runnable {
         if (reward != 0) {
             // aggiorno il wallet dell'autore:
             double autR = reward * rewardAuthor;
-            socialManager.getWallet(p.getOwner()).amountUpdate(reasonAuthor, autR);
+            socialManager.getWallet(p.getOwner()).amountUpdate(reasonAuthor + p.getpostId(), autR);
             // aggiorno i wallet dei curatori
 
             HashSet<String> curators = new LinkedHashSet<>();

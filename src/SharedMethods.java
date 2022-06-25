@@ -18,6 +18,16 @@ public class SharedMethods {
         // out è lo stream su cio inviare la stringa
     }
 
+    //metodo che controlla se ho effettivamente inserito un intero
+    public static boolean isNumber(String a){
+        try{
+            Integer.parseInt(a);
+        }catch(NumberFormatException i){
+            return false;
+        }
+        return true;
+    }
+
     // readFromStream() metodo che permette di leggere una stringa da uno stream
     public static String readFromStream(BufferedReader in) throws IOException {
         int size = 0;
