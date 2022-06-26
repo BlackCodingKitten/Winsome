@@ -230,6 +230,19 @@ public class WinsomeClientMain {
                                     break;
                                 }
                             case "exit":
+                                if (nickname != null) {
+                                    // se c'è un utente loggato eseguo la logout prima di uscire
+                                    SharedMethods.sendToStream(out, "logout");
+                                    if (SharedMethods.readFromStream(in).equals("OK") && server != null) {
+                                        try {
+                                            server.callbackUnregister(nickname);
+                                        } catch (RemoteException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }else{
+                                        System.err.println(ColoredText.ANSI_PURPLE+"Errore nella logout in uscita"+ColoredText.ANSI_RESET);
+                                    }
+                                }
                                 // operazione di uscita forzata
                                 socket.close();
                                 out.close();
@@ -249,8 +262,9 @@ public class WinsomeClientMain {
                                 // per prima cosa controllo che siano stati inseriti nome utente, password e max
                                 // 5 tag
                                 if (otherArgumentsInCommandLine.length > 7) {
-                                    System.out.println(ColoredText.ANSI_PURPLE+
-                                            "Impossibile eseguire la registrazione di un nuovo utente, hai inserito troppi tag.\nPer informazioni su come eseguire una corretta registrazione digita \"help\"."+ColoredText.ANSI_RESET);
+                                    System.out.println(ColoredText.ANSI_PURPLE +
+                                            "Impossibile eseguire la registrazione di un nuovo utente, hai inserito troppi tag.\nPer informazioni su come eseguire una corretta registrazione digita \"help\"."
+                                            + ColoredText.ANSI_RESET);
                                     break;
                                 } else {
                                     // copio la lista dei tag dall'array otherArgumentInCommandLine
@@ -413,6 +427,7 @@ public class WinsomeClientMain {
                             + ColoredText.ANSI_RESET);
                     if (SharedMethods.readFromConsole(inputReader).equalsIgnoreCase("S")) {
                         connectionState = false;
+                        nickname = null;
                     } else {
                         System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
                                 + "Chiusura in corso..." + ColoredText.ANSI_RESET);

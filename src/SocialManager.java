@@ -1,5 +1,7 @@
 import java.util.Set;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.spi.DecimalFormatSymbolsProvider;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -302,9 +304,9 @@ public class SocialManager {
                 ColoredText.ANSI_PURPLE + "DownVote: " + ColoredText.ANSI_RESET + toFormatt.getNumDownVotes() + "\n");
         HashSet<Comment> commentList = toFormatt.getComments();
         stringBuilder.append(String.valueOf(ColoredText.ANSI_PURPLE + commentList.size()) + ColoredText.ANSI_RESET);
-        if(commentList.size()==1){
+        if (commentList.size() == 1) {
             stringBuilder.append(" utente ha commentato questo post.");
-        }else{
+        } else {
             stringBuilder.append(" utenti hanno commentato questo post.");
         }
         stringBuilder.append("\n");
@@ -327,7 +329,7 @@ public class SocialManager {
 
         Post post = postList.getOrDefault(id, null);
         if (post == null) {
-
+            // il post non esiste
             throw new PostNotFoundException();
         }
         if (post.getOwner().equalsIgnoreCase(username)) {
@@ -349,42 +351,34 @@ public class SocialManager {
             throws UserNotFoundException, InvalidOperationException, SameUserException {
 
         if (follower.equalsIgnoreCase(user)) {
-            // d.messaggioDiDebug("L'utente sta cercando si seguirsi da solo");
+            // l'utente st cercando si seguirsi da solo
             throw new SameUserException();
         }
 
         if (!userList.containsKey(user)) {
+            // user non è registrato
             throw new UserNotFoundException();
         }
 
         if (followingList.getOrDefault(follower, new HashSet<String>()).contains(user)) {
-
+            // segui già l'utente user
             throw new InvalidOperationException();
         }
-
+        // aggiorno la lista follower
         addNewFollower(user, follower);
-
+        // aggiorno la lista following
         addNewFollowing(follower, user);
-
-        // salvo nel file json il nuovo follower
-        try {
-            WinsomeServerMain.fileManager.fileSaver("config/jsonFile" + "/" + "follower.json", followersList);
-            WinsomeServerMain.fileManager.fileSaver("config/jsonFile" + "/" + "following.json", followingList);
-
-        } catch (IOException e) {
-            /* ignored tanto c'è il backup automatico */
-        }
     }
 
     // metodo per aggiungere un utente alla follower list
     public void addNewFollower(String user, String follower) {
 
         if (followersList.containsKey(user)) {
-
+            // se già esiste una followers list
             followersList.get(user).add(follower);
 
         } else {
-
+            // se non este una follower list
             HashSet<String> newList = new HashSet<>();
             newList.add(follower);
             followersList.put(user, newList);
@@ -396,17 +390,14 @@ public class SocialManager {
     // metodo che aggiorna la lista following
     public void addNewFollowing(String follower, String user) {
         if (followingList.containsKey(follower)) {
-
+            // se esiste già una following list
             followingList.get(follower).add(user);
             return;
         } else {
-
+            // se non esisteva già una following list
             HashSet<String> newList = new HashSet<String>();
-
             newList.add(follower);
-
             followingList.put(user, newList);
-
             return;
         }
 
@@ -414,15 +405,12 @@ public class SocialManager {
 
     // metodo per prendere una lista di follower di un dato utente
     public HashSet<String> getFollowers(String username) {
-
         return followersList.getOrDefault(username, new HashSet<String>());
-
     }
 
     // metodo per avere un set di tutti gli utenti che ne segue uno specifico
     public HashSet<String> getFollowings(String u) {
         return followingList.getOrDefault(u, new HashSet<String>());
-
     }
 
     // metodo per remuovere un follower
@@ -433,19 +421,11 @@ public class SocialManager {
     // rimuove un elemento dalla lista dei seguiti
     public void removeFollowing(String username, String following) {
         followingList.get(username).remove(following);
-
     }
 
     // restituisce l'oggetto User corrispondente all'usernme
     public User getUser(String u) {
         return userList.getOrDefault(u, null);
-    }
-
-    // rimuove un utente da Winsome
-    public void deleteUser(String u) {
-        userList.remove(u);
-        followersList.remove(u);
-        followingList.remove(u);
     }
 
     // restituisce il wallet corrispondente ad un utente
@@ -457,11 +437,14 @@ public class SocialManager {
 
     // metodo che formatta la valuta winsome in una stringa
     public String formattedWincoin(double i) {
-        String out = String.format("%." + 4 + "f", i);
+        DecimalFormat df = new DecimalFormat("0.0000");
+        String out = df.format(i);
         if (i <= 1) {
-            return out + WINCOIN;
+            //nome valuta singolare 
+            return out + " " + WINCOIN;
         } else {
-            return out + WINCOINS;
+            //nome valuta plurale
+            return out + " " + WINCOINS;
         }
     }
 
@@ -476,8 +459,10 @@ public class SocialManager {
             throw new UserNotFoundException();
         } else {
             if (p.equals(u.getPassword())) {
+                //password corretta
                 return true;
             } else {
+                //password sbagliata
                 return false;
             }
         }
@@ -491,6 +476,7 @@ public class SocialManager {
     // metodo che aggiunge un utente
     public void addNewUser(User u) {
         userList.putIfAbsent(u.getNickname(), u);
+        //inizializzo anche followerList e followingList
         followersList.put(u.getNickname(), new HashSet<String>());
         followingList.put(u.getNickname(), new HashSet<String>());
     }

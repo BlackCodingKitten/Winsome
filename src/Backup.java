@@ -27,7 +27,6 @@ public class Backup implements Runnable {
 
     // metodo che cicla ogni backupInterval millisecondi per salvare i dati in
     // maniera persistente
-    // questo thread termina chiamando stopServer()
     @Override
     public void run() {
         while (!stop) {
@@ -54,17 +53,7 @@ public class Backup implements Runnable {
             }
 
         }
-        System.out.println("Salvataggio prima dello spegnimeto effettuato.\nChiusura sistema di backup in corso...");
-        System.out.println(ColoredText.ANSI_PURPLE + "Chiusura completata Winsome sta schiacciando un pisolino"
-                + ColoredText.ANSI_RESET);
     }
 
-    // metdo per chiudere il server in maniera sicura facendo un ultimo backup prima
-    // dello spegnimento
-    public void stopServer() {
-        stop = true;
-        System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
-                + "WinsomeServer terminato correttamente." + ColoredText.ANSI_RESET);
-    }
 
 }

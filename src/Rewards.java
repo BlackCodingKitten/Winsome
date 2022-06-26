@@ -42,11 +42,6 @@ public class Rewards implements Runnable {
         this.datagramSocketPort = Integer.parseInt(configReader.getConfigValue("DatagramSocketPort"));
     }
 
-    // metodo che blocca il thread si assegnazione premi
-    public void stopServer() {
-        this.stop = true;
-    }
-
     // metodo che salva la data dell'ultimo Reward sul file di config
     public void saveLastReward() {
         configReader.changeSaveConfig("LastRewardCheck", lastRewardCheck);

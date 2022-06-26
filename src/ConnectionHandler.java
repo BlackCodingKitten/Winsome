@@ -49,7 +49,7 @@ public class ConnectionHandler implements Runnable {
 
     // comando sconosciuto
     private void unknownCmd() {
-        SharedMethods.sendToStream(output, "Comando Sconosciuto.");
+        SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE + "Comando Sconosciuto." + ColoredText.ANSI_RESET);
     }
 
     // metodo di login: se utente e password sono corretti e non esiste già una
@@ -63,14 +63,14 @@ public class ConnectionHandler implements Runnable {
         }
         nickname = nickname.toLowerCase();
         User user = socialManager.getUser(nickname);
-        if (user != null && SharedMethods.isPasswordCorrect(password, user.getPassword())) {// controllo che nome utente
-                                                                                            // e password siano corretti
+        if (user != null && SharedMethods.isPasswordCorrect(password, user.getPassword())) {
+            // controllo che nome utente e password siano corretti
             ClientSession thisClientSession = WinsomeServerMain.clientSessionList.get(nickname);
             if (thisClientSession != null && thisClientSession.getSocket() == clientSocket) {
                 // sessione già esistente per questo client
-                SharedMethods.sendToStream(output,
-                        "Login gia' effettuato" + ColoredText.ANSI_PURPLE + thisClientSession.getUser()
-                                + ColoredText.ANSI_RESET + "Sara' il tuo gemello cattivo?");
+                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE +
+                        "Login gia' effettuato" + thisClientSession.getUser()
+                        + "Sara' il tuo gemello cattivo?" + ColoredText.ANSI_RESET);
                 return;
             }
             // se thisClientSession = null
@@ -82,7 +82,7 @@ public class ConnectionHandler implements Runnable {
         } else {
             // nome utente password non corretti
             SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
-                    + "Errore!!\nPer favore ricontrolla nome utente e password." + ColoredText.ANSI_RESET);
+                    + "Errore!!\nNome utente o password incorretti, riprova." + ColoredText.ANSI_RESET);
         }
 
     }
@@ -103,7 +103,7 @@ public class ConnectionHandler implements Runnable {
             }
             // se il feed ha almeno 1 post
             StringBuilder toSend = new StringBuilder();
-            toSend.append(ColoredText.ANSI_PURPLE + "******FEED DI "
+            toSend.append("\n" + ColoredText.ANSI_PURPLE + "******FEED DI "
                     + thisUser.toUpperCase() + ColoredText.ANSI_RESET + "\n");
             for (Post pt : feed) {
                 toSend.append(socialManager.formattedPost(pt.getpostId()));
@@ -133,7 +133,7 @@ public class ConnectionHandler implements Runnable {
                 return;
             }
             StringBuilder toSend = new StringBuilder();
-            toSend.append(ColoredText.ANSI_WHITE + ColoredText.ANSI_PURPLE
+            toSend.append("\n" + ColoredText.ANSI_WHITE + ColoredText.ANSI_PURPLE
                     + "LISTA DI UTENTI CHE HANNO TAG IN COMUNE CON TE:" + ColoredText.ANSI_RESET + "\n");
             for (User user : usersCommonTagList) {
                 toSend.append(ColoredText.ANSI_PURPLE + user.getNickname() + " " + ColoredText.ANSI_RESET + "\t[ ");
@@ -294,7 +294,7 @@ public class ConnectionHandler implements Runnable {
                         ColoredText.ANSI_PURPLE + "Non segui nessun utente." + ColoredText.ANSI_RESET);
                 return;
             } else {
-                toSend.append(ColoredText.ANSI_PURPLE + "LISTA DEI SEGUITI:\n" + ColoredText.ANSI_RESET);
+                toSend.append("\n" + ColoredText.ANSI_PURPLE + "LISTA DEI SEGUITI:\n" + ColoredText.ANSI_RESET);
                 int i = 1;
                 for (String user : followings) {
                     toSend.append(ColoredText.ANSI_PURPLE + i + ")" + ColoredText.ANSI_RESET + user + "\n");
@@ -427,7 +427,7 @@ public class ConnectionHandler implements Runnable {
             } else {
                 // blog con almeno un post
                 StringBuilder toSend = new StringBuilder();
-                toSend.append(ColoredText.ANSI_WHITE_BACKGROUND + ColoredText.ANSI_PURPLE + "*****BLOG*****"
+                toSend.append("\n" + ColoredText.ANSI_WHITE_BACKGROUND + ColoredText.ANSI_PURPLE + "*****BLOG*****"
                         + ColoredText.ANSI_RESET + "\n");
                 for (Post p : posts) {
                     // prende il post pronto per la stampa dal metodo di formatter del social
@@ -441,7 +441,7 @@ public class ConnectionHandler implements Runnable {
 
     // mostra dettagliatamete il wallet all'utente
     private void getWallet() {
-        DecimalFormat df = new DecimalFormat("0.0000");
+
         if (clientSession != null) {
             Wallet thisUserWallet = socialManager.getWallet(clientSession.getUser());
             ConcurrentLinkedQueue<WalletMovement> thisWalletMovements = thisUserWallet.getTransactionList();
@@ -450,16 +450,16 @@ public class ConnectionHandler implements Runnable {
                     + ColoredText.ANSI_RESET + "\n");
             double wallet = thisUserWallet.getWallet();
             if (wallet == 1) {
-                toSend.append("Possiede:\t" + df.format(wallet) + " Wincoin");
+                toSend.append("Possiede:\t" + socialManager.formattedWincoin(wallet));
             } else {
-                toSend.append("Possiede:\t" + df.format(wallet) + " Wincoins");
+                toSend.append("Possiede:\t" + socialManager.formattedWincoin(wallet));
             }
             if (thisWalletMovements.size() != 0) {
                 toSend.append(ColoredText.ANSI_PURPLE + "\nTRANSAZIONI:" + ColoredText.ANSI_RESET + "\n");
                 for (WalletMovement transaction : thisWalletMovements) {
                     double amount = transaction.getAmount();
                     toSend.append(transaction.getDate().toString() + "\t");
-                    toSend.append(df.format(amount) + "\nReason:\t");
+                    toSend.append(socialManager.formattedWincoin(amount) + "\nReason:\t");
                     toSend.append(transaction.getReason() + "\n");
                 }
             } else {
@@ -538,7 +538,7 @@ public class ConnectionHandler implements Runnable {
                     request = SharedMethods.readFromStream(input);
                     // splitto comando e argomenti
                     String[] splitted = request.split(" ");
-                    String op = splitted[0];
+                    String op = splitted[0].toLowerCase();
                     String[] args = new String[splitted.length - 1];
                     System.arraycopy(splitted, 1, args, 0, splitted.length - 1);
                     // gestisco la richiesta
@@ -562,6 +562,11 @@ public class ConnectionHandler implements Runnable {
                             getBitcoin();
                             break;
                         case "login":
+                            if (WinsomeServerMain.clientSessionList.containsKey(args[0])) {
+                                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
+                                        + "Questo account e' già loggato da un altro dispositivo, impossibile accedere.");
+                                break;
+                            }
                             // controllo che il comando di login sia corretto
                             if (args.length != 2) {
                                 // non sono stati mandati utente e password

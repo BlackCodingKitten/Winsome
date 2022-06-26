@@ -3,7 +3,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.rmi.AlreadyBoundException;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -133,41 +132,6 @@ public class WinsomeServerMain {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        } // ->fine del while
-          // se sono uscito dal while perchè il sever sta chiudendo
-          // per prima cosa chiudo le socket client
-        System.out.println("Disconnessione sicura dei client...");
-        for (Socket client : clientSocketList) {
-            try {
-                client.close();
-            } catch (IOException e) {
-                // ignored
-            }
-        }
-        System.out.println("Tutti i client sono stati chiusi.");
-
-        // adesso passo alla chiusura della socket server
-        try {
-            serverSocket.close();
-        } catch (IOException e) {
-            // ignored tanto sat chiudendo il client
-
-        }
-
-        // chiusura di tutti i thread
-        rewards.stopServer();
-        rewardManager.interrupt();
-        // chiudo eseguendo il salvataggio finale
-        dataBackup.stopServer();
-        dataBackupThread.interrupt();
-
-        // chiusura del'rmi
-        try {
-            // le chiudo tutte e 2 insieme
-            UnicastRemoteObject.unexportObject(winsomeService, false);
-            UnicastRemoteObject.unexportObject(winsomeCallback, false);
-        } catch (NoSuchObjectException e) {
-            // ignored, tanto sta chiudendo il server
         }
     }
 }
