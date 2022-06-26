@@ -175,6 +175,11 @@ public class WinsomeClientMain {
                                 help();
                                 break;
                             case "logout":
+                                if (nickname == null) {
+                                    System.out.println(ColoredText.ANSI_PURPLE + "Esegui prima il login."
+                                            + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 // operazione di logout
                                 SharedMethods.sendToStream(out, completeRequest);
                                 String fromServer = SharedMethods.readFromStream(in);
@@ -219,8 +224,9 @@ public class WinsomeClientMain {
                                             + " siamo lieti di rivederti." + ColoredText.ANSI_RESET);
                                     break;
                                 } else {
-                                    System.out.println(ColoredText.ANSI_PURPLE+
-                                            "Ops, sembra che qualcosa sia andato storto\n"+ColoredText.ANSI_RESET + fromServer2);
+                                    System.out.println(ColoredText.ANSI_PURPLE +
+                                            "Ops, sembra che qualcosa sia andato storto\n" + ColoredText.ANSI_RESET
+                                            + fromServer2);
                                     break;
                                 }
                             case "exit":
@@ -229,14 +235,22 @@ public class WinsomeClientMain {
                                 out.close();
                                 in.close();
                                 wNotifier.stopReading();
+                                System.out.println(ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE
+                                        + "Chiusura in corso..." + ColoredText.ANSI_RESET);
                                 System.exit(0);
                             case "register":
+                                if (nickname != null) {
+                                    System.out.println(ColoredText.ANSI_PURPLE
+                                            + "Non e' possibile registrare un nuovo utente se si e' loggati con un account, esegui il logout e registrati."
+                                            + ColoredText.ANSI_RESET);
+                                    break;
+                                }
                                 // operazione di register
                                 // per prima cosa controllo che siano stati inseriti nome utente, password e max
                                 // 5 tag
                                 if (otherArgumentsInCommandLine.length > 7) {
-                                    System.out.println(
-                                            "Impossibile eseguire la registrazione di un nuovo utente.\nPer informazioni su come eseguire una corretta registrazione digita \"help\".");
+                                    System.out.println(ColoredText.ANSI_PURPLE+
+                                            "Impossibile eseguire la registrazione di un nuovo utente, hai inserito troppi tag.\nPer informazioni su come eseguire una corretta registrazione digita \"help\"."+ColoredText.ANSI_RESET);
                                     break;
                                 } else {
                                     // copio la lista dei tag dall'array otherArgumentInCommandLine
@@ -394,8 +408,9 @@ public class WinsomeClientMain {
                     } // end while richieste utente
                 } catch (IOException y) {
                     // persa la connessione col server
-                    System.out.println(
-                            "Oh no un perfido stregone si e' preso il nostro server.\nVuoi affrontarlo? [S/N]\nS per riconnetterti al server, N per uscire");
+                    System.out.println(ColoredText.ANSI_PURPLE +
+                            "Oh no un perfido stregone si e' preso il nostro server.\nVuoi affrontarlo? [S/N]\nS per riconnetterti al server, N per uscire"
+                            + ColoredText.ANSI_RESET);
                     if (SharedMethods.readFromConsole(inputReader).equalsIgnoreCase("S")) {
                         connectionState = false;
                     } else {

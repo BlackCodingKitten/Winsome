@@ -136,14 +136,14 @@ public class ConnectionHandler implements Runnable {
             toSend.append(ColoredText.ANSI_WHITE + ColoredText.ANSI_PURPLE
                     + "LISTA DI UTENTI CHE HANNO TAG IN COMUNE CON TE:" + ColoredText.ANSI_RESET + "\n");
             for (User user : usersCommonTagList) {
-                toSend.append(ColoredText.ANSI_PURPLE + user.getNickname() + " " + ColoredText.ANSI_RESET + "\t[");
+                toSend.append(ColoredText.ANSI_PURPLE + user.getNickname() + " " + ColoredText.ANSI_RESET + "\t[ ");
                 for (String tag : user.getTags()) {
                     // append()dei tag in comune
                     if (thisUserTags.contains(tag)) {
-                        toSend.append(tag + "-");
+                        toSend.append(tag + " ");
                     }
                 }
-                toSend.append("\n");
+                toSend.append("]\n");
             }
 
             SharedMethods.sendToStream(output, toSend.toString());
@@ -509,9 +509,8 @@ public class ConnectionHandler implements Runnable {
                 WinsomeServerMain.clientSessionList.remove(nickname);
                 setFlag(false);// la flag server per poter effettuare un nuovo login dopo il logout
                 SharedMethods.sendToStream(output, "OK");
+                return;
             }
-
-            return;
         } else {
             // l'utente non ha una clienSession Attiva
             SharedMethods.sendToStream(output,

@@ -1,7 +1,8 @@
 package Color;
 
 public class ColoredText {
-    public static final String ANSI_BOLD = "\033[0;1M";
+    public static final String ANSI_BOLD_ON = "\u001BE\u0001";
+    public static final String ANSI_BOLD_OFF = "\u001BE\0";
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
     public static final String ANSI_RED_BACKGROUND = "\u001B[41m";

@@ -227,18 +227,19 @@ public class SocialManager {
             throws PostNotFoundException, PostNotInFeedException {
         Post post = postList.get(id);
         if (post == null) {
-
             // post non trovato
             throw new PostNotFoundException();
         } else {
-
+            if (post.getOwner().equalsIgnoreCase(username)) {
+                // l'autore del post può commentarlo
+                post.addNewComment(username, comment);
+                return;
+            }
             if (!isPostInFeed(id, username)) {
-
                 // post non in feed
                 throw new PostNotInFeedException();
             } else {
                 post.addNewComment(username, comment);
-
             }
         }
     }
@@ -300,8 +301,12 @@ public class SocialManager {
         stringBuilder.append(
                 ColoredText.ANSI_PURPLE + "DownVote: " + ColoredText.ANSI_RESET + toFormatt.getNumDownVotes() + "\n");
         HashSet<Comment> commentList = toFormatt.getComments();
-        stringBuilder.append(String.valueOf(ColoredText.ANSI_PURPLE + commentList.size()) + ColoredText.ANSI_RESET
-                + " utenti hanno commentato questo post.");
+        stringBuilder.append(String.valueOf(ColoredText.ANSI_PURPLE + commentList.size()) + ColoredText.ANSI_RESET);
+        if(commentList.size()==1){
+            stringBuilder.append(" utente ha commentato questo post.");
+        }else{
+            stringBuilder.append(" utenti hanno commentato questo post.");
+        }
         stringBuilder.append("\n");
         for (Comment c : commentList) {
             stringBuilder.append(ColoredText.ANSI_PURPLE + c.getOwner() + ":   " + ColoredText.ANSI_RESET);

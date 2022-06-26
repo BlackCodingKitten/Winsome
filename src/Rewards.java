@@ -10,8 +10,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import Color.ColoredText;
-
 /*questa classe gestisce il calcolo assegnazione e invio delle notifiche dei reward , apre una 
 connessione multicast in modo che i client possano collegarsi ed ascoltare le notifiche */
 
@@ -157,6 +155,10 @@ public class Rewards implements Runnable {
 
             curators.addAll(voteList.keySet());
             curators.addAll(commentingUser);
+            if (curators.contains(p.getOwner())) {
+                // l'autore del post non viene incluso nel calcolo del reward per i curatori
+                curators.remove(p.getOwner());
+            }
             if (curators.size() == 0) {
                 return reward;
             }
