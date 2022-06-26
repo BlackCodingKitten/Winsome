@@ -7,12 +7,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import Color.ColoredText;
+
 /*rappresenta il wallet di un utente, il valore corrente viene calcolato dalla lista di transazioni che l'untente ha fatto */
 public class Wallet {
-    //private static final DEBUG debug = new DEBUG();
-    private final String owner; //-> proprietario del portafoglio
-    private final ConcurrentLinkedQueue<WalletMovement> transaction; //-> lista delle transazioni del portafoglio
-    private double walletAmount;//-> valore corrente del portafoglio riaggiornato ad ogni chiamata
+    // private static final DEBUG debug = new DEBUG();
+    private final String owner; // -> proprietario del portafoglio
+    private final ConcurrentLinkedQueue<WalletMovement> transaction; // -> lista delle transazioni del portafoglio
+    private double walletAmount;// -> valore corrente del portafoglio riaggiornato ad ogni chiamata
 
     // costruttore della classe wallet
     public Wallet(String owner) {
@@ -53,15 +55,20 @@ public class Wallet {
     public double getWalletbitcoin() {
         double exchangeRate = 0.000;
         try {
-            URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=4&col=1&format=plain&rnd=new");
-            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection(); //httpsURLConnection estende httpURLConnection con funzionalità specifiche per https
+            URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=10&col=1&format=plain&rnd=new");
+            HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+            // httpsURLConnection estende
+            // httpURLConnection con
+            // funzionalità specifiche per
+            // https
             if (connection.getResponseCode() < 300) {
                 InputStream inputStream = connection.getInputStream();
                 BufferedReader bReader = new BufferedReader(new InputStreamReader(inputStream));
                 String line = bReader.readLine();
                 exchangeRate = Double.parseDouble(line);
             } else {
-                System.out.print(" Servizio temporaneamente non disponibile. :-( \nRiprovare più tardi \n");
+                System.out.print(ColoredText.ANSI_PURPLE
+                        + "Servizio temporaneamente non disponibile.\nRiprovare più tardi.\n" + ColoredText.ANSI_RESET);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -77,9 +84,8 @@ public class Wallet {
         return this.walletAmount;
     }
 
-
     @Override
-    public int hashCode(){
+    public int hashCode() {
         return this.owner.hashCode();
     }
 }
