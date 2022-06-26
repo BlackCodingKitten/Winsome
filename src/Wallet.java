@@ -55,7 +55,7 @@ public class Wallet {
     public double getWalletbitcoin() {
         double exchangeRate = 0.000;
         try {
-            URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=10&col=1&format=plain&rnd=new");
+            URL url = new URL("https://www.random.org/decimal-fractions/?num=1&dec=20&col=1&format=plain&rnd=new");
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             // httpsURLConnection estende
             // httpURLConnection con

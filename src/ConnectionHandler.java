@@ -477,6 +477,7 @@ public class ConnectionHandler implements Runnable {
     // metodo per la conversione del wallet di un utente in bitcoins
     private void getBitcoin() {
         DecimalFormat df = new DecimalFormat("0.0000");
+        DecimalFormat n20df = new DecimalFormat("0.00000000000000000000");
         if (clientSession == null) {
             SharedMethods.sendToStream(output, "Effettua il login per convertire il tuo wallet in bitcoin.");
         } else {
@@ -487,7 +488,7 @@ public class ConnectionHandler implements Runnable {
             double bitcoin = cRate * thisUserWallet.getWallet();
 
             toSend.append(ColoredText.ANSI_PURPLE + "Il tasso di conversione in bitcoin è "
-                    + ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE + df.format(cRate)
+                    + ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE + n20df.format(cRate)
                     + ColoredText.ANSI_RESET + "\n");
             toSend.append(ColoredText.ANSI_PURPLE + "Il portafoglio di " + thisUser + " corrisponde a "
                     + ColoredText.ANSI_PURPLE_BACKGROUND + ColoredText.ANSI_WHITE + df.format(bitcoin)
