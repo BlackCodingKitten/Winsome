@@ -519,12 +519,13 @@ public class WinsomeClientMain {
 
     // metetodo che stampa il comando help
     public static void help() {
-        System.out.println("Hai bidogno di aiuto?\n" + ColoredText.ANSI_WHITE_BACKGROUND + ColoredText.ANSI_PURPLE
+        System.out.println(ColoredText.ANSI_PURPLE + "Hai bisogno di aiuto?\n" + ColoredText.ANSI_WHITE_BACKGROUND
+                + ColoredText.ANSI_PURPLE
                 + "Ecco una lista dei comadi pronta per te:" + ColoredText.ANSI_RESET);
         System.out.println(ColoredText.ANSI_PURPLE + "help\t" + ColoredText.ANSI_RESET
                 + "Serve a mostrare questa lista, ma questo lo sai. :-)");
         System.out
-                .println(ColoredText.ANSI_PURPLE + "register <username> <password> <elnenca max 5 tag>\t"
+                .println(ColoredText.ANSI_PURPLE + "register <username> <password> <elenca max 5 tag>\t"
                         + ColoredText.ANSI_RESET + "Serve per registrare nuovi utenti");
         System.out
                 .println(ColoredText.ANSI_PURPLE + "login <username> <password>\t" + ColoredText.ANSI_RESET
