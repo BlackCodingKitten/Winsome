@@ -13,6 +13,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.io.BufferedReader;
 import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import Color.ColoredText;
 
@@ -36,8 +38,14 @@ public class WinsomeClientMain {
     public static String multicastAddress;
     public static ConfigReader configReader;
 
-    public static HashSet<String> followerList = new HashSet<>();
+    public static Set<String> followerList = ConcurrentHashMap.newKeySet();
 
+    // newKeySet() restituisce un'istanza che rispetta l'interfaccia java.util.Set e
+    // consente l'uso di metodi standard come add(), contains(), ecc.
+    // le prestazioni del set restituito sono simili a quelle di HashSet, poiché
+    // entrambi sono implementati con un algoritmo basato su hash. Inoltre,
+    // l'overhead aggiunto dalla logica di sincronizzazione è minimo, perché
+    // l'implementazione utilizza una ConcurrentHashMap.
     public static void main(String[] args) throws NotBoundException {
         // lettura del file config
         System.out.println(
@@ -239,8 +247,9 @@ public class WinsomeClientMain {
                                         } catch (RemoteException e) {
                                             e.printStackTrace();
                                         }
-                                    }else{
-                                        System.err.println(ColoredText.ANSI_PURPLE+"Errore nella logout in uscita"+ColoredText.ANSI_RESET);
+                                    } else {
+                                        System.err.println(ColoredText.ANSI_PURPLE + "Errore nella logout in uscita"
+                                                + ColoredText.ANSI_RESET);
                                     }
                                 }
                                 // operazione di uscita forzata
@@ -292,12 +301,13 @@ public class WinsomeClientMain {
                                 if (nickname != null) {
                                     if (followerList.size() > 0) {
                                         System.out.println(ColoredText.ANSI_PURPLE
-                                                + "LISTA DEGLI UTENTI CHE TI SEGUONO:" + ColoredText.ANSI_RESET);
+                                                + "\nLISTA DEGLI UTENTI CHE TI SEGUONO:" + ColoredText.ANSI_RESET);
                                         l = 1;// serve solo per stampare la lista numerata
                                         for (String follower : followerList) {
                                             System.out.println(l + ")" + follower);
                                             l++;
                                         }
+                                        System.out.print("\n");
                                     } else {
                                         System.out.println(ColoredText.ANSI_PURPLE
                                                 + "Nessuno ti segue. Sei nuovo o sei solo antipatico?\n****** "

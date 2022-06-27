@@ -18,11 +18,11 @@ public class SharedMethods {
         // out è lo stream su cio inviare la stringa
     }
 
-    //metodo che controlla se ho effettivamente inserito un intero
-    public static boolean isNumber(String a){
-        try{
+    // metodo che controlla se ho effettivamente inserito un intero
+    public static boolean isNumber(String a) {
+        try {
             Integer.parseInt(a);
-        }catch(NumberFormatException i){
+        } catch (NumberFormatException i) {
             return false;
         }
         return true;
@@ -34,9 +34,9 @@ public class SharedMethods {
         StringBuilder sBuilder = new StringBuilder();
         // leggo la lunghezza della stringa
         String length = in.readLine();
-        
+
         if (length == null) {
-            System.out.println("*****Errore!!!*****\nStringa di lunghezza nulla.");
+            System.out.println("Client Disconnesso.");
             return null;
         } else {
 
@@ -44,7 +44,7 @@ public class SharedMethods {
                 size = Integer.parseInt(length);
             } catch (NumberFormatException e) {
                 e.printStackTrace();
-                System.out.println("*****Errore!!!*****\nStringa con un formato incorretto, conversione non riuscita");
+                System.err.println("Stringa con un formato incorretto, conversione non riuscita");
             }
 
         }
@@ -57,7 +57,7 @@ public class SharedMethods {
 
     }
 
-    // readFromConsole() così come dice il nome permette din leggere una Stringa da
+    // readFromConsole() così come dice il nome permette di leggere una Stringa da
     // console, sostitutivo della readline() per gestire il caso della
     // NoSuchElementException che si può verificare a causa di una terminazione
     // anticipata mentre si sta leggendo un input, il metodo restituisce la stringa
@@ -84,9 +84,9 @@ public class SharedMethods {
 
     // approximateDouble() approssima un numero a 4 cifre dopo la virgola
 
-   // public static double approximateDouble(double num) {
-     //   return (double) Math.round(num * (Math.pow(10, 4))) / Math.pow(10, 4);
+    // public static double approximateDouble(double num) {
+    // return (double) Math.round(num * (Math.pow(10, 4))) / Math.pow(10, 4);
 
-   // }
+    // }
 
 }
