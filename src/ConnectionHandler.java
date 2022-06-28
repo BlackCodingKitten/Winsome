@@ -94,11 +94,12 @@ public class ConnectionHandler implements Runnable {
                     ColoredText.ANSI_PURPLE + "Effettua prima il login, grazie." + ColoredText.ANSI_RESET);
         } else {
             String thisUser = clientSession.getUser();
-            HashSet<Post> feed = (HashSet<Post>) socialManager.getUserFeed(thisUser);
+            HashSet<Post> feed = socialManager.getUserFeed(thisUser);
             if (feed.size() == 0) {
                 // se il feed è vuoto
-                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
-                        + "Il tuo feed è vuoto.\nSei un nuovo utente?, digita \"help\"." + ColoredText.ANSI_RESET);
+                String toSend = ColoredText.ANSI_PURPLE
+                        + "Il tuo feed è vuoto.\nSei un nuovo utente?, digita \"help\"." + ColoredText.ANSI_RESET;
+                SharedMethods.sendToStream(output, toSend);
                 return;
             }
             // se il feed ha almeno 1 post
@@ -563,8 +564,10 @@ public class ConnectionHandler implements Runnable {
                             break;
                         case "login":
                             if (WinsomeServerMain.clientSessionList.containsKey(args[0])) {
-                                SharedMethods.sendToStream(output, ColoredText.ANSI_PURPLE
-                                        + "Questo account e' già loggato da un altro dispositivo, impossibile accedere.");
+                                String toSend = ColoredText.ANSI_PURPLE
+                                        + "Questo account e' già loggato da un altro dispositivo, impossibile accedere."
+                                        + ColoredText.ANSI_RESET;
+                                SharedMethods.sendToStream(output, toSend);
                                 break;
                             }
                             // controllo che il comando di login sia corretto
